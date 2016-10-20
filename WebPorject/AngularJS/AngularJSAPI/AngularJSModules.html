@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/angular.js"></script>
+</head>
+<body>
+<h3>AngularJS指令,数据绑定</h3>
+<!-- ng-app:初始化一个AngularJS应用程序,ng-app指令告诉AngularJS,div是AngularJS应用程序的所有者,一个网页可以包含对个运行在不同元素的AngularJS应用程序
+    ng-init:指令初始化应用程序数据
+    ng-model:指令吧元素之(比如输入域的值)绑定到应用程序
+-->
+    <!--<div ng-app="myApp" ng-init="firatName">
+        <input type="text" ng-model="firstName">
+        <p>你输入了:{{firstName}}</p>
+    </div>-->
+    <div data-ng-app="myApp" data-ng-init="quantity=1;price=5;name=['pl','ui','kjhhgg'];
+    person=[{name:'哈哈',age:23,sex:'男'},
+            {name:'呵呵',age:56,sex:'男'},
+            {name:'嘿嘿',age:10,sex:'女'}]">
+        <h2>价格计算:</h2>
+        数量: <input type="number" ng-model="quantity">
+        价格: <input type="number" ng-model="price">
+        <h3>总价: <span ng-bind="quantity*price"></span></h3>
+        <p>使用ng-repeat来循环数组</p>
+        <ul>
+            <li ng-repeat="x in name">
+                {{x}}
+            </li>
+        </ul>
+        <p>使用ng-repeat来循环对象</p>
+        <ul>
+            <li ng-repeat="x in person">{{x.name+","+x.age+","+x.sex}}</li>
+        </ul>
+        <runood-directive></runood-directive>
+    </div>
+<script>
+    var app=angular.module("myApp",[]);
+    app.directive("runoodDirective",function () {
+        return{
+            template:"<h1>自定义指令!</h1>"
+        }
+    });
+</script>
+</body>
+</html>

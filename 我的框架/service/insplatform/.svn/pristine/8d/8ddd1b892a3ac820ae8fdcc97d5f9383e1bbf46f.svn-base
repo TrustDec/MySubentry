@@ -1,0 +1,249 @@
+package com.insplatform.module.classreport.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_CLASS_REPORT")
+public class ClassReport implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String name;
+	private double population;
+	private String remark;
+	private java.util.Date startTime;
+	private java.util.Date stopTime;
+	private String pxYear;
+	private String pxMonth;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String pxAddress;
+	private String classTeacher;
+	private String pxContent;
+	private String state;
+	private String pxProject;
+	private String pxOrganization;
+	private String pxShape;
+	private String applySign;
+	private java.util.Date applyStatTime;
+	private java.util.Date applyStopTime;
+	private String pxRanag;
+	private String orgType;
+	private String costType;
+	
+	public String getPxRanag() {
+		return pxRanag;
+	}
+
+	public void setPxRanag(String pxRanag) {
+		this.pxRanag = pxRanag;
+	}
+
+	public String getApplySign() {
+		return applySign;
+	}
+
+	public void setApplySign(String applySign) {
+		this.applySign = applySign;
+	}
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setPopulation(double value) {
+		this.population = value;
+	}
+	
+	public double getPopulation() {
+		return this.population;
+	}
+	
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	
+	public void setStartTime(java.util.Date value) {
+		this.startTime = value;
+	}
+	
+	public java.util.Date getStartTime() {
+		return this.startTime;
+	}
+	
+	public void setStopTime(java.util.Date value) {
+		this.stopTime = value;
+	}
+	
+	public java.util.Date getStopTime() {
+		return this.stopTime;
+	}
+	
+	public void setPxYear(String value) {
+		this.pxYear = value;
+	}
+	
+	public String getPxYear() {
+		return this.pxYear;
+	}
+	
+	public void setPxMonth(String value) {
+		this.pxMonth = value;
+	}
+	
+	public String getPxMonth() {
+		return this.pxMonth;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setPxAddress(String value) {
+		this.pxAddress = value;
+	}
+	
+	public String getPxAddress() {
+		return this.pxAddress;
+	}
+	
+	public void setClassTeacher(String value) {
+		this.classTeacher = value;
+	}
+	
+	public String getClassTeacher() {
+		return this.classTeacher;
+	}
+	
+	public void setPxContent(String value) {
+		this.pxContent = value;
+	}
+	
+	public String getPxContent() {
+		return this.pxContent;
+	}
+	
+	public void setState(String value) {
+		this.state = value;
+	}
+	
+	public String getState() {
+		return this.state;
+	}
+	
+	public void setPxProject(String value) {
+		this.pxProject = value;
+	}
+	
+	public String getPxProject() {
+		return this.pxProject;
+	}
+
+	public String getPxOrganization() {
+		return pxOrganization;
+	}
+
+	public void setPxOrganization(String pxOrganization) {
+		this.pxOrganization = pxOrganization;
+	}
+
+	public String getPxShape() {
+		return pxShape;
+	}
+
+	public void setPxShape(String pxShape) {
+		this.pxShape = pxShape;
+	}
+
+	public java.util.Date getApplyStatTime() {
+		return applyStatTime;
+	}
+
+	public void setApplyStatTime(java.util.Date applyStatTime) {
+		this.applyStatTime = applyStatTime;
+	}
+
+	public java.util.Date getApplyStopTime() {
+		return applyStopTime;
+	}
+
+	public void setApplyStopTime(java.util.Date applyStopTime) {
+		this.applyStopTime = applyStopTime;
+	}
+
+	public String getOrgType() {
+		return orgType;
+	}
+
+	public void setOrgType(String orgType) {
+		this.orgType = orgType;
+	}
+
+	public String getCostType() {
+		return costType;
+	}
+
+	public void setCostType(String costType) {
+		this.costType = costType;
+	}
+
+	
+	
+	
+	
+	
+}

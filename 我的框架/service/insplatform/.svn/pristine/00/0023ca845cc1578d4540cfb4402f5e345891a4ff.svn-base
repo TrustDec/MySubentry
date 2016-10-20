@@ -1,0 +1,84 @@
+package com.insplatform.module.testpaper.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.testpaper.model.TestPaperQuestionAnswer;
+import com.insplatform.module.testpaper.repository.TestPaperQuestionAnswerRepository;
+import com.insplatform.module.testpaper.service.TestPaperQuestionAnswerService;
+
+@Service
+public class TestPaperQuestionAnswerServiceImpl extends BaseServiceImpl<TestPaperQuestionAnswer> implements TestPaperQuestionAnswerService{
+	
+	@Autowired
+	private TestPaperQuestionAnswerRepository testPaperQuestionAnswerRepository;
+
+	@Override
+	public BaseRepository<TestPaperQuestionAnswer> getRepository() {		
+		return testPaperQuestionAnswerRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return testPaperQuestionAnswerRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return testPaperQuestionAnswerRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return testPaperQuestionAnswerRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TestPaperQuestionAnswer get(Serializable id) {		
+		return testPaperQuestionAnswerRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TestPaperQuestionAnswer entity) {	
+		return testPaperQuestionAnswerRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TestPaperQuestionAnswer entity) {		
+		testPaperQuestionAnswerRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		testPaperQuestionAnswerRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		testPaperQuestionAnswerRepository.deleteByIds(ids);
+	}
+
+}

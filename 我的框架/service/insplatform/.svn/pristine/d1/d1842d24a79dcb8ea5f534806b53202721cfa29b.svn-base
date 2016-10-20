@@ -1,0 +1,109 @@
+package com.insplatform.module.osta.personworktype.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.personworktype.model.OstaPersonWorktypeLevel;
+import com.insplatform.module.osta.personworktype.service.OstaPersonWorktypeLevelService;
+
+@Controller
+@RequestMapping("/px/ostapersonworktypelevel")
+public class OstaPersonWorktypeLevelController extends BaseController{
+	
+	@Autowired
+	private OstaPersonWorktypeLevelService ostaPersonWorktypeLevelService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"pid","worktypeName","gainLevelId");
+		return ostaPersonWorktypeLevelService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(ostaPersonWorktypeLevelService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(ostaPersonWorktypeLevelService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(OstaPersonWorktypeLevel ostapersonworktypelevel, HttpServletRequest request){
+		CurrentUser user = this.getCurrentUser(request);
+		ostapersonworktypelevel.setCreateUserId(user.getId());
+		ostapersonworktypelevel.setCreateUserName(user.getName());
+		ostapersonworktypelevel.setCreateTime(new Date());
+		ostaPersonWorktypeLevelService.save(ostapersonworktypelevel);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		OstaPersonWorktypeLevel ostapersonworktypelevel = ostaPersonWorktypeLevelService.get(id);
+		this.bindObject(request, ostapersonworktypelevel);
+		ostaPersonWorktypeLevelService.update(ostapersonworktypelevel);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		ostaPersonWorktypeLevelService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	
+}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script src="js/SmallRui.js"></script>
+</head>
+<body>
+	<ul>
+		<li class="li">12</li>
+		<li>23</li>
+		<li class="li">3445</li>
+	</ul>
+	<script type="text/javascript">
+	var ul=document.getElementsByTagName("ul")[0];
+	var li=getClassName(ul,"li");
+	for (var i = 0; i < li.length; i++) {
+		li[i].style.color="red";
+	};
+	var o=firstName(ul);
+	o.style.color="green";
+	
+	</script>
+</body>
+</html>

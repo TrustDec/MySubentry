@@ -1,0 +1,136 @@
+package com.insplatform.module.trainingimplement.repository;
+
+import java.util.List;
+import java.util.Map;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingUserRoster;
+
+
+public interface TrainingUserRosterRepository extends BaseRepository<TrainingUserRoster>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> load(String id);
+
+	/**
+	 * 添加人员花名册
+	 * @param id
+	 * @param ids
+	 */
+	void add(String id, String[] ids);
+
+	/**
+	 * 
+	 * @param id
+	 * @param ids
+	 * @param statu
+	 */
+	void isChecking(String id, String[] ids, String statu);
+
+	/**
+	 * 
+	 * @param id
+	 * @param courseId 
+	 */
+	void addOrUpadteUser(String id, String courseId);
+
+	/**
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllQueryClockGrid(Condition condition);
+
+	/**
+	 * 
+	 * @param id
+	 * @param schemeId
+	 * @param statu
+	 * @param idSer 
+	 */
+	void isCheckingChecked(String id, String schemeId, String statu, String[] idSer, String courseId);
+
+	/**
+	 * 
+	 * @param id
+	 * @param result
+	 * @param remark
+	 * @return 
+	 */
+	Map<String, Object> updateResult(String id, String result, String remark);
+
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	Map<String, Object> loadData(String id);
+
+	/**
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllListIsChecking(Condition condition);
+
+	/**
+	 * 
+	 * @param condition
+	 * @param ids
+	 * @param userGroup
+	 * @param trainingSchemeId 
+	 */
+	void userGroup(Condition condition, String[] ids, String userGroup, String trainingSchemeId);
+
+	/**
+	 * 
+	 * @param id
+	 * @param trainingSchemeId 
+	 * @return
+	 */
+	Map<String, Object> loadEdit(String id, String trainingSchemeId);
+
+	/**
+	 * 
+	 * @param phone
+	 * @param id
+	 */
+	void update(String phone, String id);
+
+	/**
+	 * 
+	 * @param id
+	 * @param remark
+	 */
+	void remark(String id, String remark);
+
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	Map<String, Object> loadRemark(String id);
+	
+}

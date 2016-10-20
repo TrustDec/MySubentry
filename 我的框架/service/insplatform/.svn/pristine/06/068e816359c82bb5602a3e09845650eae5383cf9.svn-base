@@ -1,0 +1,96 @@
+package com.insplatform.module.osta.question.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.osta.question.model.OstaQuestionClassify;
+import com.insplatform.module.osta.question.repository.OstaQuestionClassifyRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class OstaQuestionClassifyRepositoryImpl extends BaseRepositoryImpl<OstaQuestionClassify> implements OstaQuestionClassifyRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_QUESTION_CLASSIFY t where t.is_delete = 'N'";
+		if (condition.containsKey("name")) {
+			sql += " and t.name like ?";
+			condition.put("name","%"+condition.get("name")+"%");
+		}
+		sql+=" order by t.name";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_QUESTION_CLASSIFY t where t.is_delete = 'N'" +
+				" order by t.name";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_OSTA_QUESTION_CLASSIFY t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaQuestionClassify get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaQuestionClassify entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaQuestionClassify entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public int deleteByIdsx(String[] ids) {
+		if(ids!=null &&ids.length > 0){
+			String[] sqls = new String[ids.length];
+			String tmpl = "update px_osta_question_classify set is_delete = 'Y' where id = '";
+			for (int i = 0; i < ids.length; i++) {
+				sqls[i] = tmpl+ids[i]+"'";
+			}
+			jdbcAssistant.batchUpdate(sqls);
+			return 1;
+		}
+		return 0;
+	}
+	
+}

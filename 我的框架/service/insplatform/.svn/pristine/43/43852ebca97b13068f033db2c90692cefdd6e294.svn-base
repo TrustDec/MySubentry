@@ -1,0 +1,93 @@
+package com.insplatform.module.osta.personworktype.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.osta.personworktype.model.OstaPersonWorktypeLevel;
+import com.insplatform.module.osta.personworktype.repository.OstaPersonWorktypeLevelRepository;
+import com.insplatform.module.osta.personworktype.service.OstaPersonWorktypeLevelService;
+import com.insplatform.system.dict.model.Dict;
+import com.insplatform.system.dict.repository.DictRepository;
+
+@Service
+public class OstaPersonWorktypeLevelServiceImpl extends BaseServiceImpl<OstaPersonWorktypeLevel> implements OstaPersonWorktypeLevelService{
+	
+	@Autowired
+	private OstaPersonWorktypeLevelRepository ostaPersonWorktypeLevelRepository;
+	
+	@Autowired
+	private DictRepository dictRepository;
+
+	@Override
+	public BaseRepository<OstaPersonWorktypeLevel> getRepository() {		
+		return ostaPersonWorktypeLevelRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return ostaPersonWorktypeLevelRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return ostaPersonWorktypeLevelRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return ostaPersonWorktypeLevelRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaPersonWorktypeLevel get(Serializable id) {		
+		return ostaPersonWorktypeLevelRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaPersonWorktypeLevel entity) {	
+		Dict dict = dictRepository.get(entity.getGainLevelId());
+		entity.setGainLevelName(dict.getName());
+		return ostaPersonWorktypeLevelRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaPersonWorktypeLevel entity) {	
+		Dict dict = dictRepository.get(entity.getGainLevelId());
+		entity.setGainLevelName(dict.getName());
+		ostaPersonWorktypeLevelRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		ostaPersonWorktypeLevelRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		ostaPersonWorktypeLevelRepository.deleteByIds(ids);
+	}
+
+}

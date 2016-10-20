@@ -1,0 +1,84 @@
+package com.insplatform.module.training.meeting.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.training.meeting.model.TrainingStartMeeting;
+import com.insplatform.module.training.meeting.repository.TrainingStartMeetingRepository;
+import com.insplatform.module.training.meeting.service.TrainingStartMeetingService;
+
+@Service
+public class TrainingStartMeetingServiceImpl extends BaseServiceImpl<TrainingStartMeeting> implements TrainingStartMeetingService{
+	
+	@Autowired
+	private TrainingStartMeetingRepository trainingStartMeetingRepository;
+
+	@Override
+	public BaseRepository<TrainingStartMeeting> getRepository() {		
+		return trainingStartMeetingRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return trainingStartMeetingRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return trainingStartMeetingRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return trainingStartMeetingRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingStartMeeting get(Serializable id) {		
+		return trainingStartMeetingRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingStartMeeting entity) {	
+		return trainingStartMeetingRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingStartMeeting entity) {		
+		trainingStartMeetingRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		trainingStartMeetingRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		trainingStartMeetingRepository.deleteByIds(ids);
+	}
+
+}

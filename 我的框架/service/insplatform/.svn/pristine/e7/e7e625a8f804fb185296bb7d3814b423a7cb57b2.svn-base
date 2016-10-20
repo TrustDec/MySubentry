@@ -1,0 +1,31 @@
+package com.insplatform.module.osta.question.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insplatform.module.osta.question.model.OstaQuestionAnswer;
+import com.insplatform.module.osta.question.repository.OstaQuestionAnswerRepository;
+import com.insplatform.module.osta.question.service.OstaQuestionAnswerService;
+
+@Service
+public class OstaQuestionAnswerServiceImpl extends BaseServiceImpl<OstaQuestionAnswer> implements OstaQuestionAnswerService{
+	
+	@Autowired
+	private OstaQuestionAnswerRepository ostaQuestionAnswerRepository;
+	
+	@Override
+	public BaseRepository<OstaQuestionAnswer> getRepository() {	
+		return ostaQuestionAnswerRepository;
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAnswerByQueId(String id) {		
+		return ostaQuestionAnswerRepository.loadAnswerByQueId(id);
+	}
+
+}

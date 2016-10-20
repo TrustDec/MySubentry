@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+<input type="text" id="input">
+<button>添加</button>
+<button>删除</button>
+	<ul class="ul"></ul>
+	<script>
+	var input=document.getElementById('input')
+	var oUl=document.getElementsByTagName('ul')[0];
+	var btn=document.getElementsByTagName("button")
+	btn[0].onclick=function(){
+		var li=document.createElement("li");
+		var a=document.createElement("a");
+		a.setAttribute("href","javascript:void(0);");
+		a.setAttribute("onClick","remove1()");
+		a.innerHTML="删除";
+		var zli=oUl.getElementsByTagName("li");
+		li.innerHTML=input.value;
+		li.appendChild(a);		
+		if (zli.length>0) {
+			oUl.insertBefore(li,zli[0]);			
+		}else{
+
+			oUl.appendChild(li);
+		}
+		a.onclick=function(){
+			oUl.removeChild(this.parentNode);
+		}
+	}
+	btn[1].onclick=function(){
+		var li=oUl.getElementsByTagName("li");
+		for (var i = 0; i < li.length; i++) {
+			if (li.length>0) {
+				oUl.removeChild(li[i]);				
+			}
+		}
+	}
+	
+	</script>
+</body>
+</html>

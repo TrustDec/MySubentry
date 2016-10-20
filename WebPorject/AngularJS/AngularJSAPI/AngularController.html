@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/angular.js"></script>
+</head>
+<body>
+    <div ng-app="myApp" ng-controller="myCtrl">
+        名: <input type="text" ng-model="firstName">
+        姓: <input type="text" ng-model="lastName">
+        <br>
+        姓名:{{firstName+""+lastName}}
+    </div>
+    <script>
+        var app=angular.module("myApp",[]);
+        app.controller("myCtrl",function ($scope) {
+            $scope.firstName="John";
+            $scope.lastName="Doe";
+            $scope.fullName=function(){
+                return $scope.firstName+""+$scopr.lastName;
+            }
+        });
+    </script>
+</body>
+</html>

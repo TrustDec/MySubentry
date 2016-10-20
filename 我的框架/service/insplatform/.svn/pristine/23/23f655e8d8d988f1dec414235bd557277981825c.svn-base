@@ -1,0 +1,145 @@
+package com.insplatform.module.classsummarize.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_CLASS_SUMMARIZE")
+public class ClassSummarize implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String pid;
+	private String oldFileName;
+	private String newFileName;
+	private String path;
+	private String url;
+	private int sortNum;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private String attType;
+	private String name;
+	private String remark;
+	private String recordType;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setPid(String value) {
+		this.pid = value;
+	}
+	
+	public String getPid() {
+		return this.pid;
+	}
+	
+	public void setOldFileName(String value) {
+		this.oldFileName = value;
+	}
+	
+	public String getOldFileName() {
+		return this.oldFileName;
+	}
+	
+	public void setNewFileName(String value) {
+		this.newFileName = value;
+	}
+	
+	public String getNewFileName() {
+		return this.newFileName;
+	}
+	
+	public void setPath(String value) {
+		this.path = value;
+	}
+	
+	public String getPath() {
+		return this.path;
+	}
+	
+	public void setUrl(String value) {
+		this.url = value;
+	}
+	
+	public String getUrl() {
+		return this.url;
+	}
+	
+	public void setSortNum(int value) {
+		this.sortNum = value;
+	}
+	
+	public int getSortNum() {
+		return this.sortNum;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setAttType(String value) {
+		this.attType = value;
+	}
+	
+	public String getAttType() {
+		return this.attType;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getRecordType() {
+		return recordType;
+	}
+
+	public void setRecordType(String recordType) {
+		this.recordType = recordType;
+	}
+	
+}

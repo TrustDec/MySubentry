@@ -1,0 +1,82 @@
+package com.insplatform.module.training.cost.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.training.cost.model.TrainingCostInfo;
+import com.insplatform.module.training.cost.repository.TrainingCostInfoRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TrainingCostInfoRepositoryImpl extends BaseRepositoryImpl<TrainingCostInfo> implements TrainingCostInfoRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.*,a.name as addressname,d.name as stay from px_training_cost_info t left join sys_dict d on t.stay_type=d.id left join PX_TRAINBASE a on t.address=a.id where 1=1";
+		
+		if(condition.containsKey("pxTrainingScheme")){
+			sql += " and t.px_training_scheme = ? ";
+			condition.put("pxTrainingScheme", condition.get("pxTrainingScheme"));
+		}
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_COST_INFO t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.*,a.name as addressname,d.name as stay from px_training_cost_info t left join sys_dict d on t.stay_type=d.id left join PX_TRAINBASE a on t.address=a.id where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingCostInfo get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingCostInfo entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingCostInfo entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

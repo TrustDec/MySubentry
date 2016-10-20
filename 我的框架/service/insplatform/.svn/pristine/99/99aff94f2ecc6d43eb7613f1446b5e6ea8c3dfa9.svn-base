@@ -1,0 +1,15 @@
+# init
+
+#ProxyRequests
+CTX_PATH=/insplatform
+STATIC_PATH=/insstatic
+#file
+FILE_SYS=Z:/insfile
+FILE_SYS_URL=/insfile
+FILE_SYS_HOST=http://192.168.100.13
+FILE_VIDEO_HOST=http://192.168.100.13
+
+#rtmp_server
+
+#report_server
+REPORT_SERVER=http\://192.168.100.13\:8080/WebReport/ReportServer?reportlet\=

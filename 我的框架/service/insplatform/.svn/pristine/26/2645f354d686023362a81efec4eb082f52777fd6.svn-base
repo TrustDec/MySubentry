@@ -1,0 +1,118 @@
+package com.insplatform.module.training.curriculum.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TRAINING_CURRICULUM")
+public class TrainingCurriculum implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String course;
+	private String coursename;
+	private java.util.Date statTime;
+	private java.util.Date stopTime;
+	private String pxTrainingScheme;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String address;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setCourse(String value) {
+		this.course = value;
+	}
+	
+	public String getCourse() {
+		return this.course;
+	}
+	
+	public void setCoursename(String value) {
+		this.coursename = value;
+	}
+	
+	public String getCoursename() {
+		return this.coursename;
+	}
+	
+	public void setStatTime(java.util.Date value) {
+		this.statTime = value;
+	}
+	
+	public java.util.Date getStatTime() {
+		return this.statTime;
+	}
+	
+	public void setStopTime(java.util.Date value) {
+		this.stopTime = value;
+	}
+	
+	public java.util.Date getStopTime() {
+		return this.stopTime;
+	}
+	
+	public void setPxTrainingScheme(String value) {
+		this.pxTrainingScheme = value;
+	}
+	
+	public String getPxTrainingScheme() {
+		return this.pxTrainingScheme;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+}

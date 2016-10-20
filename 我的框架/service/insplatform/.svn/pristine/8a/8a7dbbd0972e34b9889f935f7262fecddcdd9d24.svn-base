@@ -1,0 +1,53 @@
+package com.insplatform.module.teachassessmentcom.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+
+import com.insframework.system.map.Condition;
+import com.insplatform.module.teachassessmentcom.model.TeachassessmentCom;
+
+
+public interface TeachassessmentComRepository extends BaseRepository<TeachassessmentCom>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	/**
+	 * 获取学员数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllStuGrid(Condition condition,String id,String pid);
+	
+	/**
+	 * 获取当前用户所在公司
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	String getCurrOrgId(String id);
+	
+}

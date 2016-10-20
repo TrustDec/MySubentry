@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:websocket="http://www.springframework.org/schema/websocket"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx       
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd">
+	
+        
+        <!-- 
+    	<bean id="userBizDataFilterAspectHandler" class="com.insframework.system.aspect.UserBizDataFilterAspect"/>
+		<aop:config>  
+			<aop:aspect id="userBizDataFilterAspect" ref="userBizDataFilterAspectHandler">
+				<aop:pointcut id="AllMethod" 
+				expression="(execution(* com.insframework.common.spring.jdbc.JdbcAssistant.query(..)))
+				or (execution(* com.insframework.common.spring.jdbc.JdbcAssistant.queryAsPager(..)))"/>  				
+				<aop:before method="doBefore"  pointcut-ref="AllMethod"/>  
+	            <aop:after method="doAfter"  pointcut-ref="AllMethod"/>  
+	            <aop:around method="doAround"  pointcut-ref="AllMethod"/>  
+	            <aop:after-returning method="doReturn"  pointcut-ref="AllMethod"/>  
+	            <aop:after-throwing method="doThrowing" throwing="ex" pointcut-ref="AllMethod"/>  			
+			</aop:aspect>
+		</aop:config>
+		-->
+	
+</beans>

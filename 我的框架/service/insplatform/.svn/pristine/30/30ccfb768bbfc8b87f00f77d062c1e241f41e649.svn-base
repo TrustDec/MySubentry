@@ -1,0 +1,115 @@
+package com.insplatform.module.teachingplan.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TEACHING_PLAN")
+public class TeachingPlan implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String pxClassReport;
+	private String courseId;
+	private double courseHour;
+	private String isFull;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private double orderIndex;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setPxClassReport(String value) {
+		this.pxClassReport = value;
+	}
+	
+	public String getPxClassReport() {
+		return this.pxClassReport;
+	}
+	
+	
+	
+	public String getCourseId() {
+		return courseId;
+	}
+
+	public void setCourseId(String courseId) {
+		this.courseId = courseId;
+	}
+
+	public void setCourseHour(double value) {
+		this.courseHour = value;
+	}
+	
+	public double getCourseHour() {
+		return this.courseHour;
+	}
+	
+	
+	public void setIsFull(String value) {
+		this.isFull = value;
+	}
+	
+	public String getIsFull() {
+		return this.isFull;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+
+	public double getOrderIndex() {
+		return orderIndex;
+	}
+
+	public void setOrderIndex(double orderIndex) {
+		this.orderIndex = orderIndex;
+	}
+
+
+	
+	
+}

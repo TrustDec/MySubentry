@@ -1,0 +1,73 @@
+package com.insplatform.module.osta.question.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_OSTA_QUESTION_ANSWER")
+public class OstaQuestionAnswer implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String answer;
+	private String isRight;
+	private String img;
+	private String queId;
+	private int no;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setAnswer(String value) {
+		this.answer = value;
+	}
+	
+	public String getAnswer() {
+		return this.answer;
+	}
+	
+	public void setIsRight(String value) {
+		this.isRight = value;
+	}
+	
+	public String getIsRight() {
+		return this.isRight;
+	}
+	
+	public void setImg(String value) {
+		this.img = value;
+	}
+	
+	public String getImg() {
+		return this.img;
+	}
+	
+	public void setQueId(String value) {
+		this.queId = value;
+	}
+	
+	public String getQueId() {
+		return this.queId;
+	}
+	
+	public void setNo(int value) {
+		this.no = value;
+	}
+	
+	public int getNo() {
+		return this.no;
+	}
+	
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+/*对象的属性没有次序,变量必须与属性同名,才能取到正确的值,数组与变量是按次序排列取值*/
+	/*var {foo,bar} = {foo:"aaa",bar:"bbb"};
+	$(foo,bar);
+	var {oof,rab,lkj} = {rab:'12121',oof:'888'};
+	$(oof,rab,lkj);
+
+	var {fdd:yua} = {fdd:456,bsd:894};
+	$(yua);
+
+	let obj = {first:'hello',last:'world'};
+	let {first:f,last:l}=obj;
+	// $(first,last); //报错,真正赋值的是后者,而不是前者
+	 $(f,l);*/
+
+	 let {log,sd,op}=Math;
+	 $(log);
+
+
+		function $(){
+			if (arguments.length<2) {
+				arguments[0]===undefined?console.log('--------undefined---------'):console.log(arguments[0]);		
+			}else{				
+				for (let i = 0; i < arguments.length; i++) {
+				 	console.log(arguments[i]);					
+				}				
+			}
+		}
+	</script>
+</body>
+</html>

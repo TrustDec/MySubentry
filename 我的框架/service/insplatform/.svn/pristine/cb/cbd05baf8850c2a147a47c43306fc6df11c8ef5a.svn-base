@@ -1,0 +1,142 @@
+package com.insplatform.module.training.scheme.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.training.scheme.model.TrainingScheme;
+import com.insplatform.module.training.scheme.service.TrainingSchemeService;
+
+@Controller
+@RequestMapping("/px/trainingscheme")
+public class TrainingSchemeController extends BaseController{
+	
+	@Autowired
+	private TrainingSchemeService trainingSchemeService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"pxProject","name","depname");
+		return trainingSchemeService.loadAllGrid(condition);
+	}
+	
+	
+	/**
+	 * 选择器
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllChoose")
+	public @ResponseBody Map<String, Object> loadAllChoose(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"pxProject","name","depname");
+		return trainingSchemeService.loadAllChoose(condition);
+	}
+	
+	
+	/**
+	 * 带条件查询通知信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGridByInform")
+	public @ResponseBody Map<String, Object> loadAllGridByInform(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"pxProject","name","depname");
+		
+		return trainingSchemeService.loadAllGridByInform(condition);
+	}
+	
+	
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(trainingSchemeService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(trainingSchemeService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(TrainingScheme trainingscheme, HttpServletRequest request){
+		trainingscheme.setDepid(this.getCurrentUser(request).getOrganizationId());
+		trainingscheme.setCreateTime(new Date());
+		trainingscheme.setCreateUserId(this.getCurrentUser(request).getId());
+		trainingscheme.setCreateUserName(this.getCurrentUser(request).getName());
+		trainingscheme.setUpdateTime(new Date());
+		trainingSchemeService.save(trainingscheme, request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		TrainingScheme trainingscheme = trainingSchemeService.get(id);
+		this.bindObject(request, trainingscheme);
+		trainingSchemeService.update(trainingscheme, request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		trainingSchemeService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	
+
+	
+}

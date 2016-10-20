@@ -1,0 +1,67 @@
+package com.insplatform.module.trainingimplement.repository;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingCourseware;
+
+
+public interface TrainingCoursewareRepository extends BaseRepository<TrainingCourseware>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 
+	 * @param trainingcourseware
+	 * @param request
+	 * @return
+	 */
+	Serializable save(TrainingCourseware trainingcourseware,
+			HttpServletRequest request);
+
+	/**
+	 * 
+	 * @param id
+	 * @param trainingCourseware 
+	 * @param request
+	 */
+	void update(String id,TrainingCourseware trainingCourseware, HttpServletRequest request);
+
+	/**
+	 * 
+	 * @param id
+	 * @param request
+	 * @param response
+	 */
+	void downloadAttachment(String id, HttpServletRequest request,
+			HttpServletResponse response);
+	
+}

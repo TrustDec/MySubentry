@@ -1,0 +1,79 @@
+package com.insplatform.module.bbs.article.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.bbs.article.model.BbsArticle;
+
+public interface BbsArticleService extends BaseService<BbsArticle> {
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 加载模板数据
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAllTemplate(Condition condition);
+
+	/**
+	 * 修改文章发布状态
+	 * 
+	 * @param ispublish
+	 * @param articleId
+	 */
+	void updateIspublish(String ispublish, String articleId);
+
+	/**
+	 * 更具id获取一篇文章关联是否已收藏，并将浏览次数加1 通过文章id查询所有的评论 根据作者查询作者的其他文章
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> getOneArticleAndLookNumUp(Condition condition);
+
+	List<Map<String, Object>> loadArticleTitleMobile(Condition condition);
+
+	Map<String, Object> loadAllListMobile(String type, String idx);
+
+	List<Map<String, Object>> loadAllListInfoMobile(String id, String userId);
+
+	List<Map<String, Object>> loadAllCommentInfoMobile(String id);
+
+	void addCommentMobile(String id, String id2, String comment);
+
+	void addCommentHFMobile(String id, String id2, String comment);
+
+	void changeHeartMobile(String userId, String type, String id);
+
+	Map<String, Object> loadArticleAsIMobile(String id, String type, String idx);
+
+}

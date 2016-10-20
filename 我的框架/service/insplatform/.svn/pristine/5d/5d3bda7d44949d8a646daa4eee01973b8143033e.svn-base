@@ -1,0 +1,135 @@
+package com.insplatform.system.role.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.system.base.controller.BaseController;
+import com.insplatform.system.role.model.Role;
+import com.insplatform.system.role.service.RoleService;
+
+@Controller
+@RequestMapping("/system/role")
+public class RoleController extends BaseController{
+	
+	@Autowired
+	private RoleService roleService;
+	
+	/**
+	 * 加载角色列表
+	 * @return
+	 */
+	@RequestMapping("/loadAll")
+	public @ResponseBody Map<String, Object> loadCategory(HttpServletRequest request){
+		return this.getMessager().success().data(roleService.loadAll(this.getCondition(request)));
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(roleService.get(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(Role role){
+		roleService.save(role);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		Role role = roleService.get(id);
+		this.bindObject(request, role);
+		roleService.update(role);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String id = request.getParameter("id");
+		roleService.deleteById(id);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 检查名称或编码是否重复
+	 * @param name
+	 * @param code
+	 * @return
+	 */
+	@RequestMapping("/checkNameAndCode")
+	public @ResponseBody Map<String, Object> checkNameAndCode(
+			@RequestParam("name") String name,
+			@RequestParam("code") String code,
+			@RequestParam(value="id", required=false) String id){
+		boolean has = roleService.checkNameAndCode(name, code, id);
+		return this.getMessager().success().put("has", has);
+	}
+	
+	/**
+	 * 删除角色下的用户
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/deleteRoleUser")	
+	public @ResponseBody Map<String, Object> removeRoleUsers(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String[] userIds = this.getSelectedItems(request);
+		roleService.deleteRoleUser(id, userIds);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 添加角色下的用户
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/addRoleUser")
+	public @ResponseBody Map<String, Object> addRoleUser(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String[] userIds = this.getSelectedItems(request);
+		roleService.addRoleUser(id, userIds);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 添加角色下的权限
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/addRoleAuthz")
+	public @ResponseBody Map<String, Object> addRoleAuthz(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String[] authzIds = this.getSelectedItems(request);
+		roleService.addRoleAuthz(id, authzIds);
+		return this.getMessager().success();
+	}
+	
+}

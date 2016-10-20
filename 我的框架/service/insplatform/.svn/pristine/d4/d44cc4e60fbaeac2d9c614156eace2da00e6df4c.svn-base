@@ -1,0 +1,145 @@
+package com.insplatform.module.trainingimplement.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TRAINING_GUIDE")
+public class TrainingGuide implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String trainingSchemeId;
+	private String linkMan;
+	private String phone;
+	private String trainLinkMan;
+	private String trainPhone;
+	private String position;
+	private String weChatQuickmark;
+	private String weChatQuickmarkFile;
+	private String trainingBaseId;
+	private String createUserId;
+	private String createUserName;
+	private String createTime;
+	private String updateTime;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setTrainingSchemeId(String value) {
+		this.trainingSchemeId = value;
+	}
+	
+	public String getTrainingSchemeId() {
+		return this.trainingSchemeId;
+	}
+	
+	public void setLinkMan(String value) {
+		this.linkMan = value;
+	}
+	
+	public String getLinkMan() {
+		return this.linkMan;
+	}
+	
+	public void setPhone(String value) {
+		this.phone = value;
+	}
+	
+	public String getPhone() {
+		return this.phone;
+	}
+	
+	public void setTrainLinkMan(String value) {
+		this.trainLinkMan = value;
+	}
+	
+	public String getTrainLinkMan() {
+		return this.trainLinkMan;
+	}
+	
+	public void setTrainPhone(String value) {
+		this.trainPhone = value;
+	}
+	
+	public String getTrainPhone() {
+		return this.trainPhone;
+	}
+	
+	public void setPosition(String value) {
+		this.position = value;
+	}
+	
+	public String getPosition() {
+		return this.position;
+	}
+	
+	public void setWeChatQuickmark(String value) {
+		this.weChatQuickmark = value;
+	}
+	
+	public String getWeChatQuickmark() {
+		return this.weChatQuickmark;
+	}
+	
+	public void setWeChatQuickmarkFile(String value) {
+		this.weChatQuickmarkFile = value;
+	}
+	
+	public String getWeChatQuickmarkFile() {
+		return this.weChatQuickmarkFile;
+	}
+	
+	public void setTrainingBaseId(String value) {
+		this.trainingBaseId = value;
+	}
+	
+	public String getTrainingBaseId() {
+		return this.trainingBaseId;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(String value) {
+		this.createTime = value;
+	}
+	
+	public String getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(String value) {
+		this.updateTime = value;
+	}
+	
+	public String getUpdateTime() {
+		return this.updateTime;
+	}
+	
+}

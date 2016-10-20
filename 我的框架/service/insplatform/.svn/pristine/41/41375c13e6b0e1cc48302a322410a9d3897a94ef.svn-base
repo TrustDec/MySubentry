@@ -1,0 +1,94 @@
+package com.insplatform.module.course.courseworktype.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.course.courseworktype.model.CourseWorktype;
+import com.insplatform.module.course.courseworktype.repository.CourseWorktypeRepository;
+import com.insplatform.module.course.courseworktype.service.CourseWorktypeService;
+
+@Service
+public class CourseWorktypeServiceImpl extends BaseServiceImpl<CourseWorktype> implements CourseWorktypeService{
+	
+	@Autowired
+	private CourseWorktypeRepository courseWorktypeRepository;
+
+	@Override
+	public BaseRepository<CourseWorktype> getRepository() {		
+		return courseWorktypeRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return courseWorktypeRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return courseWorktypeRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return courseWorktypeRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public CourseWorktype get(Serializable id) {		
+		return courseWorktypeRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(CourseWorktype entity) {	
+		return courseWorktypeRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(CourseWorktype entity) {		
+		courseWorktypeRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		courseWorktypeRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		courseWorktypeRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public void saveBatch(String courseId, String[] ids) {
+		courseWorktypeRepository.BatchSave(courseId, ids);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadCourseWorktypes(String courseId) {		
+		return courseWorktypeRepository.loadCourseWorktypes(courseId);
+	}
+
+}

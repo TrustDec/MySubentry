@@ -1,0 +1,80 @@
+﻿<%@page language="java" contentType="text/html; charset=utf-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%	
+	//上下文路径
+	Object CTX_PATH = request.getServletContext().getAttribute("CTX_PATH");
+	pageContext.setAttribute("CTX_PATH",CTX_PATH);
+	
+	//静态资源路径
+	Object STATIC_PATH = request.getServletContext().getAttribute("STATIC_PATH");
+	pageContext.setAttribute("STATIC_PATH",STATIC_PATH);	
+	
+	//文件服务器
+	Object FILE_SYS_HOST = request.getServletContext().getAttribute("FILE_SYS_HOST");
+	pageContext.setAttribute("FILE_SYS_HOST",FILE_SYS_HOST);
+	
+	//视频服务器
+	Object FILE_VIDEO_HOST = request.getServletContext().getAttribute("FILE_VIDEO_HOST");
+	pageContext.setAttribute("FILE_VIDEO_HOST",FILE_VIDEO_HOST);
+	
+	//报表服务器
+	Object REPORT_SERVER = request.getServletContext().getAttribute("REPORT_SERVER");
+	pageContext.setAttribute("REPORT_SERVER",REPORT_SERVER);
+	
+	//EXTJS全局样式
+	Object EXT_STYPE = session.getAttribute("EXT_STYLE");	
+	if(EXT_STYPE == null || "".equals(EXT_STYPE)){
+		EXT_STYPE = "crisp";
+	}
+	pageContext.setAttribute("EXT_STYLE", EXT_STYPE);
+	
+	//国际化
+	Object EXT_LOCALE = session.getAttribute("EXT_LOCALE");	
+	/* EXT_LOCALE = "en_US";  */
+	pageContext.setAttribute("EXT_LOCALE", EXT_LOCALE);
+	
+	//是否是开发模式(生产环境将其改为false)
+	pageContext.setAttribute("IS_DEV_MODEL", true);
+	
+		
+%>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chome=1">
+<meta name="viewport" content="width=1280">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<link rel="shortcut icon" type="image/x-icon" href="${STATIC_PATH }/image/favicon.ico" />
+<script type="text/javascript">
+var IS_DEV_MODEL = eval('${IS_DEV_MODEL}'),
+CTX_PATH = '${CTX_PATH}',
+STATIC_PATH = '${STATIC_PATH}',
+FILE_SYS_HOST = '${FILE_SYS_HOST}',
+FILE_VIDEO_HOST = '${FILE_VIDEO_HOST}',
+REPORT_SERVER = '${REPORT_SERVER}',
+EXT_STYLE = '${EXT_STYLE}',
+STATIC_VERSION = IS_DEV_MODEL ? '<%=System.nanoTime()%>' : 'west2016';
+var getStaticPath = function(){
+	return STATIC_PATH;
+};
+var CURRENT_USER = {
+	id: '${sessionScope.CURRENT_USER.id}',
+	name: '${sessionScope.CURRENT_USER.name}'
+};
+</script>
+<!-- 全局css -->
+<link href="${STATIC_PATH}/css/common.css" rel="stylesheet" type="text/css"/>
+<!-- jquery -->
+<script src="${STATIC_PATH}/lib/jquery/1.11.3/jquery.min.js"></script>
+<c:if test="${NOT_EXT == null}">
+<!-- extjs -->
+<link href="${STATIC_PATH}/lib/extjs/5.1.1/packages/ext-theme-${EXT_STYLE}/build/resources/ext-theme-${EXT_STYLE}-all.css" rel="stylesheet" type="text/css"/>
+<script src="${STATIC_PATH}/lib/extjs/5.1.1/ext-all${IS_DEV_MODEL ? '-debug' : ''}.js"></script>
+<script src="${STATIC_PATH}/lib/extjs/5.1.1/packages/ext-theme-${EXT_STYLE}/build/ext-theme-${EXT_STYLE}.js"></script>
+<script src="${STATIC_PATH}/lib/extjs/5.1.1/packages/ext-locale/build/ext-locale-zh_CN.js"></script>
+<!-- 字体图标 -->
+<link href="${STATIC_PATH}/lib/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+<!-- 核心组件  -->
+<script src="${STATIC_PATH}/js/component/build/ins-component-zh_CN${IS_DEV_MODEL ? '' : '.min'}.js"></script>
+</c:if>

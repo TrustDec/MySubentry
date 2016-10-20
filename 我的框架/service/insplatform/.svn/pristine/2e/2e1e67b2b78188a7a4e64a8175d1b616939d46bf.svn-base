@@ -1,0 +1,38 @@
+package com.insplatform.module.classsummarize.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.classsummarize.model.ClassSummarizeFolder;
+
+import com.insframework.system.map.Condition;
+
+
+public interface ClassSummarizeFolderRepository extends BaseRepository<ClassSummarizeFolder>{
+	
+	/**
+	 * 加载数据
+	 * @param pid 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(String pid, Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+}

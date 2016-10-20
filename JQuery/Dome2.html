@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.active{background:green;}
+		.text{width:150px;height:150px;border:1px solid red;}
+	</style>
+	<script src="js/jquery221.js"></script>
+</head>
+<body>
+	<div id="div">
+		<input type="button" value="1" class="active">
+		<input type="button" value="2">
+		<input type="button" value="3">
+		<div class="text">1</div>
+	</div>
+	<script>
+		$(function(){
+			$("#div").find("input").click(function(){
+				$("#div").find("input").attr("class","");
+				$("#div").find("div").text($(this).val());
+				$(this).attr('class','active');
+			});
+		});
+	</script>
+</body>
+</html>

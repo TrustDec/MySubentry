@@ -1,0 +1,46 @@
+package com.insplatform.module.osta.eval.demand.service;
+
+import java.util.*;
+
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.osta.eval.demand.model.OstaEvalDemandWrite;
+
+public interface OstaEvalDemandWriteService extends BaseService<OstaEvalDemandWrite>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	/**
+	 * 自主报名
+	 * @param pid
+	 * @param user
+	 * @return
+	 */
+	Map<String, Object> addReg(String pid, CurrentUser user);
+
+}

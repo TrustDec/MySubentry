@@ -1,0 +1,182 @@
+package com.insplatform.module.trainingevaluate.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluate;
+import com.insplatform.module.trainingevaluate.repository.TrainingEvaluateRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TrainingEvaluateRepositoryImpl extends BaseRepositoryImpl<TrainingEvaluate> implements TrainingEvaluateRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE t where 1=1";
+		if(condition.containsKey("schemeId"))
+		{
+			sql += " and t.scheme_id = ? ";
+			condition.put("schemeId", condition.get("schemeId"));
+		}
+		
+		if(condition.containsKey("name"))
+		{
+			sql += " and t.name like ? ";
+			condition.put("name","%"+ condition.get("name")+"%");
+		}
+		sql += " order by t.update_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingEvaluate get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingEvaluate entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingEvaluate entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+		
+		deleteEvaluateResult(new String[]{id.toString()});
+	}
+	
+	private String getInSql(String[] ids){
+		String sql="(";
+		for (int i=0;i<ids.length;i++) {
+			sql += "?,";
+		}
+		sql = sql.substring(0, sql.length()-1);
+		return sql +")";
+	}
+	
+	private void deleteEvaluateResult(String []ids){
+		String sql = "delete from px_training_evaluate_result t where t.evaluate_id IN " + getInSql(ids);
+		jdbcAssistant.update(sql,(Object[]) ids);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+		deleteEvaluateResult(ids);
+	}
+	
+	@Override
+	public Map<String, Object> getCurriculum(Condition condition) {
+		String sql = "select t.id,t.course,t.address,to_char(t.stat_time,'yyyy-mm-dd hh24:mi') as stat_time, " +
+				" to_char(t.stop_time,'yyyy-mm-dd hh24:mi') as stop_time, (case when t.course is null then   " +
+				" t.coursename  else (select tt.title  from PX_COURSE tt where tt.id=t.course) end) as coursename  " +
+				" from PX_TRAINING_CURRICULUM t where t.px_training_scheme=? " +
+				" order by stat_time ";
+		List<Map<String, Object>> results = jdbcAssistant.query(sql, condition.valueArray());
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		returnMap.put("curList", results);
+		return returnMap;
+	}
+
+	@Override
+	public Map<String, Object> isSubmit(String evaluateId,String currentUserId) {
+		String sql = "select * from  " +
+				" (SELECT COUNT(1) as is_myself FROM PX_TRAINING_EVALUATE WHERE ID=? AND CREATE_USER_ID=?)," +
+				" (SELECT COUNT(1) as is_submit FROM PX_TRAINING_EVALUATE  WHERE ID=? and is_submit='N')";
+		Map<String,Object> retMap = jdbcAssistant.queryOne(sql, new String[]{evaluateId,currentUserId,evaluateId});
+		return retMap;
+	}
+
+	@Override
+	public boolean hasSubEvaluate(String shcemeId) {
+		String sql = "select count(1) from px_training_evaluate t where scheme_id=? and is_submit='Y'";
+		int count = jdbcAssistant.queryAsInt(sql,new String[]{shcemeId});
+		if(count > 0) return true;
+		return false;
+	}
+
+	@Override
+	public Map<String, Object> loadAllSchemeInfo(Condition condition,String currentUserId) {
+		String sql = "select t.id,p.name as px_project_name, t.px_project, t.name, t.depname, t.depid,to_char(t.stat_time,'yyyy-mm-dd') as stat_time," +
+				" to_char(t.stop_time,'yyyy-mm-dd') as stop_time, to_char(t.enact_time,'yyyy-mm-dd') as enact_time, t.px_goal, " +
+				" t.px_taarget, t.px_time, t.px_way, t.file_name, t.file_path " +
+				" from (select * from px_training_scheme where id in (select t.training_scheme_id from px_training_user_roster t " +
+				" where t.employee_id='"+currentUserId+"')) t left join PX_PROJECT p on t.px_project=p.id where 1=1 ";
+		
+		if(condition.containsKey("pxProject"))
+		{
+			sql+=" and p.name like ?";
+			condition.put("pxProject", "%" + condition.get("pxProject") + "%" );
+		}
+		
+		if(condition.containsKey("name"))
+		{
+			sql+=" and t.name like ?";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("depname"))
+		{
+			sql+=" and t.depname like ?";
+			condition.put("depname", "%" + condition.get("depname") + "%" );
+		}
+		sql+=" order by t.update_time desc";
+
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public Map<String, Object> hasEvaluateOfCurUser(String currentUserId,
+			String schemeId) {
+		String sql = "SELECT COUNT(1) FROM PX_TRAINING_EVALUATE WHERE SCHEME_ID=? AND CREATE_USER_ID=? ";
+		int count = jdbcAssistant.queryAsInt(sql,new String[]{schemeId,currentUserId});
+		if(count > 0){
+			Map<String,Object> returnMap = new HashMap<String, Object>();
+			returnMap.put("has","true");
+			return returnMap;
+		}
+		
+		sql = "select * from ( select name from sys_user where id=?),( " +
+				"select is_checking,phone from px_training_user_roster t where t.training_scheme_id=? and t.employee_id=?)";
+		Map<String,Object> retMap = jdbcAssistant.queryOne(sql, new String[]{currentUserId,schemeId,currentUserId});
+		retMap.put("has","false");
+		return retMap;
+	}
+	
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>创建图案填充</title>
+	<style>
+		#myId{border:1px solid red;background:#188eee;}
+	</style>
+</head>
+<body>
+	<img src="logo.png" id="logo" width="50">
+	<canvas id="myId" width="300" height="300"></canvas>
+	<script>
+	window.onclick=function (){
+		var q=document.getElementById('myId');
+		var xd=q.getContext("2d");		
+		xd.clearRect(0,0,q.width,q.height);
+		var img=document.getElementById('logo');
+		var pat=xd.createPattern(img,"repeat"); //创建图案填充
+		xd.fillStyle=pat;
+		xd.fillRect(0,0,300,300);
+		xd.clearRect(50,50,200,200);		//相当于挖洞,清空指定范围
+		xd.fillStyle="green";
+		xd.rect(50,50,100,100);	//创建矩形,用rect()创建矩形需要使用stroke()或fill()方法在画布上是机会只矩形.
+		xd.fill();		//填充当前图像(路径),默认颜色是黑色,
+
+	}
+		
+	</script>
+</body>
+</html>

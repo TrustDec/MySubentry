@@ -1,0 +1,117 @@
+package com.insplatform.module.yearplan.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yearplan.model.YearPlanMonth;
+import com.insplatform.module.yearplan.service.YearPlanMonthService;
+
+@Controller
+@RequestMapping("/px/yearplanmonth")
+public class YearPlanMonthController extends BaseController{
+	
+	@Autowired
+	private YearPlanMonthService yearPlanMonthService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllOptionalMonth")
+	public @ResponseBody List<Map<String,Object>> loadAllOptionalMonth(
+			HttpServletRequest request, HttpServletResponse response){
+		String yearPlanId = request.getParameter("yearPlanId");
+		return yearPlanMonthService.loadAllOptionalMonth(yearPlanId);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"yearPlanId");
+		return yearPlanMonthService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(yearPlanMonthService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(yearPlanMonthService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(YearPlanMonth yearplanmonth, HttpServletRequest request){
+		String msg = yearPlanMonthService.save(yearplanmonth).toString();
+		return this.getMessager().success().put("msg", msg);
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		YearPlanMonth yearplanmonth = yearPlanMonthService.get(id);
+		this.bindObject(request, yearplanmonth);
+		String msg = yearPlanMonthService.updatex(yearplanmonth);
+		return this.getMessager().success().put("msg", msg);
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		yearPlanMonthService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	
+}

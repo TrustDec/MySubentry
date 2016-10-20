@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="js/jquery221.js"></script>
+</head>
+<body>
+	<div>div</div>
+	<span>span</span>
+	<p>pppppp</p>
+	<script>
+		/*将指定的内容添加到某某前面
+		$("span").insertBefore($("div"));*/
+		/*将指定的内容添加到某某后面
+		$("p").insertAfter($("span"));*/
+		/*将div追加到span里面
+		$("div").appendTo($("span"));*/
+		/*将div插入到span里面的前面
+		$("div").prependTo($("span"));*/
+		//区别:后续操作变了
+		/*将div插入到p的前面,p的前面必须是div
+		$("div").before($("p"));*/
+		/*将p插入到span的后面,p的后面必须是div
+		$("p").after($("span"));*/
+		/*将span追加到div里面
+		$("div").append($("span"));*/
+		/*将span插入到div里面
+		$("div").prepend($("span"));*/
+
+	</script>
+</body>
+</html>

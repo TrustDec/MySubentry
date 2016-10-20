@@ -1,0 +1,96 @@
+package com.insplatform.module.kpoint.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.kpoint.model.Kpoint;
+import com.insplatform.module.kpoint.repository.KpointRepository;
+import com.insplatform.module.kpoint.service.KpointService;
+
+@Service
+public class KpointServiceImpl extends BaseServiceImpl<Kpoint> implements KpointService{
+	
+	@Autowired
+	private KpointRepository kpointRepository;
+
+	@Override
+	public BaseRepository<Kpoint> getRepository() {		
+		return kpointRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAll(Condition condition) {			
+		return kpointRepository.loadAll(condition);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Kpoint get(Serializable id) {		
+		return kpointRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Kpoint entity) {	
+		return kpointRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Kpoint entity) {		
+		kpointRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		kpointRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		kpointRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public boolean checkHasResource(String id, String type) {		
+		
+		String sql = "select count(1) as c from V_PX_RESOURCE t where t.kpoint_id = '"+id+"'";
+		int questionCount = jdbcAssistant.queryAsInt(sql);
+		if(questionCount > 0){
+			return true;
+		}
+		
+		if("remove".equals(type)){
+			sql = "select * from PX_KPOINT where parent_id = '"+id+"'";
+			List<Map<String, Object>> list = jdbcAssistant.query(sql);
+			for(Map<String, Object> map : list){
+				String nodeId = map.get("id")+"";			
+				if(checkHasResource(nodeId, type)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+}

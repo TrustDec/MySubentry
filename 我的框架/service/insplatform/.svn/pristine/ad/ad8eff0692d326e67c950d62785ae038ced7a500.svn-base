@@ -1,0 +1,107 @@
+package com.insplatform.system.role.repository.impl;
+
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.system.role.RoleConstant;
+import com.insplatform.system.role.model.Role;
+import com.insplatform.system.role.repository.RoleRepository;
+
+@Repository
+public class RoleRepositoryImpl extends BaseRepositoryImpl<Role> implements RoleRepository{
+
+	@Override
+	public List<Map<String, Object>> loadByMgt(String userId) {
+		String sql = "select t.* from SYS_ROLE t where 1=1 ";
+		//如果查询条件中包含userId,需要判断用户是否为超级管理员
+		if(TextUtil.isNotEmpty(userId)){
+			//如果不是超级管理员，则进行过滤
+			if(!checkUserIsSysAdmin(userId)){
+				sql += " and t.allow_authz = 'Y' ";
+			}
+		}
+		sql += " order by t.order_index ";
+		return jdbcAssistant.query(sql);
+	}
+	
+	@Override
+	public List<String> loadUserRoleIds(String userId) {
+		String sql = "select t.id from SYS_USER_ROLE_REL r " +
+					" left join SYS_ROLE t on r.role_id = t.id " +
+					" where r.user_id = '"+userId+"' " +
+					" order by t.order_index ";
+		return jdbcAssistant.queryAsList(sql, String.class, null);
+	}
+	
+
+	@Override
+	public Map<String, Object> loadRoleByCode(String code) {
+		String sql = "select t.* from SYS_ROLE t where t.code = ? ";		
+		return jdbcAssistant.queryOne(sql, new Object[]{code});
+	}
+
+	@Override
+	public void addRoleUser(String roleId, String... userIds) {
+		if(userIds.length > 0){
+			String [] sqls = new String[userIds.length];
+			for(int i=0; i<userIds.length; i++){
+				sqls[i] = "insert into SYS_USER_ROLE_REL values ('"+userIds[i]+"', '"+roleId+"') ";
+			}
+			jdbcAssistant.batchUpdate(sqls);	
+		}			
+	}
+
+	@Override
+	public void deleteRoleUser(String id, String... userIds) {
+		String sql = "delete from SYS_USER_ROLE_REL where role_id = '"+id+"' ";
+		//如果用户id存在，则删除相关用户
+		if(userIds.length > 0){
+			String[] sqls = new String[userIds.length];
+			for(int i=0; i<userIds.length; i++){
+				sqls[i] = sql + " and user_id = '"+userIds[i]+"' ";				
+			}
+			jdbcAssistant.batchUpdate(sqls);
+		}
+		//用户id不存在，删除此角色的所有用户
+		else{			
+			jdbcAssistant.update(sql);
+		}			
+	}	
+
+	@Override
+	public boolean checkNameAndCode(String name, String code, String id) {
+		String sql = "select count(1) from SYS_ROLE t where (t.name='"+name+"' or upper(t.code)='"+code.toUpperCase()+"') ";
+		//如果id不为空，排除当前id的数据
+		if(TextUtil.isNotEmpty(id)){
+			sql += " and t.id != '"+id+"' ";		
+		}
+		int count = jdbcAssistant.queryAsInt(sql);
+		if(count > 0) return true;
+		return false;
+	}
+
+	@Override
+	public boolean checkUserIsSysAdmin(String userId) {
+		String sql = "select count(1) from SYS_USER_ROLE_REL t" +
+				" where t.user_id = '"+userId+"' and upper(role_id)='"+RoleConstant.SYS_ADMIN_ID.getValue().toUpperCase()+"' ";
+		int count = jdbcAssistant.queryAsInt(sql);
+		if(count > 0) return true;
+		return false;
+	}
+	
+	@Override
+	public boolean checkUserIsOrgAdmin(String userId) {
+		String sql = "select count(1) from SYS_USER_ROLE_REL t" +
+				" where t.user_id = '"+userId+"' and upper(role_id)='"+RoleConstant.ORG_ADMIN_ID.getValue().toUpperCase()+"' ";
+		int count = jdbcAssistant.queryAsInt(sql);
+		if(count > 0) return true;
+		return false;
+	}
+
+
+}

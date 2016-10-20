@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script>
+	/*后台response添加header，response.setHeader("Access-Control-Allow-Origin", "*");*/
+	 var url="http://192.168.1.124:8080/landing-craft/shcoolapicontroller.do?shcoolapi&field=id";
+		function oop(){
+			$.ajax({
+			   type: "get",
+			   dataType:'json',
+			   url:url,
+			   success: function(data){
+					console.log(typeof data)
+					let jsonObj=JSON.parse(data);
+					for(p in jsonObj){
+						console.log(jsonObj[p]);	
+					}
+			   },
+			   error:function(error){
+			   		alert(1);
+			   }
+			});
+		}
+	</script>
+	<button onclick="oop()">11</button>
+</body>
+</html>

@@ -1,0 +1,105 @@
+package com.insplatform.module.trainingimplement.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingCourseware;
+import com.insplatform.module.trainingimplement.repository.TrainingCoursewareRepository;
+import com.insplatform.module.trainingimplement.service.TrainingCoursewareService;
+
+@Service
+public class TrainingCoursewareServiceImpl extends BaseServiceImpl<TrainingCourseware> implements TrainingCoursewareService{
+	
+	@Autowired
+	private TrainingCoursewareRepository trainingCoursewareRepository;
+
+	@Override
+	public BaseRepository<TrainingCourseware> getRepository() {		
+		return trainingCoursewareRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return trainingCoursewareRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return trainingCoursewareRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return trainingCoursewareRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingCourseware get(Serializable id) {		
+		return trainingCoursewareRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingCourseware entity) {	
+		return trainingCoursewareRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingCourseware entity) {		
+		trainingCoursewareRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		trainingCoursewareRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		trainingCoursewareRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Serializable save(TrainingCourseware trainingcourseware,
+			HttpServletRequest request) {
+		return trainingCoursewareRepository.save(trainingcourseware,request);
+	}
+
+	@Override
+	public void update(TrainingCourseware trainingcourseware,
+			HttpServletRequest request) {
+		trainingCoursewareRepository.update(trainingcourseware, request);
+	}
+
+	@Override
+	public void downloadVideo(String id, HttpServletRequest request,
+			HttpServletResponse response) {
+		
+		trainingCoursewareRepository.downloadVideo(id, request, response);
+	}
+
+}

@@ -1,0 +1,82 @@
+package com.insplatform.module.bbs.articlemycollect.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.bbs.articlemycollect.model.BbsArticleMycollect;
+import com.insplatform.module.bbs.articlemycollect.repository.BbsArticleMycollectRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class BbsArticleMycollectRepositoryImpl extends BaseRepositoryImpl<BbsArticleMycollect> implements BbsArticleMycollectRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_BBS_ARTICLE_MYCOLLECT t ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_BBS_ARTICLE_MYCOLLECT t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_BBS_ARTICLE_MYCOLLECT t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public BbsArticleMycollect get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(BbsArticleMycollect entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(BbsArticleMycollect entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+	@Override
+	public void uncollect(String articleId, String userId) {
+		String sql = "delete px_bbs_article_mycollect t" +
+				" where t.article_id = ? and t.user_id = ?";
+		jdbcAssistant.update(sql,new Object[]{articleId,userId});
+	}
+}

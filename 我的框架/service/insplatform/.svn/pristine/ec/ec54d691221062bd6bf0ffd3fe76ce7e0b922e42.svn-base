@@ -1,0 +1,122 @@
+package com.insplatform.module.trainingimplement.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingVideo;
+import com.insplatform.module.trainingimplement.repository.TrainingVideoRepository;
+import com.insplatform.module.trainingimplement.service.TrainingVideoService;
+
+@Service
+public class TrainingVideoServiceImpl extends BaseServiceImpl<TrainingVideo>
+		implements TrainingVideoService {
+
+	@Autowired
+	private TrainingVideoRepository trainingVideoRepository;
+
+	@Override
+	public BaseRepository<TrainingVideo> getRepository() {
+		return trainingVideoRepository;
+	}
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {
+		return trainingVideoRepository.loadAllGrid(condition);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {
+		return trainingVideoRepository.loadAllList(condition);
+	}
+
+	@Override
+	public Map<String, Object> load(String id) {
+		return trainingVideoRepository.load(id);
+	}
+
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingVideo get(Serializable id) {
+		return trainingVideoRepository.get(id);
+	}
+
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingVideo entity) {
+		return trainingVideoRepository.save(entity);
+	}
+
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingVideo entity) {
+		trainingVideoRepository.update(entity);
+	}
+
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {
+		trainingVideoRepository.deleteById(id);
+	}
+
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {
+		trainingVideoRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllGridType(Condition condition) {
+		return trainingVideoRepository.loadAllGridType(condition);
+	}
+
+	@Override
+	public Map<String, Object> loadType(String id) {
+		return trainingVideoRepository.loadType(id);
+	}
+
+	@Override
+	public void addType(String trainingSchemeId, String type, String name, String remark) {
+		trainingVideoRepository.addType(trainingSchemeId, type, name, remark);
+	}
+
+	@Override
+	public void updateType(String id, String type, String name,  String remark) {
+		trainingVideoRepository.updateType(id, type, name, remark);
+	}
+
+	@Override
+	public void deleteType(String[] ids) {
+		trainingVideoRepository.deleteType(ids);
+	}
+
+	@Override
+	public Serializable save(TrainingVideo TrainingVideo,
+			HttpServletRequest request) {
+		return trainingVideoRepository.save(TrainingVideo,request);
+	}
+
+	@Override
+	public void update(TrainingVideo trainingVideo, HttpServletRequest request) {
+		trainingVideoRepository.update(trainingVideo,request);
+	}
+
+}

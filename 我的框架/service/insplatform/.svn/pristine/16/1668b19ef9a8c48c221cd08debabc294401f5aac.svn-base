@@ -1,0 +1,70 @@
+package com.insplatform.module.everyday.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.everyday.model.EverydaySetting;
+import com.insplatform.module.everyday.repository.EverydaySettingRepository;
+import com.insplatform.module.everyday.service.EverydaySettingService;
+
+@Service
+public class EverydaySettingServiceImpl extends
+		BaseServiceImpl<EverydaySetting> implements EverydaySettingService {
+
+	@Autowired
+	private EverydaySettingRepository everydaySettingRepository;
+
+	@Override
+	public BaseRepository<EverydaySetting> getRepository() {
+		return everydaySettingRepository;
+	}
+
+	@Override
+	public Map<String, Object> loadAll(Condition condition) {
+		return everydaySettingRepository.loadAll(condition);
+	}
+
+	@Override
+	public Serializable save(EverydaySetting entity) {
+		String sql = "select * from PX_EVERYDAY_SETTING t where t.date_no = ?";
+		List<Map<String, Object>> query = jdbcAssistant.query(sql,
+				new Object[] { entity.getDateNo() });
+		if (query.size() == 0) {
+			return super.save(entity);
+		}
+		return -1;
+	}
+
+	@Override
+	public Map<String, Object> loadTodayExam(String date) {
+		return everydaySettingRepository.loadTodayExam(date);
+	}
+
+	@Override
+	public Map<String, Object> addCurrentRecourse(String userId, String settingId,
+			String myAnswer, String isRight) {
+		return everydaySettingRepository.addCurrentRecourse(userId,settingId,myAnswer,isRight);
+	}
+
+	@Override
+	public Map<String, Object> checkHasTodayExam(String userId, String date) {
+		return everydaySettingRepository.checkHasTodayExam(userId, date);
+	}
+
+	@Override
+	public Map<String, Object> loadMyEverydayExam(String userId, String idx) {
+		return everydaySettingRepository.loadMyEverydayExam(userId, idx);
+	}
+
+	@Override
+	public Map<String, Object> loadMyEverydayExamInfo(String userId, String id) {
+		return everydaySettingRepository.loadMyEverydayExamInfo(userId, id);
+	}
+}

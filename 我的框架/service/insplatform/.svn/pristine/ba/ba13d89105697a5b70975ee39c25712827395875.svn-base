@@ -1,0 +1,207 @@
+package com.insplatform.module.trainingimplement.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.context.App;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingVideo;
+import com.insplatform.module.trainingimplement.service.TrainingVideoService;
+
+@Controller
+@RequestMapping("/px/trainingvideo")
+public class TrainingVideoController extends BaseController {
+
+	@Autowired
+	private TrainingVideoService trainingVideoService;
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody
+	Map<String, Object> loadAllGrid(HttpServletRequest request,
+			HttpServletResponse response) {
+		Condition condition = this.getCondition(request, "id");
+		return trainingVideoService.loadAllGrid(condition);
+	}
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGridType")
+	public @ResponseBody
+	Map<String, Object> loadAllGridType(HttpServletRequest request,
+			HttpServletResponse response) {
+		Condition condition = this.getCondition(request, "id");
+		return trainingVideoService.loadAllGridType(condition);
+	}
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody
+	Map<String, Object> loadAllList(HttpServletRequest request,
+			HttpServletResponse response) {
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success()
+				.data(trainingVideoService.loadAllList(condition));
+	}
+
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody
+	Map<String, Object> load(@RequestParam("id") String id) {
+		return this.getMessager().success().data(trainingVideoService.load(id));
+	}
+
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/loadType")
+	public @ResponseBody
+	Map<String, Object> loadType(@RequestParam("id") String id) {
+		return this.getMessager().success()
+				.data(trainingVideoService.loadType(id));
+	}
+
+	/**
+	 * 新增
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")
+	public @ResponseBody
+	Map<String, Object> add(TrainingVideo TrainingVideo,
+			HttpServletRequest request) {
+		trainingVideoService.save(TrainingVideo, request);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 新增
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/addType")
+	public @ResponseBody
+	Map<String, Object> addType(HttpServletRequest request) {
+		String trainingSchemeId = request.getParameter("trainingSchemeId");
+		String type = request.getParameter("type");
+		String name = request.getParameter("name");
+		String remark = request.getParameter("remark");
+		trainingVideoService.addType(trainingSchemeId, type, name, remark);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 编辑
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")
+	public @ResponseBody
+	Map<String, Object> update(@RequestParam("id") String id,
+			HttpServletRequest request) {
+		TrainingVideo TrainingVideo = trainingVideoService.get(id);
+		this.bindObject(request, TrainingVideo);
+		trainingVideoService.update(TrainingVideo, request);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 编辑
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/updateType")
+	public @ResponseBody
+	Map<String, Object> updateType(@RequestParam("id") String id,
+			HttpServletRequest request) {
+		String type = request.getParameter("type");
+		String name = request.getParameter("name");
+		String remark = request.getParameter("remark");
+		trainingVideoService.updateType(id, type, name, remark);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 删除
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")
+	public @ResponseBody
+	Map<String, Object> delete(HttpServletRequest request) {
+		String[] ids = this.getSelectedItems(request);
+		trainingVideoService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 删除
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/deleteType")
+	public @ResponseBody
+	Map<String, Object> deleteType(HttpServletRequest request) {
+		String[] ids = this.getSelectedItems(request);
+		trainingVideoService.deleteType(ids);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 下载视频文件
+	 * 
+	 * @param id
+	 * @param response
+	 */
+	@RequestMapping("/downloadAttachment")
+	public void downloadVideo(@RequestParam("id") String id,
+			HttpServletResponse response) {
+		TrainingVideo TrainingVideo = trainingVideoService.get(id);
+		String url = TrainingVideo.getVideoUrl();
+		String path = App.FILE_SYS;
+		path += url.replace(App.FILE_SYS_URL, "");
+		downloadService.downloadFile(path, TrainingVideo.getOriginalName(),
+				response);
+	}
+
+}

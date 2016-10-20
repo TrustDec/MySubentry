@@ -1,0 +1,113 @@
+package com.insplatform.module.trainingimplement.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingUserRoster;
+import com.insplatform.module.trainingimplement.repository.TrainingUserRosterRepository;
+
+
+@Repository
+public class TrainingUserRosterRepositoryImpl extends BaseRepositoryImpl<TrainingUserRoster> implements TrainingUserRosterRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_USER_ROSTER t ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_USER_ROSTER t where 1=1 ";
+		if(condition.containsKey("id"))
+		{
+			sql += " and t.training_scheme_id = ? ";
+			condition.put("id", condition.get("id"));
+		}
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TRAINING_USER_ROSTER t where t.id = ? ";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql, new Object[]{id});
+		if("1".equals(map.get("sex")))
+		{
+			map.put("sex", "男");
+		}else
+		{
+			map.put("sex", "女");
+		}
+		
+		return map;
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingUserRoster get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingUserRoster entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingUserRoster entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public void add(String id, String[] ids) {
+		String str = "";
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+			str = str + "'" + ids[i] + "',";
+		}
+		str = str.substring(0, str.length() - 1);
+		String sql = "select t.* from v_sys_user_info t where id in(" + str + ")";
+		List<Map<String, Object>> list = jdbcAssistant.query(sql);
+		
+		String idsSql[] = new String[ids.length];
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+			idsSql[i] = "insert into PX_TRAINING_USER_ROSTER values((select sys_guid() from dual),'" + list.get(i).get("companyName") + "','','" + list.get(i).get("id") + "'," +
+					"'" + list.get(i).get("name") + "','" + list.get(i).get("sex") + "','" + list.get(i).get("idCard") + "','" + list.get(i).get("birthday") + "'," +
+					"'','" + list.get(i).get("phone") + "','" + list.get(i).get("edu") + "','','','" + list.get(i).get("duty") + "','" + id + "','')";
+		}
+		
+		jdbcAssistant.batchUpdate(idsSql);
+		
+	}
+	
+}

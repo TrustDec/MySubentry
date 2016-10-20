@@ -1,0 +1,121 @@
+package com.insplatform.module.doc.controller;
+
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.context.App;
+import com.insplatform.module.doc.model.Doc;
+import com.insplatform.module.doc.service.DocService;
+
+@Controller
+@RequestMapping("/px/doc")
+public class DocController extends BaseController{
+	
+	@Autowired
+	private DocService docService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){		
+		return docService.loadAllGrid(this.getCondition(request, "name", "createUserName", "difficulty", "kpointName"));
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){		
+		return this.getMessager().success().data(docService.loadAllList(this.getCondition(request)));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(docService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(Doc doc, HttpServletRequest request){
+		doc.setCreateUserId(this.getCurrentUser(request).getId());
+		doc.setCreateUserName(this.getCurrentUser(request).getName());	
+		Date date = new Date();
+		doc.setCreateTime(date);
+		doc.setUpdateTime(date);
+		docService.save(doc, request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		Doc doc = docService.get(id);
+		this.bindObject(request, doc);
+		doc.setUpdateTime(new Date());
+		docService.update(doc, request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		docService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 下载文档
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/downloadDoc")	
+	public void downloadDoc(@RequestParam("id") String id, HttpServletResponse response){
+		Doc doc = docService.get(id);
+		String url = doc.getDocOriginal();
+		String path = App.FILE_SYS;
+		path += url.replace(App.FILE_SYS_URL, "");
+		downloadService.downloadFile(path, doc.getOriginalName(), response);
+	}
+
+	
+}

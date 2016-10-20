@@ -1,0 +1,25 @@
+body{font-family: '微软雅黑';padding-top: 50px;}
+
+.navbar-inverse input[type="text"]{
+	background:#333;
+	border:none;
+	color:#999;
+}
+.navbar-inverse .navbar-form{
+	position:relative;
+}
+.navbar-inverse button[type="submit"]{
+	position:absolute;
+	top:30%;
+	right:20px;
+	background:none;
+	border:none;
+	color:#888;
+}
+@media(min-width:768px){
+	.navbar-inverse button[type="submit"]{
+		top:17%;
+	}
+}
+.profile{margin-right: 25px;}
+

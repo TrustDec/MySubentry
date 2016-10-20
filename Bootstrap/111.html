@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">  <!-- 规定缩放倍数1倍 no是移动设备用户不能去缩放 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  <!-- 告诉ie用最新的技术去渲染 -->
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	
+	<title>bootstrap</title>
+</head>
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+			<div class="nav-header">
+				<button class="navbar-toggle" data-toggle="collapse" data-target="#responsive-navbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="#" class="navbar-brand"><strong>zcb</strong>.net</a>
+			</div>
+				<div class="collapse navbar-collapse" id="responsive-navbar">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="">课程</a></li>
+						<li><a href="">博客</a></li>
+						<li><a href="">手册</a></li>
+					</ul>
+					<form action="" class="navbar-form navbar-left" >
+						<input type="text" placeholder="搜索" class="form-control">
+						<button type="submit">
+							<span class="glyphicon glyphicon-search"></span>
+						</button>
+					</form>
+					<a href="#" class="btn btn-primary btn-sm navbar-right navbar-btn hidden-xs">订阅课程</a>
+					<div class="profile navbar-right">
+						<ul class="nav navbar-nav">
+							<li><a href="" data-toggle="modal" data-target="#login-modal">登录</a></li>
+							<li><a href="">注册</a></li>
+						</ul>
+						<!-- <p class="navbar-text">您好，<a href="" class="navbar-link">李辉</a></p> -->
+					</div>
+				</div>
+			</div>
+	</nav>
+
+	<!-- modal对话框 -->
+	<div class="modal fade" id="login-modal" tabindex="-1" data-backdrop="false">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal">&times;</button>
+					<h4>用户登录</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<label for="email">Email</label>
+							<input type="email" class="form-control" id="email" placeholder="输入 Email">
+						</div>
+						<div class="form-group">
+							<label for="password">密码</label>
+							<input type="password" class="form-control" id="password" placeholder="输入密码">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary">登录</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 幻灯片 -->  
+	<!-- data-pause="false" 鼠标放上去不停
+	data-wrap="false"  到最后一张不跳到第一张 -->
+
+	<!-- <div class="container">   -->   
+	<!-- 不注释就是居中的轮播了 现在是适应全屏 -->
+		<div class="carousel slide"  data-ride="carousel" id="slideshow" data-interval="1000" >
+			<div class="carousel-inner">
+				<div class="item active">
+					<img src="images/pic2.png" alt="">
+					<!-- holder.js/1200x100/auto?text=Bootstrap -->
+					<div class="carousel-caption">
+						<h2>Bootstrap</h2>
+						<p> they're plastered with images of "non-friendly Western</p>
+					</div>
+				</div>
+				<div class="item">
+					<img src="images/pic22.png" alt="">
+					<div class="carousel-caption">
+						<h2>JavaScript</h2>
+						<p>But the establishment's toilets are a Putin-free zone. Labelled "Nato bloc5"</p>
+					</div>
+				</div>
+			</div>
+			<a href="#slideshow" data-slide="prev" class="left carousel-control">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</a>
+			<a href="#slideshow" data-slide="next" class="right carousel-control">
+				<span class="glyphicon glyphicon-chevron-right"></span>
+			</a>
+			<ol class="carousel-indicators">
+				<li data-target="#slideshow" data-slide-to="0" class="active"></li>
+				<li data-target="#slideshow" data-slide-to="1"></li>
+			</ol>
+		</div>
+		<div class="text-center" style="padding-top:10px;">
+			<div class="btn-group">
+				<button class="btn btn-default prev-slide">
+					<span class="glyphicon glyphicon-backward"></span>
+				</button>
+				<button class="btn btn-default play-and-stop">
+					<span class="glyphicon glyphicon-play"></span>
+				</button>
+				<button class="btn btn-default next-slide">
+					<span class="glyphicon glyphicon-forward"></span>
+				</button>
+			</div>
+		</div>
+	<!-- </div> -->
+
+
+
+	<div class="container">
+		<div class="row">
+			<div class=" col-sm-8 col-md-9 col-lg-10">
+				<h1 class="page-header">主体</h1>
+				<p class="visible-xs alert alert-info">在手机上显示</p>
+				<p>But the establishment's toilets are a Putin-free zone. Labelled "Nato bloc5", they're plastered with images of "non-friendly Western leaders" including David Cameron, Angela Merkel and Ukrainian President Petro Poroshenko, the report says. Barack Obama gets a look in too - on the toilet paper.</p>
+				<div class="row">
+					<div class="col-md-4">
+						<h2>区块一</h2>
+						<p>Angela Merkel and Ukrainian President Petro Poroshenko, the report says. Barack Obama gets a look in too - on the toilet paper.Angela Merkel and Ukrainian President Petro Poroshenko, the report says. Barack Obama gets a look in too - on the toilet paper.</p>
+					</div>
+					<div class="col-md-4">
+						<h2>区块二</h2>
+						<p>Angela Merkel and Ukrainian President Petro Poroshenko, the report says. Barack Obama gets a look in too - on the toilet paper.</p>
+					</div>
+					<div class="col-md-4">
+						<h2>区块三</h2>
+						<p>Angela Merkel and Ukrainian President Petro Poroshenko, the report says. Barack Obama gets a look in too - on the toilet paper.</p>
+					</div>
+					<div class="clearfix"></div>
+					<div class="col-md-6 alert alert-info">
+						<h2>区块四</h2>
+						<p>Angela Merkel and Ukrainian President Petro Poroshenko, the report says. Barack Obama gets a look in too - on the toilet paper.</p>
+					</div>
+					<div class="col-md-6">
+						<h2>区块五</h2>
+						<p>Angela Merkel and Ukrainian President Petro Poroshenko, the report says. Barack Obama gets a look in too - on the toilet paper.</p>
+					</div>
+				</div>
+			</div>
+	
+			<div class=" col-sm-4 col-md-3 col-lg-2 hidden-xs">
+				<h1 class="page-header">侧边</h1>
+				<p>But the establishment's toilets are a Putin-free zone. Labelled "Nato bloc5", they're plastered with images of "non-friendly Western leaders" including David Cameron</p>
+			</div>
+			
+		</div>
+	</div> 
+	
+	<script src="scripts/jquery.min.js"></script>
+	<script src="bootstrap/js/bootstrap.min.js"></script>
+	<script src="scripts/holder.js"></script>
+	
+	<script>
+	/*$(function(){
+		$('#login-modal').modal({
+			remote:'form-content.html'
+		})
+	});*/
+	//监听事件
+	$(function(){
+		$('#login-modal').on('show.bs.modal',function(){
+			console.log('显示对话框')
+		});
+		$('#login-modal').on('shown.bs.modal',function(){
+			console.log('对话框显示了')
+		});
+		$('#login-modal').on('hide.bs.modal',function(){
+			console.log('隐藏对话框')
+		});
+		$('#login-modal').on('hidden.bs.modal',function(){
+			console.log('隐藏了对话框')
+		});
+		$('#login-modal').on('loaded.bs.modal',function(){
+			console.log('显示对话框')
+		});
+
+
+
+		$('.prev-slide').on('click',function(){
+			$('#slideshow').carousel('prev')
+		});
+
+		$('.next-slide').on('click',function(){
+			$('#slideshow').carousel('next')
+		});
+		$(document).on('keydown',function(e){
+			switch(e.which){
+				case 37:$('#slideshow').carousel('prev');
+				break;
+				case 39:$('#slideshow').carousel('next');
+				break;
+			}
+		});
+		//暂停播放按钮
+		var play=false;
+		$('.play-and-stop').click(function(){
+			if(!play){
+				$('#slideshow').carousel('cycle');
+				$(this).children('span').removeClass('glyphicon-play').addClass('glyphicon-pause')
+			}else{
+				$('#slideshow').carousel('pause');
+				$(this).children('span').removeClass('glyphicon-pause').addClass('glyphicon-play');
+			}
+			play=!play;
+		});
+		/*监听事件 silde.bs.carousel事件和slid.bs.carousel*/
+		$('#slideshow').on('silde.bs.carousel',function(){
+			console.log('播放幻灯片')
+		});
+		$('#slideshow').on('slid.bs.carousel',function(){
+			console.log('播放完成')
+		});
+	});
+	</script>
+</body>
+</html>

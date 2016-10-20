@@ -1,0 +1,98 @@
+package com.insplatform.module.trainingimplement.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingReport;
+import com.insplatform.module.trainingimplement.repository.TrainingReportRepository;
+import com.insplatform.module.trainingimplement.service.TrainingReportService;
+
+@Service
+public class TrainingReportServiceImpl extends BaseServiceImpl<TrainingReport>
+		implements TrainingReportService {
+
+	@Autowired
+	private TrainingReportRepository trainingReportRepository;
+
+	@Override
+	public BaseRepository<TrainingReport> getRepository() {
+		return trainingReportRepository;
+	}
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {
+		return trainingReportRepository.loadAllGrid(condition);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {
+		return trainingReportRepository.loadAllList(condition);
+	}
+
+	@Override
+	public Map<String, Object> load(String id) {
+		return trainingReportRepository.load(id);
+	}
+
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingReport get(Serializable id) {
+		return trainingReportRepository.get(id);
+	}
+
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingReport entity) {
+		return trainingReportRepository.save(entity);
+	}
+
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingReport entity) {
+		trainingReportRepository.update(entity);
+	}
+
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {
+		trainingReportRepository.deleteById(id);
+	}
+
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {
+		trainingReportRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Serializable save(TrainingReport trainingReport,
+			HttpServletRequest request) {
+		return trainingReportRepository.save(trainingReport,request);
+	}
+
+	@Override
+	public void update(TrainingReport trainingReport,
+			HttpServletRequest request) {
+		trainingReportRepository.update(trainingReport,request);
+	}
+
+}

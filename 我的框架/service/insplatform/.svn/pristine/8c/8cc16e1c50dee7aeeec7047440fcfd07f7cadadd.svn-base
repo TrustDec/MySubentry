@@ -1,0 +1,132 @@
+package com.insplatform.module.yeardemand.service.impl;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yeardemand.model.YearDemandStatistics;
+import com.insplatform.module.yeardemand.repository.YearDemandStatisticsRepository;
+import com.insplatform.module.yeardemand.service.YearDemandStatisticsService;
+
+@Service
+public class YearDemandStatisticsServiceImpl extends BaseServiceImpl<YearDemandStatistics> implements YearDemandStatisticsService{
+	
+	@Autowired
+	private YearDemandStatisticsRepository yearDemandStatisticsRepository;
+
+	@Override
+	public BaseRepository<YearDemandStatistics> getRepository() {		
+		return yearDemandStatisticsRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return yearDemandStatisticsRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return yearDemandStatisticsRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return yearDemandStatisticsRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public YearDemandStatistics get(Serializable id) {		
+		return yearDemandStatisticsRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(YearDemandStatistics entity) {	
+		return yearDemandStatisticsRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(YearDemandStatistics entity) {		
+		yearDemandStatisticsRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		yearDemandStatisticsRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		yearDemandStatisticsRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public void saveOrUpdate(Condition condition) {
+		if (condition.containsKey("addData")&&condition.containsKey("yearDemandId")) {
+			CurrentUser user = condition.getCurrentUser();
+			String companyId = user.getCompanyId();
+			String yearDemandId = condition.get("yearDemandId")+"";
+			yearDemandStatisticsRepository.deleteByyearDemandIdAndCompanyId(companyId,yearDemandId);
+			List<YearDemandStatistics> listObj = yearDemandWriteRepository(condition.get("addData")+"");
+			if (listObj!=null) {
+				for (YearDemandStatistics obj : listObj) {
+					if (obj!=null) {
+						obj.setCreateUserId(user.getId());
+						obj.setCreateUserName(user.getName());
+						Date date = new Date();
+						obj.setCreateTime(date);
+						obj.setUpdateTime(date);
+						obj.setCompanyId(user.getCompanyId());
+						obj.setCompanyName(user.getCompanyName());
+						yearDemandStatisticsRepository.save(obj);
+					}
+				}
+			}
+		}
+	}
+	
+	private List<YearDemandStatistics> yearDemandWriteRepository(String addData) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.readValue(addData, new TypeReference<List<YearDemandStatistics>>() {});
+		} catch (JsonParseException e) {
+		} catch (JsonMappingException e) {
+		} catch (IOException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public boolean hasRecord(Condition condition) {
+		return yearDemandStatisticsRepository.hasRecord(condition);
+	}
+
+
+}

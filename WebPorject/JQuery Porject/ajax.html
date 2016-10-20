@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css" >
+	*{margin:0;padding:0;}
+			.alertBox{background:rgba(0,0,0,0.5);position: relative;z-index:6666;display:none;}
+			.box{width:400px;height:300px;background:#e6e6e6;position: absolute;}
+	</style>
+	<script src="js/jquery.js"></script>
+</head>
+<body>
+<button >zhixjnikn</button>
+	<div class="alertBox">
+		<div class="box">
+    		
+    	</div>
+	</div>
+	<script>
+	
+		var size={
+			windowSize:function(){
+				$(".alertBox").show().width($(window).outerWidth()).height($(window).outerHeight());
+			},
+			boxCenter:function(){
+				 $(".box").css({
+				 	"left":($(window).outerWidth()-$(".box").outerWidth())/2,
+				 	"top":($(window).outerHeight()-$(".box").outerHeight())/2,
+				 });
+			}
+		}	
+		$("button").click(function(){
+			size.windowSize();
+			size.boxCenter();
+		});	
+		$(window).resize(function(){
+			size.windowSize();
+			size.boxCenter();
+		});
+	</script>
+</body>
+</html>

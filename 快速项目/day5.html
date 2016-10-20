@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>获取行间样式</title>
+	<style>
+	#box{width:100px;height:100px;background:red;margin: 10px;padding:100px;border:1px solid green;}
+	</style>
+</head>
+<body>
+	<div id="box"></div>
+	<script>
+	var div=document.getElementById('box');
+	var width="";
+	if(div.currentStyle!==undefined){
+		width=div.currentStyle.width;		
+	}else{
+		width=getComputedStyle(div,false).width;
+	}
+	alert(width);
+	</script>
+</body>
+</html>

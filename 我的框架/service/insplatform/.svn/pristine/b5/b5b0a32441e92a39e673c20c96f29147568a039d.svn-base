@@ -1,0 +1,72 @@
+package com.insplatform.module.course.coursekpointrel.service;
+
+import java.util.*;
+
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.course.coursekpointrel.model.CourseKpointRel;
+
+public interface CourseKpointRelService extends BaseService<CourseKpointRel>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 加载表格树数据
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAllTreeGrid(Condition condition);
+
+	/**
+	 * 获取课程知识点树形选择器数据
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAllTreeGridBySelectKpoint(Condition condition);
+
+	/**
+	 * 批量添加知识点
+	 * @param courseId
+	 * @param ids
+	 * @param kpointCatalogues 
+	 */
+	void saveBatch(String courseId, String[] ids, String[] kpointCatalogues);
+
+	/**
+	 * 上移或下移只是点位置
+	 * @param id
+	 * @param type 
+	 */
+	void updateKpointUpOrDown(String id, String type);
+
+	/**
+	 * 批量保存知识点排序号
+	 * @param ids
+	 */
+	void saveKpointSortNumber(String[] ids);
+
+}

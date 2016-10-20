@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+*{margin:0;padding:0;font-family:"微软雅黑";}
+*:hover{-webkit-transition:all 700ms ease;-moz-transition:all 700ms ease;-ms-transition:all 700ms ease;
+-o-transition:all 700ms ease;transition:all 700ms ease;}
+a{text-decoration:none;}
+#footer,#home{display:none;}
+body{background:#F4F4F4;}
+/* 头部栏 */
+.srHeader{width:100%;height:30px;background:#E5E5E5;display:block;box-shadow:0px 0px 5px 2px #d0d0d0;}
+
+/* 导航 */
+
+.srAlert{width:400px;height:250px;position: absolute;top:50%;left:50%;margin-top:-125px;margin-left:-200px;background:#D6D6D6;border-radius:10px;box-shadow:1px 1px 10px 1px #515151;animation:srAnimate 2s;-webkit-animation: srAnimate 2s;
+}
+.srAlertHeader{width:100%;height:30px;background:#ABABAB;border-radius:10px 10px 0 0;}
+
+.p1{color:#B50400;text-align:center;font-weight:bold;line-height:30px;}
+.srAlertCenter{width:100%;height:220px;position: relative;}
+.srAlertDl{color:#535554;position: absolute;top:10%;display:inline-block;margin:0 auto;}
+.srAlertTitle{margin-left:10px;}
+.srAlertFont{margin-left:30px;margin-top:10px;font-size:15px;}
+.p2{position: absolute;bottom:40px;right:40px;}
+.p2 a{font-size:14px;color:#004080;}
+.p2 a:hover{color:#188eee;}
+.p3{position: absolute;bottom:20px;right:0;font-size:10px;color:#B1B0B3;}
+@-webkit-keyframes srAnimate {
+	0%{left:-1000px;}
+	40%{left:50%;top:50%;}
+	60%{top:30%;}
+	80%{top:80%;}
+	100%{top:50%;}
+}
+@-o-keyframes srAnimate {
+	0%{left:-1000px;}
+	40%{left:50%;top:50%;}
+	60%{top:30%;}
+	80%{top:80%;}
+	100%{top:50%;}
+}
+@-moz-keyframes srAnimate {
+	0%{left:-1000px;}
+	40%{left:50%;top:50%;}
+	60%{top:30%;}
+	80%{top:80%;}
+	100%{top:50%;}
+}
+@keyframes srAnimate {
+	0%{left:-1000px;}
+	40%{left:50%;top:50%;}
+	60%{top:30%;}
+	80%{top:80%;}
+	100%{top:50%;}
+}
+	
+
+</style>
+</head>
+<body>
+
+	<div class="srHeader"></div>
+	<div class="srAlert">
+		<div class="srAlertHeader">
+			<p class="p1">出错啦!!</p>
+		</div>
+		<div class="srAlertCenter">
+			<dl class="srAlertDl">
+				<dt class="srAlertTitle">特此通知:</dt>
+				<dd class="srAlertFont">稍安勿躁,正在全面升级........</dd>
+			</dl> 
+			<p class="p2"><a href="http://www.cnblogs.com/smallrui/">站长:$小瑞</a></p>
+			<p class="p3">身为博客园总站长,看到此人逗逼的行为,我很无奈....</p>	
+		</div>
+	</div>
+
+</body>
+</html>

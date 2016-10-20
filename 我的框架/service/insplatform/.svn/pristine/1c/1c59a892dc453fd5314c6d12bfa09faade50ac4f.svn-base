@@ -1,0 +1,240 @@
+package com.insplatform.module.classreport.controller;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.attachment.service.AttachmentsService;
+import com.insplatform.module.classreport.model.ClassReport;
+import com.insplatform.module.classreport.service.ClassReportService;
+import com.insplatform.module.teachingplan.service.TeachingPlanService;
+/**
+ * 培训开班
+ * @author 李华
+ *
+ */
+@Controller
+@RequestMapping("/px/classreport")
+public class ClassReportController extends BaseController{
+	
+	@Autowired
+	private ClassReportService classReportService;
+	
+	@Autowired
+	private TeachingPlanService teachingPlanService;
+	
+	@Autowired
+	private AttachmentsService attachmentsService;
+	
+	/**
+	 * 加载数据班主任总结班级
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGridBySummarize")
+	public @ResponseBody Map<String, Object> loadAllGridBySummarize(
+			HttpServletRequest request, HttpServletResponse response){
+		return classReportService.loadAllGridBySummarize(this.getCondition(request,"operType", "name","pxYear","pxMonth","SelectPxProject"));
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		return classReportService.loadAllGrid(this.getCondition(request, "name","pxYear","pxMonth","startTime","stopTime","SelectPxProject"));
+	}
+	
+	
+	
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadClasspplySignAllGrid")
+	public @ResponseBody Map<String, Object> loadClasspplySignAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		return classReportService.loadClasspplySignAllGrid(this.getCondition(request, "name","pxYear","pxMonth","startTime","stopTime","SelectPxProject"));
+	}
+	
+	
+	/**
+	 * 审批列表
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadStateAllGrid")
+	public @ResponseBody Map<String, Object> loadStateAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		return classReportService.loadStateAllGrid(this.getCondition(request, "name","pxYear","pxMonth","startTime","stopTime","SelectPxProject"));
+	}
+	
+	/**
+	 * 教学计划or课程表
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadTeachingplanAllGrid")
+	public @ResponseBody Map<String, Object> loadTeachingplanAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		return classReportService.loadTeachingplanAllGrid(this.getCondition(request, "name","pxYear","pxMonth","startTime","stopTime","SelectPxProject"));
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(classReportService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(classReportService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(ClassReport classreport,HttpServletRequest request,
+			HttpServletResponse response){
+		classreport.setCreateUserId(this.getCurrentUser(request).getId());
+		classreport.setCreateUserName(this.getCurrentUser(request).getName());
+		Date date = new Date();
+		classreport.setPxProject(request.getParameter("pxProjectId"));
+		classreport.setCreateTime(date);
+		classreport.setUpdateTime(date);
+		classreport.setClassTeacher(request.getParameter("classTeacherId"));
+		classreport.setState("未审批");
+		classreport.setApplySign("结束");
+		Serializable ssid=classReportService.save(classreport);
+		attachmentsService.batchSaveFiles(ssid.toString(), request);
+		Condition condition = this.getCondition(request);
+		teachingPlanService.addPlan(condition,ssid.toString(), classreport.getPxProject());
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		ClassReport classreport = classReportService.get(id);
+		this.bindObject(request, classreport);
+		classreport.setUpdateTime(new Date());
+		classreport.setPxProject(request.getParameter("pxProjectId"));
+		classreport.setClassTeacher(request.getParameter("classTeacherId"));
+		classReportService.update(classreport);
+		attachmentsService.batchSaveFiles(classreport.getId(), request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		classReportService.deleteByIds(ids);
+		attachmentsService.deleteFile(ids);
+		return this.getMessager().success();
+	}
+	
+	
+	/**
+	 * 发送审批
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/updateSendState")	
+	public @ResponseBody Map<String, Object> updateSendState(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		String name=classReportService.updateSendState(ids);
+		return this.getMessager().success().put("name", name);
+	}
+	
+	
+	/**
+	 * 处理审批
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/updateCpuState")	
+	public @ResponseBody Map<String, Object> updateCpuState(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		String type=request.getParameter("type");
+		classReportService.updateCpuState(type, ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 管理报名状态
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/applySign")	
+	public @ResponseBody Map<String, Object> applySign(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		String type=request.getParameter("type");
+		classReportService.updateApplySign(type, ids);
+		return this.getMessager().success();
+	}
+	
+	
+	/**
+	 * 发送审批
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/loadSendState")	
+	public @ResponseBody Map<String, Object> loadSendState(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		String name=classReportService.loadSendState(ids);
+		return this.getMessager().success().put("name", name);
+	}
+	
+
+	
+}

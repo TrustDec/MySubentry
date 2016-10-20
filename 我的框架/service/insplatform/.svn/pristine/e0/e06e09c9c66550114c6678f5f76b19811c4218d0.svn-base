@@ -1,0 +1,175 @@
+package com.insplatform.system.login.service;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.spring.jdbc.JdbcAssistant;
+import com.insframework.common.spring.jdbc.mapper.BeanPropertyRowMapper;
+import com.insframework.common.utils.SecurityUtil;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.context.App;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.system.authz.repository.AuthzRepository;
+import com.insplatform.system.organization.repository.OrganizationRepository;
+import com.insplatform.system.role.RoleConstant;
+import com.insplatform.system.role.repository.RoleRepository;
+import com.insplatform.system.user.service.UserBizDataAuthzService;
+import com.insplatform.system.user.service.UserService;
+
+
+@Service
+public class LoginService {
+	
+	@Autowired
+	private JdbcAssistant jdbcAssistant;	
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	private AuthzRepository authzRepository;	
+	
+	@Autowired
+	private OrganizationRepository organizationRepository;
+	
+	@Autowired
+	private UserService userService;
+	
+	
+	@Autowired
+	private UserBizDataAuthzService userBizDataAuthzService;
+	
+	/**
+	 * 检查库中是否存在此用户
+	 * @param userName
+	 * @param password
+	 * @return
+	 */
+	public boolean check(String userName, String password){
+		boolean isLogin = false;
+		if(TextUtil.isNotEmpty(userName) && TextUtil.isNotEmpty(password)){
+			String sql = "select id from sys_user where account=? and password=? and is_delete = 'N' ";
+			String _password = SecurityUtil.encrypt(password);
+			List<Map<String,Object>> list = 
+					jdbcAssistant.query(sql, new Object[]{userName, _password});
+			if(list != null && list.size() > 0){
+				isLogin = true;
+			}
+		}		
+		return isLogin;
+	}
+	
+	/**
+	 * 检查用户是否锁定
+	 * @param userName
+	 * @param password
+	 * @return
+	 */
+	public boolean checkLock(String userName, String password){
+		boolean isLock = false;
+		String sql = "select enabled from SYS_USER where account='"+userName+"'";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql);
+		String enabled = map.get("enabled")+"";
+		if("N".equals(enabled)){
+			isLock = true;
+		}
+		return isLock;
+	}
+	
+	
+	/**
+	 * 设置当前用户详细信息(用于PC端登录成功后设置当前用户)
+	 * @param request
+	 * @param account
+	 * @return
+	 */
+	public CurrentUser setCurrentUserInfo(HttpServletRequest request, String account){
+		
+		String userId = userService.loadUserIdByAccount(account);
+		
+		//获取当前用户基本信息
+		CurrentUser currentUser = this.getCurrentUserById(request, userId, false);
+		
+		//如果用户没有默认角色，添加默认角色
+		String sql = "select count(1) from SYS_USER_ROLE_REL where user_id = '"+currentUser.getId()+"' and role_id = '"+RoleConstant.DEFAULT.getValue()+"'";
+		int count = jdbcAssistant.queryAsInt(sql);
+		if(count == 0){
+			sql = "insert into SYS_USER_ROLE_REL values('"+currentUser.getId()+"', '"+RoleConstant.DEFAULT.getValue()+"')";
+			jdbcAssistant.update(sql);
+		}
+		
+		//设置用户角色id集合
+		sql = "select t.role_id from SYS_USER_ROLE_REL t where t.user_id = '"+currentUser.getId()+"'";
+		List<String> roleIds = jdbcAssistant.queryAsList(sql, String.class, null);		
+		currentUser.setRoleIds(roleIds);
+		
+		//设置用户可访问资源集合
+		List<Map<String, Object>> resources = new ArrayList<Map<String, Object>>();		
+		if(roleRepository.checkUserIsSysAdmin(currentUser.getId())){
+			resources = authzRepository.loadAllAuthzResource(new Condition(request).put("enabled", "Y"));
+		}else{
+			resources = authzRepository.loadUserAllAuthzResource(currentUser.getId());
+		}			
+		currentUser.setResources(resources);
+		
+		//设置用户是否为超级管理员
+		boolean isAdmin = roleRepository.checkUserIsSysAdmin(currentUser.getId());
+		currentUser.setIsAdmin(isAdmin);
+		
+		//设置用户的操作map
+		Map<String, Object> operateMap = null;
+		if(isAdmin){
+			operateMap = authzRepository.loadAllOperateMap(new Condition(request).put("enabled", "Y"));
+		}else{
+			operateMap = authzRepository.loadUserOperateMap(currentUser.getId());
+		}				
+		currentUser.setOperateMap(operateMap);
+		
+		//设置用户的数据权限级别
+		int bizDataLevel = userBizDataAuthzService.loadUserBizLevel(currentUser.getId());
+		currentUser.setBizDataLevel(bizDataLevel);
+		
+		request.getSession().setAttribute(App.CURRENT_USER, currentUser);	
+		
+		return currentUser;
+		
+	}
+	
+	/**
+	 * 根据id获取当前用户
+	 * @param id
+	 * @param isEcrypt
+	 */
+	public CurrentUser getCurrentUserById(HttpServletRequest request, String userId, boolean isEcrypt){
+		
+		if(isEcrypt){
+			userId = SecurityUtil.decrypt(userId);
+		}
+		
+		String sql = "select u.id,u.name,u.account,o.name as organization_name,o.id as organization_id" +
+				 " from SYS_USER u" +
+				 " left join SYS_USER_ORG_REL ou on u.id = ou.user_id" +
+				 " left join SYS_ORGANIZATION o on ou.organization_id = o.id " +
+				 " where u.id = ?";
+	
+		CurrentUser currentUser
+				= (CurrentUser) jdbcAssistant.queryAsObject(sql, new Object[] {userId},
+				BeanPropertyRowMapper.newInstance(CurrentUser.class));
+		
+		//设置公司
+		Map<String, Object> company = organizationRepository.loadSuperCompany(currentUser.getOrganizationId());
+		currentUser.setCompanyId(company.get("id").toString());
+		currentUser.setCompanyName(company.get("name").toString());
+		
+		return currentUser;
+	} 
+	
+}

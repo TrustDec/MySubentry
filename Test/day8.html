@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style>
+	body,li,ul{margin:0px;padding:0px;}
+	#box{position:relative;margin:100px auto;width:712px;height:108px;overflow: hidden;}
+	ul{position:absolute;left:0;top:0;width:auto;}
+	li{width:178px;height:108px;float:left;list-style: none;}
+	</style>
+</head>
+<body>
+<input type="button" value="向左走" >
+<input type="button" value="向右走" >
+	<div id="box">
+		<ul >
+			<li><img src="day7/1.jpg" alt=""></li>
+			<li><img src="day7/2.jpg" alt=""></li>
+			<li><img src="day7/3.jpg" alt=""></li>
+			<li><img src="day7/4.jpg" alt=""></li>
+		</ul>
+	</div>
+	<script>
+	window.onload=function(){
+		var box=document.getElementById("box");
+		var oUl=document.getElementsByTagName('ul')[0];
+		var oLI=oUl.getElementsByTagName('li');
+		var input=document.getElementsByTagName("input");
+		var timp=null;
+		var sum=-2;
+		oUl.innerHTML=oUl.innerHTML+oUl.innerHTML;		
+		oUl.style.width=oLI[0].offsetWidth*oLI.length+"px";
+		timp=setInterval(slide,30);
+		box.onmouseover=function(){
+			clearInterval(timp);
+		}
+		box.onmouseout=function(){
+			timp=setInterval(slide,20);
+		}
+
+		input[0].onclick=function(){sum=-2;}
+		input[1].onclick=function(){sum=2;}
+		function slide(){
+			if (oUl.offsetLeft<-oUl.offsetWidth/2) {
+				oUl.style.left='0';
+			}
+			 if(oUl.offsetLeft>0){
+				oUl.style.left=-oUl.offsetWidth/2+'px';
+			}		
+
+			oUl.style.left=oUl.offsetLeft+sum+"px";
+		}
+	}
+	</script>
+</body>
+</html>

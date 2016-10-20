@@ -1,0 +1,84 @@
+package com.insplatform.module.everyday.controller;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.common.utils.JsonUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insplatform.module.everyday.model.EverydaySetting;
+import com.insplatform.module.everyday.service.EverydaySettingService;
+import com.insplatform.module.question.model.Question;
+import com.insplatform.module.question.service.QuestionAnswerService;
+import com.insplatform.module.question.service.QuestionService;
+
+/**
+ * @author yb
+ * 每日一题设置
+ *
+ */
+@Controller
+@RequestMapping("/px/everydaySetting")
+public class EverydaySettingController extends BaseController{
+
+	@Autowired
+	private EverydaySettingService everydaySettingService;
+	@Autowired
+	private QuestionAnswerService questionAnswerService;
+	@Autowired
+	private QuestionService questionService;
+
+	@RequestMapping("/loadAll")
+	public @ResponseBody
+	Map<String, Object> loadAll(HttpServletRequest request,
+			HttpServletResponse response) {
+		return everydaySettingService.loadAll(this.getCondition(request));
+	}
+
+	/**
+	 * 每一一题设置表新增
+	 * 
+	 * @param everydaySetting
+	 * @param questionId
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/add")
+	public @ResponseBody
+	Map<String, Object> add(EverydaySetting everydaySetting, String questionId,
+			HttpServletRequest request) {
+		everydaySetting.setDateNo(everydaySetting.getDateNo().substring(0, 4)
+				+ everydaySetting.getDateNo().substring(5, 7)
+				+ everydaySetting.getDateNo().substring(8, 10));
+		List<Map<String, Object>> answers = questionAnswerService
+				.loadAnswerByQueId(questionId);
+		String json = JsonUtil.toJson(answers);
+		everydaySetting.setQuestionAnswer(json);
+		Question question = questionService.get(questionId);
+		everydaySetting.setQuestionDifficulty(question.getDifficulty());
+		everydaySetting.setQuestionType(question.getType());
+		everydaySetting.setImg(question.getImg());
+		Serializable seri = everydaySettingService.save(everydaySetting);
+		if (seri.toString().equals("-1")) {// 存在重复日期
+			return this.getMessager().error().put("msg", "该天已经设置过题目了");
+		} else {
+			return this.getMessager().success();
+		}
+	}
+
+	@RequestMapping("/remove")
+	@ResponseBody
+	public Map<String, Object> remove(String id, HttpServletRequest request) {
+		everydaySettingService.deleteById(id);
+		return this.getMessager().success();
+	}
+
+}

@@ -1,0 +1,121 @@
+package com.insplatform.module.video.controller;
+
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.context.App;
+import com.insplatform.module.video.model.Video;
+import com.insplatform.module.video.service.VideoService;
+
+@Controller
+@RequestMapping("/px/video")
+public class VideoController extends BaseController{
+	
+	@Autowired
+	private VideoService videoService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){		
+		return videoService.loadAllGrid(this.getCondition(request, "name", "createUserName", "difficulty", "kpointName"));
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){		
+		return this.getMessager().success().data(videoService.loadAllList(this.getCondition(request)));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(videoService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(Video video, HttpServletRequest request){
+		video.setCreateUserId(this.getCurrentUser(request).getId());
+		video.setCreateUserName(this.getCurrentUser(request).getName());	
+		Date date = new Date();
+		video.setCreateTime(date);
+		video.setUpdateTime(date);
+		videoService.save(video, request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		Video video = videoService.get(id);
+		this.bindObject(request, video);
+		video.setUpdateTime(new Date());
+		videoService.update(video, request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		videoService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 下载视频文件
+	 * @param id
+	 * @param response
+	 */
+	@RequestMapping("/downloadVideo")	
+	public void downloadVideo(@RequestParam("id") String id, HttpServletResponse response){
+		Video video = videoService.get(id);
+		String url = video.getVideo();
+		String path = App.FILE_SYS;
+		path += url.replace(App.FILE_SYS_URL, "");
+		downloadService.downloadFile(path, video.getOriginalName(), response);
+	}
+
+	
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://D:/wamp/www/427" />
+    <content url="file://F:/AngularJS" />
+    <content url="file://F:/AngularJsTest" />
+    <content url="file://F:/ECshop" />
+    <content url="file://F:/Guide page" />
+    <content url="file://F:/JQuery Porject" />
+    <content url="file://F:/Tech" />
+    <content url="file://$MODULE_DIR$" />
+    <content url="file://F:/ZC Welcome" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="jquery.js" level="project" />
+    <orderEntry type="library" name="jqueryAnimateBug.js" level="project" />
+  </component>
+</module>

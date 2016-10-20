@@ -1,0 +1,31 @@
+package com.insplatform.module.everyday.service.impl;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.everyday.model.EverydayHistory;
+import com.insplatform.module.everyday.repository.EverydayHistoryRepository;
+import com.insplatform.module.everyday.service.EverydayHistoryService;
+
+@Service
+public class EverydayHistoryServiceImpl extends
+		BaseServiceImpl<EverydayHistory> implements EverydayHistoryService {
+	@Autowired
+	private EverydayHistoryRepository everydayHistoryRepository;
+
+	@Override
+	public BaseRepository<EverydayHistory> getRepository() {
+		return everydayHistoryRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAll(Condition condition) {
+		return everydayHistoryRepository.loadAll(condition);
+	}
+
+}

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="css/initialize.css" />
+<link rel="stylesheet" href="css/9c0259fba36670007804a2b4bcf883b8.css" />
+<style>
+* { margin: 0px; }
+html { overflow-y: hidden }
+#cont { width: 100%; position: relative; }
+.stage { width: 100%; height: 580px; display: block; position: relative; overflow: hidden; }
+.stage_box { width: 900px; height: 580px; margin: auto; position: relative; text-align: center; overflow: hidden; }
+.stage_box .swf_object p{position: absolute;top: 55%; left: 30%;}
+.stage_box .swf_object p button{width:160px;height: 40px;margin: 0 10px;color: #FFFFFF;border-radius: 5px;font-size: 20px; font-weight: bold;cursor: pointer;}
+.stage_box .swf_object p button a{color: #FFFFFF;font-weight: bold;}
+.stage_box .swf_object p button:hover{border:1.5px solid #FFFFFF;}
+.stage_box .swf_object p button.follow{background: #1E90FF;}
+.stage_box .swf_object p button.resign{background: #FF8C00;}
+#stage1 { background: url(images/stage1.jpg) center center; background-size: cover; }
+#stage2 { background: url(images/stage2.jpg) center center; background-size: cover; }
+#stage3 { background: url(images/stage3.jpg) center center; background-size: cover; }
+#stage4 { background: url(images/stage4.jpg) center center; background-size: cover; }
+#stage5 { background: url(images/stage5.jpg) center center; background-size: cover; }
+#stage6 { background: url(images/stage6.jpg) center center; background-size: cover;  }
+.fe_img1 { position: absolute; margin: -196px -274px; width: 555px; height: 392px; left: 42%; top: 50%; background: url(images/fe_img1.png) no-repeat; }
+.fe_img2 { position: absolute; margin: -220px -263px; width: 527px; height: 441px; left: 42%; top: 50%; background: url(images/fe_img2.png) no-repeat; }
+.fe_img3 { position: absolute; margin: -206px -272px; width: 543px; height: 412px; left: 42%; top: 50%; background: url(images/fe_img_plus.png) no-repeat; }
+.fe_img4 { position: absolute; margin: -206px -272px; width: 543px; height: 412px; left: 42%; top: 50%; background: url(images/fe_img4.png) no-repeat; }
+.fe_img5 { position: absolute; margin: -200px -320px; width: 641px; height: 401px; left: 42%; top: 50%; background: url(images/fe_img4.png) no-repeat; }
+#guider .bg { z-index: 0; width: 100%; height: 100%; background: url(images/guider_bg5.png) no-repeat center center; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src="images/guider_bg5.png");
+_background-image: none; position: absolute; top: 0px; left: 0px; }
+#guider { width: 30px; height: 205px; position: absolute; top: 380px; right: 150px; }
+#guider .sina { z-index: 1; position: absolute; left: 0px; bottom: 34px; width: 100%; height: 26px; display: block; }
+#guider .sina:hover { background: url(images/guider_bg.png) no-repeat center -135px; }
+#guider .tencent { z-index: 1; position: absolute; left: 0px; bottom: 0px; width: 100%; height: 25px; display: block; }
+#guider .tencent:hover { background: url(images/guider_bg.png) no-repeat center -170.5px; }
+#guider_link1 { z-index: 1; height: 31px; }
+.guider_link { position: relative; z-index: 1; width: 100%; height: 20px; display: block; cursor: pointer; }
+#guider_link2.select { background: url(images/guider1_select.jpg) no-repeat center center; }
+#guider_link3.select { background: url(images/guider2_select.jpg) no-repeat center center; }
+#guider_link4.select { background: url(images/guider_select_plus.jpg) no-repeat center center; }
+#guider_link5.select { background: url(images/guider3_select.jpg) no-repeat center center; }
+#guider_link6.select { background: url(images/guider4_select.jpg) no-repeat center center; }
+#logo { position: absolute; top: 2px; left: 2.5px; }
+.swf_object { height: 760px; margin-top: -94px; width: 900px; background: url(images/stage1-title.png) 100%; }
+.btn_down { width: 80px; height: 80px; position: absolute; bottom: 0px; margin-left: -10px; left: 50%; cursor: pointer; }
+.sign { position: absolute; width: 32px; height: 12px; left: 24px; z-index: 99 }
+#sign1_1 { background: url(images/sign1.png) no-repeat; bottom: 30px; }
+#sign2_1 { background: url(images/sign2.png) no-repeat; bottom: 38px; }
+#sign3_1 { background: url(images/sign3.png) no-repeat; bottom: 46px; }
+.signImg1 { background: url(images/sign_1.png) no-repeat; bottom: 30px; }
+.signImg2 { background: url(images/sign_2.png) no-repeat; bottom: 38px; }
+.signImg3 { background: url(images/sign_3.png) no-repeat; bottom: 46px; }
+</style>
+<link rel="stylesheet" href="css/index.css" />
+<script type="text/javascript" src="js/jquery_1.7.2.js"></script>
+<script type="text/javascript" src="js/jQueryRotateCompressed.2.2.js"></script>
+<script type="text/javascript" src="js/6ac5070177379298eec2e73bea756d04.js"></script>
+<script type="text/javascript" src="js/lang.js"></script>
+<title>世界云联</title>
+</head>
+<body scroll="no">
+<div id="cont">
+  <div class="stage" id="stage1">
+    <div class="stage_box">
+      <div class="swf_object" >
+      		<p><button class="follow"><a>立刻登录</a></button><button class="resign"><a href="http://192.168.1.54/index.php?ctl=user&act=register">现在注册</a></button></p>
+      </div>
+    </div>
+    <div class="stage-bottom">
+    	<a>最新公告：世界银联受邀参加经济论坛3.15大会</a>
+    	<a>|</a>
+    	<a>是啊是多少给点空间卡号打算尽快</a>
+    	<a>|</a>
+    	<a>撒旦恶恶我去的共和国的hg</a>
+    </div>
+  </div>
+  <div class="stage" id="stage2" name ="refresh">
+    <div class="fe_img1"></div>
+    <a class="index_link btn_down" index="2">
+    <div class="sign signImg1" id="sign1_2"></div>
+    <div class="sign signImg2" id="sign2_2"></div>
+    <div class="sign signImg3" id="sign3_2"></div>
+    </a>
+       <div class="stage-bottom">
+    	<a>最新公告：世界银联受邀参加经济论坛3.15大会</a>
+    	<a>|</a>
+    	<a>是啊是多少给点空间卡号打算尽快</a>
+    	<a>|</a>
+    	<a>撒旦恶恶我去的共和国的hg</a>
+    </div>
+  </div>
+  <div class="stage" id="stage3">
+    <div class="fe_img2"></div>
+    <div class="fe_text2"></div>
+    <a class="index_link btn_down" index="3">
+    <div class="sign signImg1" id="sign1_3"></div>
+    <div class="sign signImg2" id="sign2_3"></div>
+    <div class="sign signImg3" id="sign3_3"></div>
+    </a>
+       <div class="stage-bottom">
+    	<a>最新公告：世界银联受邀参加经济论坛3.15大会</a>
+    	<a>|</a>
+    	<a>是啊是多少给点空间卡号打算尽快</a>
+    	<a>|</a>
+    	<a>撒旦恶恶我去的共和国的hg</a>
+    </div>
+  </div>
+  <div class="stage" id="stage4">
+    <div class="fe_img3"></div>
+    <div class="fe_text3"></div>
+    <a class="index_link btn_down" index="4">
+    <div class="sign signImg1" id="sign1_plus"></div>
+    <div class="sign signImg2" id="sign2_plus"></div>
+    <div class="sign signImg3" id="sign3_plus"></div>
+    </a>
+     <div class="stage-bottom">
+    	<a>最新公告：世界银联受邀参加经济论坛3.15大会</a>
+    	<a>|</a>
+    	<a>是啊是多少给点空间卡号打算尽快</a>
+    	<a>|</a>
+    	<a>撒旦恶恶我去的共和国的hg</a>
+    </div>
+  </div>
+  <div class="stage" id="stage5">
+    <div class="fe_img4"></div>
+  	   <div class="stage-bottom">
+    	<a>最新公告：世界银联受邀参加经济论坛3.15大会</a>
+    	<a>|</a>
+    	<a>是啊是多少给点空间卡号打算尽快</a>
+    	<a>|</a>
+    	<a>撒旦恶恶我去的共和国的hg</a>
+    </div>
+  </div>
+  <div class="stage" id="stage6">
+  			<div class="fe_img4"></div>
+  			<div class="stage6-center"></div>
+    	<p class="footer-bottom">联系电话：029-62867633&nbsp;&nbsp;&nbsp;联系我们：sxhrdser@163.com  ·陕西华尓道投资管理有限公司        © 2015世界雲联 All rights reserved ·陕ICP备15006786</p>
+    </div>
+  </div>
+  <div id="guider"> <a class = "guider_link" id="guider_link1"><img src="images/logo4.png" id="logo"></a> <a class="guider_link" id="guider_link2"></a> <a class="guider_link" id="guider_link3"></a> <a class="guider_link" id="guider_link4"></a> <a class="guider_link" id="guider_link5"></a> <a class="guider_link" id="guider_link6"></a>
+    <div class="bg"></div>
+  </div>
+</div>
+<div class="header" id="header">
+   <!---->
+<div class="constr">
+	<div class="wrap">
+		 		<div class="app_down f_l" id="J_APP_DOWN">
+			<a href="./世界雲联—最大、最安全的网络借贷平台 - 世界雲联_files/a54140f5e14e94278b24263d377c4731.png"><i class="iconfont"></i>手机理财</a>
+			
+		</div>
+				<div class="f_r lh30">
+			
+		</div>	
+		<div class="f_r">
+			<ul class="right mt9">
+				<!-- <li class="hover_a top_li">
+					<i class="iconfont">&#xe614;</i>
+					官方QQ群
+				</li> -->
+								<li class="hover_a top_li jcur ">
+					<a href="http://192.168.1.54/public/images/qrcode/c4/2e88b59223bcd51f7e4f0ad4ec46a3ae.png" id="weixim">
+					<i class="iconfont"></i>
+					微信
+					</a>
+				</li>
+								<li class="top_li"><a href="http://192.168.1.54/index.php?ctl=helpcenter">帮助中心</a></li>
+				<li class=" top_li relative">
+					<div id="user_head_tip">
+						<a href="javascript:void(0);" onclick="ajax_login();">立即登录</a>
+	—
+<a href="http://192.168.1.54/index.php?ctl=user&act=register">免费注册</a>
+			      </div>
+			    </li>
+			</ul>
+		</div>	
+	</div>
+</div>
+<!---->	<div class="main_bars">
+		<div class="main_bar wrap">	
+			<div class="logo mr15">
+				<a class="link f_l" href="./世界雲联—最大、最安全的网络借贷平台 - 世界雲联_files/世界雲联—最大、最安全的网络借贷平台 - 世界雲联.html">
+										<span style="display:inline-block; width:230px; height:70px; background:url(http://192.168.1.54/public/attachment/201603/26/13/56f624635cb30.png) no-repeat; _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=http://192.168.1.54/public/attachment/201603/26/13/56f624635cb30.png, sizingMethod=scale);_background-image:none;" title="世界雲联"></span>				</a>
+			</div>     
+			<!--加载菜单-->
+			<ul class="main_nav">
+									<li class="current jcur ml5 bdr3 pr" rel="1">
+						<a href="http://192.168.1.54/index.php" target="" class="pr20">首页 <i class="iconfont"></i></a>
+						                        <div class="sub_main_nav ps hide" style="left: -19px;">
+													<a href="http://192.168.1.54/index.php?ctl=aboutp2p" target="">平台原理</a>
+													<a href="http://192.168.1.54/index.php?ctl=aboutlaws" target="">政策法规</a>
+													<a href="http://192.168.1.54/index.php?ctl=aboutfee" target="">费用</a>
+													<a href="http://192.168.1.54/index.php?ctl=help&id=1" target="">关于我们</a>
+													<a href="http://192.168.1.54/index.php?ctl=learn_activity" target="_blank">理财体验金</a>
+												</div>
+											</li>
+									<li class=" jcur ml5 bdr3 pr" rel="2">
+						<a href="http://192.168.1.54/index.php?ctl=deals&select=1" target="" class="pr20">我要理财 <i class="iconfont"></i></a>
+						                        <div class="sub_main_nav ps hide" style="left: -3px;">
+													<a href="http://192.168.1.54/index.php?ctl=deals" target="">个人贷款</a>
+													<a href="http://192.168.1.54/index.php?ctl=transfer" target="">债权转让</a>
+													<a href="http://192.168.1.54/index.php?ctl=tool" target="">工具箱</a>
+													<a href="http://192.168.1.54/index.php?ctl=deals&act=about" target="">关于理财</a>
+													<a href="http://192.168.1.54/index.php?ctl=belender" target="">成为理财人</a>
+												</div>
+											</li>
+									<li class=" jcur ml5 bdr3 pr" rel="3">
+						<a href="http://192.168.1.54/index.php?ctl=borrow" target="" class="pr20">我要借款 <i class="iconfont"></i></a>
+						                        <div class="sub_main_nav ps hide" style="left: -3px;">
+													<a href="http://192.168.1.54/index.php?ctl=borrow&act=aboutborrow" target="">贷款说明</a>
+													<a href="http://192.168.1.54/index.php?ctl=borrow&act=creditswitch" target="">信用认证</a>
+													<a href="http://192.168.1.54/index.php?ctl=borrow" target="">申请贷款</a>
+													<a href="http://192.168.1.54/index.php?ctl=deal_msgboard" target="">登记借款</a>
+												</div>
+											</li>
+									<li class=" jcur ml5 bdr3 pr" rel="4">
+						<a href="http://192.168.1.54/member.php?ctl=uc_center" target="" class="pr20">我的p2p信贷 <i class="iconfont"></i></a>
+						                        <div class="sub_main_nav ps hide" style="left: 11.5px;">
+													<a href="http://192.168.1.54/member.php?ctl=uc_center" target="">我的主页</a>
+													<a href="http://192.168.1.54/member.php?ctl=uc_deal&act=refund" target="">贷款管理</a>
+													<a href="http://192.168.1.54/member.php?ctl=uc_invest" target="">投标管理</a>
+													<a href="http://192.168.1.54/member.php?ctl=uc_account" target="">个人设置</a>
+												</div>
+											</li>
+									<li class=" jcur ml5 bdr3 pr" rel="5">
+						<a href="http://192.168.1.54/index.php?ctl=guarantee" target="" class="pr20">安全保障 <i class="iconfont"></i></a>
+						                        <div class="sub_main_nav ps hide" style="left: -3px;">
+													<a href="http://192.168.1.54/index.php?ctl=guarantee&act=detail&id=8" target="">本金保障</a>
+													<a href="http://192.168.1.54/index.php?ctl=guarantee&act=detail&id=9" target="">交易安全保障</a>
+													<a href="http://192.168.1.54/index.php?ctl=guarantee&act=detail&id=10" target="">贷款审核与保障</a>
+													<a href="http://192.168.1.54/index.php?ctl=guarantee&act=detail&id=11" target="">网上理财安全建议</a>
+												</div>
+											</li>
+									<li class="  ml5 bdr3 pr" rel="27">
+						<a href="http://192.168.1.54/index.php?ctl=score" target="">积分商城 </a>
+											</li>
+									<li class="  ml5 bdr3 pr" rel="50">
+						<a href="http://192.168.1.54/licai.php" target="_blank">理财中心 </a>
+											</li>
+							</ul>
+			<!--加载菜单END-->
+		</div>
+	</div>
+</div>
+<!---->
+<script type="text/javascript">
+$(document).ready(function(){
+	 lgdh1();
+});	
+function lgdh1(){
+	$(".login_block").animate({
+	    top:'20px'
+	  },800);
+	setTimeout("lgdh2()","100");  
+}	
+function lgdh2(){
+	$(".login_block").animate({
+	    top:'0px'
+	  },300);
+}	
+$(function(){ 
+$(".freebj").css("opacity","0.5"); //设置透明度 
+});
+</script>
+
+	<script type="text/javascript" defer="defer">
+	resetWindowBox();
+</script>
+</div>
+<script type="text/javascript" src="js/js.js"></script>
+</body>
+</html>

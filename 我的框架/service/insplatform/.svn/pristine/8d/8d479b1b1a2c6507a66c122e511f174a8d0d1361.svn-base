@@ -1,0 +1,43 @@
+package com.insplatform.module.trainingevaluate.service;
+
+import java.util.*;
+
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluate;
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluateResult;
+
+public interface TrainingEvaluateResultService extends BaseService<TrainingEvaluateResult>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	void saveEvaluateResult(TrainingEvaluate trainingEvaluate, Condition condition);
+
+	Map<String, Object> getEvaluateResults(Condition condition);
+
+	void updateEvaluateResult(Condition condition);
+}

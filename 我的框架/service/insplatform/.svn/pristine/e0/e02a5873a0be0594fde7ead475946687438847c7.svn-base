@@ -1,0 +1,136 @@
+package com.insplatform.module.osta.eval.demand.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_OSTA_EVAL_DEMAND_WRITE_WORK")
+public class OstaEvalDemandWriteWork implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String pid;
+	private String worktypeclassId;
+	private String worktypeclassName;
+	private String worktypeId;
+	private String worktypeName;
+	private String trainingLevelId;
+	private String trainingLevelName;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private int approvalStatus;
+	private int approvalNode;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setPid(String value) {
+		this.pid = value;
+	}
+	
+	public String getPid() {
+		return this.pid;
+	}
+	
+	public void setWorktypeclassId(String value) {
+		this.worktypeclassId = value;
+	}
+	
+	public String getWorktypeclassId() {
+		return this.worktypeclassId;
+	}
+	
+	public void setWorktypeclassName(String value) {
+		this.worktypeclassName = value;
+	}
+	
+	public String getWorktypeclassName() {
+		return this.worktypeclassName;
+	}
+	
+	public void setWorktypeId(String value) {
+		this.worktypeId = value;
+	}
+	
+	public String getWorktypeId() {
+		return this.worktypeId;
+	}
+	
+	public void setWorktypeName(String value) {
+		this.worktypeName = value;
+	}
+	
+	public String getWorktypeName() {
+		return this.worktypeName;
+	}
+	
+	public void setTrainingLevelId(String value) {
+		this.trainingLevelId = value;
+	}
+	
+	public String getTrainingLevelId() {
+		return this.trainingLevelId;
+	}
+	
+	public void setTrainingLevelName(String value) {
+		this.trainingLevelName = value;
+	}
+	
+	public String getTrainingLevelName() {
+		return this.trainingLevelName;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setApprovalStatus(int value) {
+		this.approvalStatus = value;
+	}
+	
+	public int getApprovalStatus() {
+		return this.approvalStatus;
+	}
+	
+	public void setApprovalNode(int value) {
+		this.approvalNode = value;
+	}
+	
+	public int getApprovalNode() {
+		return this.approvalNode;
+	}
+	
+}

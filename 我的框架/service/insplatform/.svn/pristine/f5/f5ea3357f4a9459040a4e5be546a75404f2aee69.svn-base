@@ -1,0 +1,283 @@
+package com.insplatform.module.osta.eval.demand.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insframework.system.map.Messager;
+import com.insplatform.module.osta.eval.demand.model.OstaEvalDemandWriteWork;
+import com.insplatform.module.osta.eval.demand.repository.OstaEvalDemandWriteWorkRepository;
+import com.insplatform.module.osta.eval.demand.service.OstaEvalDemandWriteWorkService;
+import com.insplatform.module.osta.worktype.repository.OstaWorktypeClassifyRepository;
+import com.insplatform.system.dict.model.Dict;
+import com.insplatform.system.dict.repository.DictRepository;
+
+@Service
+public class OstaEvalDemandWriteWorkServiceImpl extends BaseServiceImpl<OstaEvalDemandWriteWork> implements OstaEvalDemandWriteWorkService{
+	
+	private int[] approvalNode = new int[]{0,10,20,30,40,50};
+	private String[] OPERTYPES = new String[]{"BM","RL","LD","JDZ"};
+	
+	@Autowired
+	private OstaEvalDemandWriteWorkRepository ostaEvalDemandWriteWorkRepository;
+	
+	@Autowired
+	private OstaWorktypeClassifyRepository ostaworktypeClassifyRepository;
+	
+	@Autowired
+	private DictRepository dictRepository;
+
+	@Override
+	public BaseRepository<OstaEvalDemandWriteWork> getRepository() {		
+		return ostaEvalDemandWriteWorkRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {
+		String pid = "noPid";
+		if (condition.containsKey("pid")) {
+			pid = condition.get("pid").toString();
+			condition.remove("pid");
+		}
+		return ostaEvalDemandWriteWorkRepository.loadAllGrid(pid,condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return ostaEvalDemandWriteWorkRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return ostaEvalDemandWriteWorkRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaEvalDemandWriteWork get(Serializable id) {		
+		return ostaEvalDemandWriteWorkRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaEvalDemandWriteWork entity) {
+		return ostaEvalDemandWriteWorkRepository.save(entity);
+	}
+	
+	@Override
+	public Map<String, Object> mySave(OstaEvalDemandWriteWork entity) {
+		boolean flag = ostaEvalDemandWriteWorkRepository.beforeSaveCheck(entity);
+		if (!flag) {
+			return new Messager().put("err", "exist");
+		}
+		Map<String, Object> map = ostaworktypeClassifyRepository.getOneByWorkTypeId(entity.getWorktypeId());
+		entity.setWorktypeclassId(map.get("id")+"");
+		entity.setWorktypeclassName(map.get("name")+"");
+		Dict dict = dictRepository.get(entity.getTrainingLevelId());
+		entity.setTrainingLevelName(dict.getName());
+		Serializable id = ostaEvalDemandWriteWorkRepository.save(entity);
+		return new Messager().put("id", id);
+	}
+
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaEvalDemandWriteWork entity) {		
+		ostaEvalDemandWriteWorkRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		ostaEvalDemandWriteWorkRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		ostaEvalDemandWriteWorkRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> updateApprovalNode(String[] ids, int node) {
+		boolean chackParm = checkParmByUpdateApprovalStatus(ids, node);
+		if (!chackParm) {
+			return new Messager().put("err", "errParm");
+		}
+		if (node==10) {
+			return this.sendApprovalNodeAndStatus(ids,node);
+		}
+		return new Messager().put("err", "接口调用异常");
+	}
+	
+	/**
+	 * 员工发送部门领导审批
+	 * @param string
+	 * @param node
+	 * @param status
+	 */
+	private Map<String, Object> sendApprovalNodeAndStatus(String[] ids, int node) {
+		boolean flag = false;
+		//状态设置为审批中
+		int status = 1;
+		int result = 0;
+		int errNum = 0;
+		for (int i = 0; i < ids.length; i++) {
+			flag = ostaEvalDemandWriteWorkRepository.beforeCheckUpdateApprovalStatus(ids[i]);
+			if (flag) {
+				result = ostaEvalDemandWriteWorkRepository.updateApprovalNode(ids[i],node);
+				if (result == 0) {errNum ++;}
+				ostaEvalDemandWriteWorkRepository.updateApprovalStatus(ids[i],status);
+			}	
+		}
+		return new Messager().put("errNum", errNum);
+		
+	}
+
+	/**
+	 * 校验提交审批参数
+	 * @param ids
+	 * @param node
+	 * @param status
+	 * @return
+	 */
+	private boolean checkParmByUpdateApprovalStatus(String[] ids, int node) {
+		if (ids!=null&&ids.length>0) {
+			for (int an : approvalNode) {
+				if (an==node) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Map<String, Object> deleteByIdsx(String[] ids) {
+		int errNum = 0;
+		if (ids!=null&&ids.length>0) {
+			boolean flag = false;
+			int result = 0;
+			int notAllowedToDelete = 0; 
+			for (String id : ids) {
+				flag = ostaEvalDemandWriteWorkRepository.beforeCheckDeleteByIdsx(id);
+				if (flag) {
+					try {
+						result = ostaEvalDemandWriteWorkRepository.deleteByIdx(id);
+						if (result==0) {
+							errNum++;
+						}
+					} catch (Exception e) {
+						errNum++;
+					}
+				}else {
+					notAllowedToDelete++;
+				}
+			}
+			return new Messager().put("errNum", errNum).put("notAllowedToDelete", notAllowedToDelete);
+		}
+		return new Messager().put("err", "errParm");
+	}
+
+	@Override
+	public Map<String, Object> loadAllGridByApprover(Condition condition) {
+		return ostaEvalDemandWriteWorkRepository.loadAllGridByApprover(condition);
+	}
+
+	@Override
+	public Map<String, Object> loadByApprover(String id) {
+		return ostaEvalDemandWriteWorkRepository.loadByApprover(id);
+	}
+
+	@Override
+	public Map<String, Object> approvalPass(String[] ids, String operType) {
+		boolean chackParm = checkParmByApproval(ids, operType);
+		if (!chackParm) {
+			return new Messager().put("err", "errParm");
+		}
+		int node = 1000;
+		boolean flag = false;
+		int result = 0;
+		int errNum = 0;
+		for (String id : ids) {
+			if ("BM".equals(operType)) {
+				node = 10;
+			}else if ("RL".equals(operType)) {
+				node = 20;
+			}else if ("LD".equals(operType)) {
+				node = 30;
+			}else if ("JDZ".equals(operType)) {
+				node = 40;
+			}
+			flag = ostaEvalDemandWriteWorkRepository.beforeApprovalPassCheck(id,node);
+			if (flag) {
+				//node+10下一节点值
+				result = ostaEvalDemandWriteWorkRepository.updateApprovalNodeAndStatus(id,node+10,1);
+				if (result==0) {
+					errNum++;
+				}
+			}
+		}
+		return new Messager().put("errNum", errNum);
+	}
+
+	@Override
+	public Map<String, Object> approvalNoPass(String[] ids, String operType) {
+		boolean chackParm = checkParmByApproval(ids, operType);
+		if (!chackParm) {
+			return new Messager().put("err", "errParm");
+		}
+		int node = 1000;
+		boolean flag = false;
+		int result = 0;
+		int errNum = 0;
+		for (String id : ids) {
+			if ("BM".equals(operType)) {
+				node = 10;
+			}else if ("RL".equals(operType)) {
+				node = 20;
+			}else if ("LD".equals(operType)) {
+				node = 30;
+			}else if ("JDZ".equals(operType)) {
+				node = 40;
+			}
+			flag = ostaEvalDemandWriteWorkRepository.beforeApprovalNoPassCheck(id,node);
+			if (flag) {
+				//node+10下一节点值
+				result = ostaEvalDemandWriteWorkRepository.updateApprovalNodeAndStatus(id,node,2);
+				if (result==0) {
+					errNum++;
+				}
+			}
+		}
+		return new Messager().put("errNum", errNum);
+	}
+	
+	private boolean checkParmByApproval(String[] ids, String operType) {
+		if (ids!=null&&ids.length>0&&operType!=null) {
+			for (int i = 0; i < OPERTYPES.length; i++) {
+				if (OPERTYPES[i].equals(operType)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
+}

@@ -1,0 +1,106 @@
+package com.insplatform.module.yearplan.repository;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yearplan.model.YearPlan;
+
+
+public interface YearPlanRepository extends BaseRepository<YearPlan>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGridByNeedApprove(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 获取可用的需求计划
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadUsableYearDemand(Condition condition);
+
+	/**
+	 * 判断是否可以删除该数据
+	 * @param id
+	 * @return
+	 */
+	boolean whetherItCanBeDeleted(String id);
+
+	/**
+	 * 发送审批前校验
+	 * @param id
+	 * @return
+	 */
+	boolean beforeSendApprovalCheck(String id);
+
+	/**
+	 * 修改审批状态
+	 * @param id
+	 * @param string
+	 * @return
+	 */
+	int updateState(String id, String state);
+
+	/**
+	 * 创建一个副本
+	 * @param id
+	 * @param user
+	 * @return
+	 */
+	Serializable createCopy(String id, CurrentUser user);
+
+	/**
+	 * 校验是否存在该年份
+	 * @param year
+	 * @return
+	 */
+	boolean beforeSaveCheckYear(int year);
+
+	/**
+	 * 获取本年度最新的年度计划
+	 * @param year
+	 * @return
+	 */
+	Map<String, Object> getTheLatestVersion(int year);
+	
+	/**
+	 * 获取本年度所有学习项目的总人数
+	 * @param yearMonthId
+	 * @return
+	 */
+	int getYearStudyPersonNumber(String yearMonthId);
+
+
+}

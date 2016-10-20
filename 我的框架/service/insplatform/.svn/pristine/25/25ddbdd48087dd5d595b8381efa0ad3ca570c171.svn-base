@@ -1,0 +1,147 @@
+package com.insplatform.module.training.scheme.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.training.scheme.model.TrainingScheme;
+import com.insplatform.module.training.scheme.repository.TrainingSchemeRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TrainingSchemeRepositoryImpl extends BaseRepositoryImpl<TrainingScheme> implements TrainingSchemeRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id,p.name as px_project_name, t.px_project, t.name, t.depname, t.depid,to_char(t.stat_time,'yyyy-mm-dd') as stat_time," +
+				"to_char(t.stop_time,'yyyy-mm-dd') as stop_time, to_char(t.enact_time,'yyyy-mm-dd') as enact_time, t.px_goal, " +
+				"t.px_taarget, t.px_time, t.px_way, t.file_name, t.file_path from px_training_scheme t left join PX_PROJECT p on t.px_project=p.id where 1=1";
+		if(condition.containsKey("name"))
+		{
+			sql+=" and t.name like ?";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("depname"))
+		{
+			sql+=" and t.depname like ?";
+			condition.put("depname", "%" + condition.get("depname") + "%" );
+		}
+		if(condition.containsKey("pxProject"))
+		{
+			sql+=" and p.name like ?";
+			condition.put("pxProject", "%" + condition.get("pxProject") + "%" );
+		}
+		sql+=" order by t.update_time desc";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_SCHEME t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.id, t.px_project, (select p.name from px_project p where p.id=t.px_project) as px_project_name, t.name," +
+				" t.depname, t.depid,to_char(t.stat_time,'yyyy-mm-dd') as stat_time,to_char(t.stop_time,'yyyy-mm-dd') as stop_time, " +
+				"to_char(t.enact_time,'yyyy-mm-dd') as enact_time, t.px_goal, t.px_taarget, t.px_time, t.px_way, t.file_name, t.file_path " +
+				"from px_training_scheme t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingScheme get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingScheme entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingScheme entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllChoose(Condition condition) {
+		String sql = "select t.id,p.name as px_project_name, t.name, t.depname from px_training_scheme t left join PX_PROJECT p on t.px_project=p.id where t.id not in (select training_scheme_id from PX_TRAINING_INFORM_ATTACHMENT)";
+		if(condition.containsKey("name"))
+		{
+			sql+=" and t.name like ?";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("depname"))
+		{
+			sql+=" and t.depname like ?";
+			condition.put("depname", "%" + condition.get("depname") + "%" );
+		}
+		if(condition.containsKey("pxProject"))
+		{
+			sql+=" and p.name like ?";
+			condition.put("pxProject", "%" + condition.get("pxProject") + "%" );
+		}
+		sql+=" order by t.update_time desc";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public Map<String, Object> loadAllGridByInform(Condition condition) {
+		
+		String sql = "select q.*,p.name as px_project_name from " +
+				"(select t.id, t.px_project, t.name, t.update_time, t.depname, t.depid,to_char(t.stat_time,'yyyy-mm-dd') as stat_time," +
+				"to_char(t.stop_time,'yyyy-mm-dd') as stop_time, to_char(t.enact_time,'yyyy-mm-dd') as enact_time, " +
+				"t.px_goal,t.px_taarget, t.px_time, t.px_way, t.file_name, t.file_path from px_training_scheme t " +
+				"where t.id in ( select training_scheme_id from PX_TRAINING_INFORM_ATTACHMENT where is_release = 'Y')) q " +
+				"left join PX_PROJECT p on q.px_project=p.id where 1=1";
+		if(condition.containsKey("name"))
+		{
+			sql+=" and q.name like ?";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("depname"))
+		{
+			sql+=" and q.depname like ?";
+			condition.put("depname", "%" + condition.get("depname") + "%" );
+		}
+		if(condition.containsKey("pxProject"))
+		{
+			sql+=" and p.name like ?";
+			condition.put("pxProject", "%" + condition.get("pxProject") + "%" );
+		}
+		sql+=" order by q.update_time desc";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- 基本spring配置 -->
+   	<import resource="classpath:/spring/core/context.xml"/>
+	
+	<!-- 数据库连接 -->
+	<import resource="classpath:/spring/core/database.xml"/>
+	
+	<!-- 事物管理 -->
+	<import resource="classpath:/spring/core/transaction.xml"/>
+	
+	<!-- aop -->
+	<import resource="classpath:/spring/core/aspect.xml"/>
+	
+	
+	<!-- 任务调度 -->	 
+	<import resource="classpath:/quartz/jobs/*"/>
+	<import resource="classpath:/quartz/scheduler.xml"/>
+	
+</beans>

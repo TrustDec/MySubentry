@@ -1,0 +1,74 @@
+package com.insplatform.module.everyday.repository.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.common.utils.pager.Pager;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.everyday.model.EverydaySetting;
+import com.insplatform.module.everyday.repository.EverydaySettingRepository;
+
+@Repository
+public class EverydaySettingRepositoryImpl extends BaseRepositoryImpl<EverydaySetting> implements EverydaySettingRepository {
+	@Override
+	public Map<String, Object> loadAll(Condition condition) {
+		List<Object> queryParams = new ArrayList<Object>();
+		String sql = "select t.*,(select count(1) from px_everyday_history eh where eh.SETTING_ID = t.id) has_delete from PX_EVERYDAY_SETTING t order by t.date_no desc";
+		return gridService.loadData(condition.getGridTransModel(), sql,
+				queryParams.toArray(), null);
+	}
+
+	@Override
+	public Map<String, Object> loadTodayExam(String date) {
+		String sql = "select t.* from PX_EVERYDAY_SETTING t where date_no = '" + date + "'";
+		return jdbcAssistant.queryOne(sql);
+	}
+
+	@Override
+	public Map<String, Object> addCurrentRecourse(String userId, String settingId,
+			String myAnswer, String isRight) {
+		String sql = "insert into px_everyday_history values('"+TextUtil.getUUID()+"','" + settingId + "','" + userId + "','" + myAnswer + "','" + isRight + "')";
+		jdbcAssistant.update(sql);
+		sql = "select t.date_no from PX_EVERYDAY_SETTING t where t.id = '" + settingId + "'";
+		return jdbcAssistant.queryOne(sql);
+	}
+
+	@Override
+	public Map<String, Object> checkHasTodayExam(String userId, String date) {
+		String sql = "select count(*) as num from PX_EVERYDAY_SETTING t where date_no = '" + date + "'";
+		String num = jdbcAssistant.queryOne(sql).get("num") + "";
+		if("0".equals(num))
+		{
+			return jdbcAssistant.queryOne(sql);//今日没有设置每日一题
+		}
+		else{
+			sql = "select t.id from PX_EVERYDAY_SETTING t where date_no = '" + date + "'";
+			String id = jdbcAssistant.queryOne(sql).get("id") + "";
+			sql = "select count(*) as num from px_everyday_history t where setting_id = '" + id + "' and t.user_id = '" + userId + "'";
+			return jdbcAssistant.queryOne(sql);
+		}
+	}
+
+	@Override
+	public Map<String, Object> loadMyEverydayExam(String userId, String idx) {
+		Pager<Map<String, Object>> pager = new Pager<Map<String,Object>>(0, Integer.parseInt(idx), 10);
+		String sql = "select p.* from PX_EVERYDAY_SETTING p where p.id in " +
+				"(select t.setting_id from px_everyday_history t where user_id = '" + userId + "') order by date_no desc";
+		return jdbcAssistant.queryAsPager(sql, pager).toMap();
+	}
+
+	@Override
+	public Map<String, Object> loadMyEverydayExamInfo(String userId, String id) {
+		String sql = "select eh.*,es.date_no,es.question_title,es.question_type,es.img,es.question_difficulty," +
+				"es.QUESTION_ANSWER,u.name user_name from px_everyday_setting es " +
+				"join px_everyday_history eh on(es.id = eh.setting_id) join sys_user u " +
+				"on(eh.user_id = u.id) where 1=1 and eh.user_id = '" + userId + "' and " +
+				"eh.setting_id = '" + id + "'";
+		return jdbcAssistant.queryOne(sql);
+	}
+}

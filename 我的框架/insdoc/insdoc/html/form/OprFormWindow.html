@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>平台使用手册</title>
+<link href="../common/include.css" rel="stylesheet" />
+</head>
+<body id="bodyId">
+<h1>OprFormWindow</h1> 
+<h3>介绍</h3>
+<p>
+crudgrid，新增，编辑，查看表单
+</p>
+<img src="" />
+<h3>示例代码</h3>
+<pre class="brush:js;">
+</pre>
+<h3>类名</h3>
+<code>Ins.form.OprFormWindow</code>
+<h4>别名</h4>
+<code>alias : ["widget.ins_form"],</code>
+<h3>继承自</h3>
+<code>Ins.window.Window</code>
+<h3>构造对象</h3>
+<pre class="brush:js;">
+var me = this;
+
+//增删改查表格窗体
+var formWindow = Ext.create('Ins.form.OprFormWindow',{
+	fields : [{
+		name: 'id',
+		xtype: 'ins_hiddenfield'
+	},{
+		name: 'name',
+		text: '分类列表',
+		allowBlank: false
+	},{
+		name: 'code',
+		text: '分类编码',
+		allowBlank: false
+	},{
+		text: '备注',
+		name: 'remark',
+		xtype: 'ins_textareafield',
+		width: 465,					
+		colspan: 2					
+	}],			
+	onBeforeHide: function(obj){
+		obj.getForm().setValue('id', '');
+		obj.getForm().reset();
+	}
+});
+me.formWindow = formWindow;
+
+//右键菜单
+var menu = Ext.create('Ins.menu.Menu',{
+	items: [{
+		text: '编辑',
+		iconCls: 'icon-edit',
+		hidden: !App.checkCurrentUserOperate('SYSTEM_DICT_CLASSIFY_UPDATE'),
+		handler: function(){
+			me.formWindow.showAsEditMode({
+				loadUrl: CTX_PATH + '/system/dict/classify/load?nolog=y',
+				updateUrl: CTX_PATH + '/system/dict/classify/update',
+				onBeforeSave: function(form){
+					if(me.checkNameAndCode(form, 'update')){
+						TopMessage.warn('角色名称或编码重复，请重新设置！');
+						return false;
+					}
+					return true;
+				},							
+				params: {
+					id: me.record.data.id
+				},
+				success: function(data){
+					dataView.getStore().reload();
+				}
+			});
+		}
+	},{
+		text: '删除',
+		hidden: !App.checkCurrentUserOperate('SYSTEM_DICT_CLASSIFY_DELETE'),
+		iconCls: 'icon-delete',
+		handler: function(){	
+			//将数据字典表格设为不可用
+			var dictGridClass = App.getClass('App.sys.system.dict.DictGrid');
+			dictGridClass.view.setDisabled(true);
+			
+			Messager.send({
+				  confirm: "确认要删除该节点吗？",					  
+				  url: CTX_PATH + '/system/dict/classify/delete',
+				  data: {
+					  id : me.record.data.id
+				  },
+				  onSuccess:function(data){							  	 
+					  dataView.getStore().reload();
+					  TopMessage.info("操作成功！");
+				  }
+			});
+		}
+	},{
+		text: '查看明细',
+		hidden: !App.checkCurrentUserOperate('SYSTEM_DICT_CLASSIFY_VIEW'),
+		iconCls: 'icon-view',
+		handler: function(){
+			me.formWindow.showAsViewMode({
+				loadUrl: CTX_PATH + '/system/dict/classify/load',
+				params: {
+					id: me.record.data.id
+				}
+			});
+		}
+	}]
+});
+me.menu = menu;
+</pre>
+<h3>属性</h3>
+<table class="table table-bordered table-striped table-hover table-hover">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>属性名</th><th>属性值类型</th><th>描述</th><th>默认值</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>fields</td>
+<td>Object[]</td>
+<td>表单字段数组</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>url</td>
+<td>String</td>
+<td>后台交互url地址</td>
+<td>null</td>
+</tr>
+<tr>
+<td>defaultFormFieldWidth</td>
+<td>Number</td>
+<td>默认表单字段宽度</td>
+<td>230</td>
+</tr>
+<tr>
+<td>columnSize</td>
+<td>Number</td>
+<td>表单列数</td>
+<td>2</td>
+</tr>
+<tr>
+<td>autoMessage</td>
+<td>boolean</td>
+<td>自动发送操作成功的消息</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+
+<h3>方法</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>方法名称</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>showAsAddMode(cfg)</td>
+<td>以新增模式显示</td>
+</tr>
+<tr>
+<td>void</td>
+<td>showAsEditMode(cfg)</td>
+<td>以编辑模式显示</td>
+</tr>
+<tr>
+<td>form</td>
+<td>getForm()</td>
+<td>获取表单对象</td>
+</tr>
+<tr>
+<td>void</td>
+<td>getField(name)</td>
+<td>获取表单的字段对象</td>
+</tr>
+<tr>
+<td>void</td>
+<td>setValue(name, value)</td>
+<td>设置表单字段值</td>
+</tr>
+<tr>
+<td>Object</td>
+<td>getValue(name)</td>
+<td>获取表单字段值</td>
+</tr>
+<tr>
+<td>void</td>
+<td>oprRecord(form)</td>
+<td>操作记录</td>
+</tr>
+</tbody>
+</table>
+
+<h3>事件</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>事件名称</th><th>绑定方法</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>success</td>
+<td>function(){}</td>
+<td>操作成功后调用的方法</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>onBeforeSave</td>
+<td>function(form){}</td>
+<td>保存之前的事件，返回true继续往下执行</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>onBeforeShow</td>
+<td>function(form){}</td>
+<td>打开前调用的，返回true继续往下执行</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>onBeforeHide</td>
+<td>function(form){}</td>
+<td>窗口影藏时调用的事件，返回true继续往下执行</td>
+</tr>
+<tr>
+<td>void</td>
+<td>setValue("age","18")</td>
+<td>设置值</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<script type="text/javascript" src="../common/include.js"></script>
+</body>
+</html>

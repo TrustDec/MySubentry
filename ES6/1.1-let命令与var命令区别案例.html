@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>let命令与var命令案例区别</title>
+</head>
+<body>
+	<button>执行let/var</button>
+	
+	<script>
+		var button=document.getElementsByTagName('button')[0];
+		var a=[];
+		/*for(var i = 0;i<5;i++){
+			a[i]=function(){
+				console.log(i);
+			}
+		}*/
+		// 变量i是var声明的,在全局范围内都有效,所以每次循环,i的值都会覆盖旧值,导致最后输出的都是i循环完的值
+		for(let i = 0;i<5;i++){
+			a[i]=function(){
+				console.log(i);
+			}
+		}
+		var p=0;
+		// 变量i是var声明的,只在当前循环有效,每次的循环,i都是一个新的变量,最后输出6
+		button.onclick=function(){
+			a[p]();
+			p<4?p++:p=0;
+		}
+	</script>
+</body>
+</html>

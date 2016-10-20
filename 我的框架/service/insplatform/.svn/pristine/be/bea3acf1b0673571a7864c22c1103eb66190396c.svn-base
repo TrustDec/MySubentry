@@ -1,0 +1,140 @@
+package com.insplatform.module.osta.register.demand.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.register.demand.model.OstaRegDemand;
+import com.insplatform.module.osta.register.demand.service.OstaRegDemandService;
+
+@Controller
+@RequestMapping("/px/ostaregdemand")
+public class OstaRegDemandController extends BaseController{
+	
+	@Autowired
+	private OstaRegDemandService ostaRegDemandService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"year","title","release","createUserName","operType");
+		return ostaRegDemandService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(ostaRegDemandService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(ostaRegDemandService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(OstaRegDemand ostaregdemand, HttpServletRequest request){
+		CurrentUser user = this.getCurrentUser(request);
+		ostaregdemand.setCreateUserId(user.getId());
+		ostaregdemand.setCreateUserName(user.getName());
+		Date date = new Date();
+		ostaregdemand.setCreateTime(date);
+		ostaregdemand.setUpdateTime(date);
+		ostaregdemand.setRelease("N");
+		ostaregdemand.setWriteAble("N");
+		String resultId = ostaRegDemandService.save(ostaregdemand)+"";
+		return this.getMessager().success().put("resultId", resultId);
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		OstaRegDemand ostaevaldemand = ostaRegDemandService.get(id);
+		this.bindObject(request, ostaevaldemand);
+		ostaevaldemand.setUpdateTime(new Date());
+		ostaRegDemandService.update(ostaevaldemand);
+		return this.getMessager().success().put("resultId", id);
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		Map<String, Object> map = ostaRegDemandService.deleteByIdsx(ids);
+		return this.getMessager().success().putAllMap(map);
+	}
+	
+	/**
+	 * 修改发布状态
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/updateRelease")	
+	public @ResponseBody Map<String, Object> updateRelease(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		String value = request.getParameter("value");
+		Map<String, Object> map = ostaRegDemandService.updateRelease(ids,value);
+		return this.getMessager().success().putAllMap(map);
+	}
+	
+	/**
+	 * 修改是否可填报
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/updateWriteAble")	
+	public @ResponseBody Map<String, Object> updateWriteAble(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		String value = request.getParameter("value");
+		Map<String, Object> map = ostaRegDemandService.updateWriteAble(ids,value);
+		return this.getMessager().success().putAllMap(map);
+	}
+
+	
+}

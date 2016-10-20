@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- metadata-complete="true" web.xml文件不去扫描注解 -->
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	                    http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0" metadata-complete="false">
+	
+	<display-name>insplatform</display-name>
+	
+	<!-- 加载spring配置文件 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:/spring/include.xml</param-value>
+	</context-param>
+	
+	<!-- 编码过滤 utf-8 -->
+	<filter>
+		<description>encoding</description>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping> 	
+
+	<!-- ContextLoaderListener监听， 自动装配ApplicationContext的配置信息 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<!-- spring mvc 配置 -->
+	<servlet>
+		<servlet-name>applicationServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:/spring/mvc/servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>applicationServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	<!-- session超时时间 -->
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
+
+	<!-- 错误处理页面 -->
+	<error-page>
+		<error-code>404</error-code>
+		<location>/errorHandler/404</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/errorHandler/500</location>
+	</error-page>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/errorHandler/400</location>
+	</error-page>
+	
+	<!-- jsp去空行 
+		也可在单独页面配置  <%@ page trimDirectiveWhitespaces="true" %>-->
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<trim-directive-whitespaces>true</trim-directive-whitespaces>
+		</jsp-property-group>
+	</jsp-config>	
+	
+	<!-- 默认首页
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>	
+	-->
+	
+</web-app> 

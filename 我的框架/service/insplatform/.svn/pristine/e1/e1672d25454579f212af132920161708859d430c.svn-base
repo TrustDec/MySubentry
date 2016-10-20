@@ -1,0 +1,124 @@
+package com.insplatform.module.examiner.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.examiner.model.Examiner;
+import com.insplatform.module.examiner.repository.ExaminerRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class ExaminerRepositoryImpl extends BaseRepositoryImpl<Examiner> implements ExaminerRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id,t.id_card,t.sex,t.technics_title,t.certificate_num,t.work_unit,t.phone,t.work_type,t.work_type_name," +
+				"t.remark,t.user_id,t.create_user_id,t.create_user_name,t.create_time,t.update_time,t.name," +
+				"(select name from sys_dict where id=t.edu) as edu,(select name from sys_dict where id=t.levels) as levels " +
+				" from PX_EXAMINER t where 1=1 ";
+		
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		
+		if(condition.containsKey("workUnit")){
+			sql += " and t.work_unit like ? ";
+			condition.put("workUnit", "%" + condition.get("workUnit") + "%" );
+		}
+		
+		if(condition.containsKey("workType")){
+			sql += " and t.work_type = ?";
+			condition.put("workType", condition.get("workType") );
+		}
+		
+		if(condition.containsKey("levels")){
+			sql += " and t.levels=? ";
+			condition.put("levels", condition.get("levels") );
+		}
+		
+		if(condition.containsKey("technicsTitle")){
+			sql += " and t.technics_title = ? ";
+			condition.put("technicsTitle", condition.get("technicsTitle") );
+		}
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_EXAMINER t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_EXAMINER t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Examiner get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Examiner entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Examiner entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadUserInfo(Condition condition) {
+		String sql = "select t.id,t.name,t.id_card,t.sex,t.edu,t.phone," +
+				"(select WM_CONCAT(name) from SYS_ORGANIZATION where is_company = 'Y' and rownum = 1 start with id = o.id connect by prior parent_id = id) as company_name,"+
+				"(select WM_CONCAT(id) from SYS_ORGANIZATION where is_company = 'Y' and rownum = 1 start with id = o.id connect by prior parent_id = id) as company_id " +
+				" from SYS_USER t left join SYS_USER_ORG_REL uo on t.id = uo.user_id left join SYS_ORGANIZATION o on uo.organization_id = o.id WHERE 1=1";
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		
+		if(condition.containsKey("account")){
+			sql += " and t.account = ?";
+			condition.put("account", condition.get("account") );
+		}
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+}

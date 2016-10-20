@@ -1,0 +1,87 @@
+package com.insplatform.module.classroom.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.classroom.model.Classroom;
+import com.insplatform.module.classroom.repository.ClassroomRepository;
+import com.insplatform.module.classroom.service.ClassroomService;
+
+@Service
+public class ClassroomServiceImpl extends BaseServiceImpl<Classroom> implements ClassroomService{
+	
+	@Autowired
+	private ClassroomRepository classroomRepository;
+
+	@Override
+	public BaseRepository<Classroom> getRepository() {		
+		return classroomRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(
+			Condition condition) {			
+		return classroomRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(
+			Condition condition) {			
+		return classroomRepository.loadAllList( condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return classroomRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Classroom get(Serializable id) {		
+		return classroomRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Classroom classroom ,HttpServletRequest request) {	
+		return classroomRepository.save(classroom);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Classroom classroom,HttpServletRequest request) {		
+		classroomRepository.update(classroom);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		classroomRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		classroomRepository.deleteByIds(ids);
+	}
+
+}

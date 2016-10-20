@@ -1,0 +1,262 @@
+package com.insplatform.module.accidentcase.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_ACCIDENT_CASE")
+public class AccidentCase implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String name;
+	private String createUserName;
+	private java.util.Date updateTime;
+	private String digest;
+	private String companyName;
+	private double injuryNumber;
+	private double deathNumber;
+	private double financialLoss;
+	private java.util.Date time;
+	private String address;
+	private String type;
+	private String nature;
+	private String survey;
+	private String situation;
+	private String addressSituation;
+	private String onsetCourse;
+	private String disasterRelief;
+	private String immediateCause;
+	private String remoteCause;
+	private String reasonAnalysis;
+	private String handlingSuggestion;
+	private String result;
+	private String moral;
+	private String measure;
+	private String createUserId;
+	private java.util.Date createTime;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setDigest(String value) {
+		this.digest = value;
+	}
+	
+	public String getDigest() {
+		return this.digest;
+	}
+	
+	public void setCompanyName(String value) {
+		this.companyName = value;
+	}
+	
+	public String getCompanyName() {
+		return this.companyName;
+	}
+	
+	public void setInjuryNumber(double value) {
+		this.injuryNumber = value;
+	}
+	
+	public double getInjuryNumber() {
+		return this.injuryNumber;
+	}
+	
+	public void setDeathNumber(double value) {
+		this.deathNumber = value;
+	}
+	
+	public double getDeathNumber() {
+		return this.deathNumber;
+	}
+	
+	public void setFinancialLoss(double value) {
+		this.financialLoss = value;
+	}
+	
+	public double getFinancialLoss() {
+		return this.financialLoss;
+	}
+	
+	public void setTime(java.util.Date value) {
+		this.time = value;
+	}
+	
+	public java.util.Date getTime() {
+		return this.time;
+	}
+	
+	public void setAddress(String value) {
+		this.address = value;
+	}
+	
+	public String getAddress() {
+		return this.address;
+	}
+	
+	public void setType(String value) {
+		this.type = value;
+	}
+	
+	public String getType() {
+		return this.type;
+	}
+	
+	public void setNature(String value) {
+		this.nature = value;
+	}
+	
+	public String getNature() {
+		return this.nature;
+	}
+	
+	public void setSurvey(String value) {
+		this.survey = value;
+	}
+	
+	public String getSurvey() {
+		return this.survey;
+	}
+	
+	public void setSituation(String value) {
+		this.situation = value;
+	}
+	
+	public String getSituation() {
+		return this.situation;
+	}
+	
+	public void setAddressSituation(String value) {
+		this.addressSituation = value;
+	}
+	
+	public String getAddressSituation() {
+		return this.addressSituation;
+	}
+	
+	public void setOnsetCourse(String value) {
+		this.onsetCourse = value;
+	}
+	
+	public String getOnsetCourse() {
+		return this.onsetCourse;
+	}
+	
+	public void setDisasterRelief(String value) {
+		this.disasterRelief = value;
+	}
+	
+	public String getDisasterRelief() {
+		return this.disasterRelief;
+	}
+	
+	public void setImmediateCause(String value) {
+		this.immediateCause = value;
+	}
+	
+	public String getImmediateCause() {
+		return this.immediateCause;
+	}
+	
+	public void setRemoteCause(String value) {
+		this.remoteCause = value;
+	}
+	
+	public String getRemoteCause() {
+		return this.remoteCause;
+	}
+	
+	public void setReasonAnalysis(String value) {
+		this.reasonAnalysis = value;
+	}
+	
+	public String getReasonAnalysis() {
+		return this.reasonAnalysis;
+	}
+	
+	public void setHandlingSuggestion(String value) {
+		this.handlingSuggestion = value;
+	}
+	
+	public String getHandlingSuggestion() {
+		return this.handlingSuggestion;
+	}
+	
+	public void setResult(String value) {
+		this.result = value;
+	}
+	
+	public String getResult() {
+		return this.result;
+	}
+	
+	public void setMoral(String value) {
+		this.moral = value;
+	}
+	
+	public String getMoral() {
+		return this.moral;
+	}
+	
+	public void setMeasure(String value) {
+		this.measure = value;
+	}
+	
+	public String getMeasure() {
+		return this.measure;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+}

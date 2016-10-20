@@ -1,0 +1,63 @@
+package com.insplatform.system.menu.repository;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.map.Condition;
+import com.insplatform.system.menu.model.Menu;
+
+public interface MenuRepository extends BaseRepository<Menu>{
+	
+	/**
+	 * 加载数据
+	 * @param condition
+	 * @return
+	 */
+	List<Map<String, Object>> loadSysTreeData(Map<String, Object> condition);
+	
+	/**
+	 * 加载菜单操作数据
+	 * @param condition
+	 * @return
+	 */
+	List<Map<String, Object>> loadMgtTreeData(HttpServletRequest request, Condition condition);	
+	
+	/**
+	 * 加载所有操作编码集合
+	 * @return
+	 */
+	List<String> loadAllOperateCode();
+	
+	/**
+	 * 加载所有的父节点
+	 * @param string
+	 * @return
+	 */
+	List<Map<String, Object>> loadSupersByIdAsOracle(String id, String type);
+	
+	/**
+	 * 获取子项，不包含子项的子项
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getChildren(Serializable id);
+	
+	/**
+	 * 加载所有子节点以及子功能（递归，效率低）
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> loadChildrenMenuOpers(String id);
+	
+	/**
+	 * 根据资源路径加载菜单
+	 * @param resourcePath
+	 * @return
+	 */
+	Map<String, Object> loadMenuByResourcePath(String resourcePath);
+	
+}

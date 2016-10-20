@@ -1,0 +1,139 @@
+package com.insplatform.module.classroom.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_CLASSROOM")
+public class Classroom implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String name;
+	private String address;
+	private String buildNo;
+	private int buildFloor;
+	private int deskNum;
+	private int personNum;
+	private String remark;
+	private String isDelete = "N";
+
+	
+	public String getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(String isDelete) {
+		this.isDelete = isDelete;
+	}
+
+	public String getBuildNo() {
+		return buildNo;
+	}
+
+	public void setBuildNo(String buildNo) {
+		this.buildNo = buildNo;
+	}
+
+	public int getBuildFloor() {
+		return buildFloor;
+	}
+
+	public void setBuildFloor(int buildFloor) {
+		this.buildFloor = buildFloor;
+	}
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setAddress(String value) {
+		this.address = value;
+	}
+	
+	public String getAddress() {
+		return this.address;
+	}
+	
+	 
+
+	public int getDeskNum() {
+		return deskNum;
+	}
+
+	public void setDeskNum(int deskNum) {
+		this.deskNum = deskNum;
+	}
+
+	public int getPersonNum() {
+		return personNum;
+	}
+
+	public void setPersonNum(int personNum) {
+		this.personNum = personNum;
+	}
+
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	
+}

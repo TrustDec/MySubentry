@@ -1,0 +1,189 @@
+package com.insplatform.module.classroom.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insplatform.module.classroom.model.Classroom;
+import com.insplatform.module.classroom.model.ClassroomEquipment;
+import com.insplatform.module.classroom.service.ClassroomEquipmentService;
+import com.insplatform.module.classroom.service.ClassroomService;
+
+@Controller
+@RequestMapping("/px/classroom")
+public class ClassroomController extends BaseController {
+
+	@Autowired
+	private ClassroomService classroomService;
+
+	@Autowired
+	private ClassroomEquipmentService classroomServiceEquipmentService;
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody
+	Map<String, Object> loadAllGrid(HttpServletRequest request,
+			HttpServletResponse response) {
+		return classroomService.loadAllGrid(this.getCondition(request, "name",
+				"address"));
+	}
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody
+	Map<String, Object> loadAllList(HttpServletRequest request,
+			HttpServletResponse response) {
+		return this.getMessager().success()
+				.data(classroomService.loadAllList(this.getCondition(request)));
+	}
+
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody
+	Map<String, Object> load(@RequestParam("id") String id) {
+		return this.getMessager().success().data(classroomService.load(id));
+	}
+
+	/**
+	 * 加载设备数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/loadEquipment")
+	public @ResponseBody
+	Map<String, Object> loadEquipment(HttpServletRequest request) {
+		return classroomServiceEquipmentService.loadAllGrid(this.getCondition(
+				request, "id"));
+	}
+
+	/**
+	 * 新增
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")
+	public @ResponseBody
+	Map<String, Object> add(Classroom classroom, HttpServletRequest request) {
+		classroom.setCreateUserId(this.getCurrentUser(request).getId());
+		classroom.setCreateUserName(this.getCurrentUser(request).getName());
+		Date date = new Date();
+		classroom.setCreateTime(date);
+		classroom.setUpdateTime(date);
+		classroomService.save(classroom, request);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 编辑
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")
+	public @ResponseBody
+	Map<String, Object> update(@RequestParam("id") String id,
+			HttpServletRequest request) {
+		Classroom classroom = classroomService.get(id);
+		this.bindObject(request, classroom);
+		classroom.setUpdateTime(new Date());
+		classroomService.update(classroom, request);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 删除教室
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")
+	public @ResponseBody
+	Map<String, Object> delete(HttpServletRequest request) {
+		String[] ids = this.getSelectedItems(request);
+		for (String nid : ids) {
+			Classroom classroom = classroomService.get(nid);
+			this.bindObject(request, classroom);
+			classroom.setIsDelete("Y");
+			classroom.setUpdateTime(new Date());
+			classroomService.update(classroom, request);
+		}
+		classroomServiceEquipmentService.deleteByClassroomIds(ids);
+
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 加载单条教室设备数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/loadOneEquip")
+	public @ResponseBody
+	Map<String, Object> loadOneEquip(@RequestParam("id") String id) {
+		return this.getMessager().success().data(classroomServiceEquipmentService.load(id));
+	}
+
+	
+	/**
+	 * 新增教室设备
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/addEquip")
+	public @ResponseBody
+	Map<String, Object> addEquip(ClassroomEquipment classroomEquipment, HttpServletRequest request) {
+
+		if(TextUtil.isNotEmpty(classroomEquipment.getId())){
+			classroomServiceEquipmentService.update(classroomEquipment);
+		}else{
+			classroomServiceEquipmentService.save(classroomEquipment);
+		}		
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 删除设备
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/deleteEquip")
+	public @ResponseBody
+	Map<String, Object> deleteEquip(HttpServletRequest request) {
+		String[] ids = this.getSelectedItems(request);
+		classroomServiceEquipmentService.deleteByEuqipIds(ids);
+
+		return this.getMessager().success();
+	}
+
+}

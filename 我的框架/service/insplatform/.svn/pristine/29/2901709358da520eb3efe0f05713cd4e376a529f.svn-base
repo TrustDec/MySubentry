@@ -1,0 +1,27 @@
+package com.insplatform.module.constant;
+
+import java.io.File;
+
+import com.insframework.system.context.App;
+
+/**
+ * 索引文件路径
+ * @author Administrator
+ *
+ */
+public enum LuceneIndex {
+	
+	COURSE_INDEX(App.FILE_SYS + File.separator + "index" + File.separator + "course"),
+	ARTICLE_INDEX(App.FILE_SYS + File.separator + "index" + File.separator + "article");
+	
+	private final String value;	
+	
+	LuceneIndex(String value) {
+        this.value = value;
+    }
+    
+    public String getValue() {
+        return value;
+    }	
+
+}

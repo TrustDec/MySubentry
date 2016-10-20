@@ -1,0 +1,132 @@
+package com.insplatform.module.subcompanymontharrange.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.subcompanymontharrange.model.SubcompanyMonthArrange;
+import com.insplatform.module.subcompanymontharrange.repository.SubcompanyMonthArrangeRepository;
+import com.insplatform.system.user.service.UserBizDataAuthzService;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class SubcompanyMonthArrangeRepositoryImpl extends BaseRepositoryImpl<SubcompanyMonthArrange> implements SubcompanyMonthArrangeRepository{
+
+	
+	@Autowired
+	private UserBizDataAuthzService userBizDataAuthzService;
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = " select  a.id,a.pxyear,a.pxmonth,a.pxproject_id,a.pxproject,a.pxnum,a.pxclassroom,a.remark,a.approval," +
+				     " b.px_person_classify_name as pxobject ,to_char(a.bg_time,'yyyy-MM-dd') bg_time,to_char(a.ed_time,'yyyy-MM-dd') ed_time "+
+	                 " from px_subcompany_month_arrange a  " +
+	                 " left join px_project b on a.pxproject_id=b.id " +
+	                 " left join V_SYS_USER_INFO c on c.id=a.create_user_id where 1=1 " ;
+		if (condition.containsKey("pxproject")) {
+			sql += " and a.pxproject like ? ";
+			condition.put("pxproject", "%" + condition.get("pxproject") + "%");
+		}
+		if (condition.containsKey("pxclassroom")) {
+			sql += " and a.pxclassroom like ? ";
+			condition.put("pxclassroom", "%" + condition.get("pxclassroom") + "%");
+		}
+		
+		sql = userBizDataAuthzService.buildUserBizDataAuthzUserSql(sql, "a.create_user_id", condition.getCurrentUser());
+	                 
+	    sql += " order by a.pxyear desc,a.pxmonth desc ";	
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_SUBCOMPANY_MONTH_ARRANGE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = " select id,pxyear,pxmonth,pxproject,pxnum,pxproject_id,pxclassroom,remark,approval, " +
+                     " to_char(bg_time,'yyyy-MM-dd') bg_time,to_char(ed_time,'yyyy-MM-dd') ed_time " +
+                     " from PX_SUBCOMPANY_MONTH_ARRANGE where id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	@Override
+	public Map<String, Object> loadApprovalCheckIds(String id) {	
+		String sql = " select id,pxyear,pxmonth,pxproject,pxnum,pxproject_id,pxclassroom,remark,approval, " +
+                     " to_char(bg_time,'yyyy-MM-dd') bg_time,to_char(ed_time,'yyyy-MM-dd') ed_time " +
+                     " from PX_SUBCOMPANY_MONTH_ARRANGE where 1=1 and approval='0' and id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	@Override
+	public Map<String, Object> loadAllAppGrid(Condition condition) {	
+		String sql = " select  a.id,a.pxyear,a.pxmonth,a.pxproject_id,a.pxproject,a.pxnum,a.pxclassroom,a.remark,a.approval,c.company_name, " +
+				     " b.px_person_classify_name as pxobject ,to_char(a.bg_time,'yyyy-MM-dd') bg_time,to_char(a.ed_time,'yyyy-MM-dd') ed_time "+
+	                 " from px_subcompany_month_arrange a  " +
+	                 " left join px_project b on a.pxproject_id=b.id " +
+	                 " left join V_SYS_USER_INFO c on c.id=a.create_user_id where 1=1 " ;
+		if (condition.containsKey("pxproject")) {
+			sql += " and a.pxproject like ? ";
+			condition.put("pxproject", "%" + condition.get("pxproject") + "%");
+		}
+		if (condition.containsKey("pxclassroom")) {
+			sql += " and a.pxclassroom like ? ";
+			condition.put("pxclassroom", "%" + condition.get("pxclassroom") + "%");
+		}
+		if (condition.containsKey("companyName")) {
+			sql += " and c.company_name like ? ";
+			condition.put("companyName", "%" + condition.get("companyName") + "%");
+		}
+		             
+	    sql += " order by a.pxyear desc,a.pxmonth desc ";	
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public SubcompanyMonthArrange get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(SubcompanyMonthArrange entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(SubcompanyMonthArrange entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

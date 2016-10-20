@@ -1,0 +1,102 @@
+package com.insplatform.module.testpaper.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.testpaper.model.TestPaperRegulation;
+import com.insplatform.module.testpaper.repository.TestPaperRegulationRepository;
+import com.insplatform.module.testpaper.service.TestPaperRegulationService;
+
+@Service
+public class TestPaperRegulationServiceImpl extends BaseServiceImpl<TestPaperRegulation> implements TestPaperRegulationService{
+	
+	@Autowired
+	private TestPaperRegulationRepository testPaperRegulationRepository;
+
+	@Override
+	public BaseRepository<TestPaperRegulation> getRepository() {		
+		return testPaperRegulationRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return testPaperRegulationRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return testPaperRegulationRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return testPaperRegulationRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TestPaperRegulation get(Serializable id) {		
+		return testPaperRegulationRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TestPaperRegulation entity) {	
+		return testPaperRegulationRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TestPaperRegulation entity) {		
+		testPaperRegulationRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		testPaperRegulationRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		testPaperRegulationRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadKpointAllList(Condition condition) {
+		// TODO Auto-generated method stub
+		return testPaperRegulationRepository.loadKpointAllList(condition);
+	}
+
+	@Override
+	public String findCheckSava(Condition condition) {
+		// TODO Auto-generated method stub
+		return testPaperRegulationRepository.findCheckSava(condition);
+	}
+
+	@Override
+	public void delete(String[] ids) {
+		testPaperRegulationRepository.delete(ids);
+		
+	}
+
+}

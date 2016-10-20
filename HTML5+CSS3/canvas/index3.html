@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>绘制无填充矩形</title>
+	<style>
+		canvas{border:1px solid red;}
+	</style>
+</head>
+<body>
+<button onclick="a()">黑色描边</button>
+<button onclick="b()">渐变描边</button>
+	<canvas id="myId" width="300" height="300"></canvas>
+	<script>
+		var myId=document.getElementById('myId');
+		var xd=myId.getContext("2d");
+		
+		function a(){
+			xd.fillStyle="green";
+			xd.lineWidth=5;
+			xd.fillRect(50,50,200,200);
+			xd.strokeStyle="yellow";		//描边的颜色
+			xd.strokeRect(0,0,100,100);		//描边的位置及大小			
+		}
+		function b(){
+			var gradient=xd.createLinearGradient(0,0,300,0);
+			gradient.addColorStop(0,"#ff0000");
+			gradient.addColorStop(0.5,"#00ff00");
+			gradient.addColorStop(1,"#0000ff");
+			xd.strokeStyle=gradient;		//描边的颜色
+			xd.lineWidth=15;
+			xd.strokeRect(30,30,100,100);		//描边的位置及大小			
+		}
+	</script>
+</body>
+</html>

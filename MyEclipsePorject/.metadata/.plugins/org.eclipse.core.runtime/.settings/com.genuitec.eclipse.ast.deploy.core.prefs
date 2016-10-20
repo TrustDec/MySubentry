@@ -1,0 +1,13 @@
+eclipse.preferences.version=1
+myeclipseTomcatServer.EducationSystem.IEARProjectName=
+myeclipseTomcatServer.EducationSystem.altContextRoot=
+myeclipseTomcatServer.EducationSystem.contextRoot=/EducationSystem
+myeclipseTomcatServer.EducationSystem.deployIsOverProject=false
+myeclipseTomcatServer.EducationSystem.deploymentPath=F\:\\MyEclipsePorject\\.metadata\\.me_tcat\\webapps\\EducationSystem
+myeclipseTomcatServer.EducationSystem.isDeployed=true
+myeclipseTomcatServer.EducationSystem.isExploded=true
+myeclipseTomcatServer.EducationSystem.isUptoDate=true
+myeclipseTomcatServer.EducationSystem.noFileCopy=false
+myeclipseTomcatServer.EducationSystem.shouldBackup=false
+myeclipseTomcatServer.EducationSystem.shouldOverwrite=false
+myeclipseTomcatServer.EducationSystem.type=WebDeployment

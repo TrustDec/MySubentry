@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="js/jquery221.js"></script>
+</head>
+<body>
+<div title="123" class="box">div1</div>
+<!-- <div>div2 <p>12</p></div> -->
+<p>ppppppppppppppppp</p>
+<div id="div"><h3>45454545445</h3>
+<h3>23423423</h3>
+<h3>234</h3>
+<h3>56</h3>
+</div>
+	<script>
+
+		/*包含h3的#div,并且下标是1的h3
+		$("#div").find("h3").eq(1).css('background','green');*/
+		/*上一个
+		$("p").prev().css('background','green');*/
+		/*下一个
+		$("div").next().css('background','red');*/
+		/*包含has()
+		$("div").has("p").css('background',"red");*/
+		/*不过滤所指定的
+		$("div").not(".box").css('background',"red");*/
+		/*过滤指定的
+		$("div").filter(".box").css('background',"red");*/
+		/*属性获取与设置
+		alert($("div").attr('title'));
+		$("div").attr("title","456");*/
+	</script>
+</body>
+</html>

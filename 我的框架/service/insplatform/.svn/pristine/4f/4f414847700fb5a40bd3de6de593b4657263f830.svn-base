@@ -1,0 +1,84 @@
+package com.insplatform.module.testpaper.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TEST_PAPER_REGULATION")
+public class TestPaperRegulation implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String pxKpoint;
+	private String difficulty;
+	private String type;
+	private int totalTopic;
+	private double oneScore;
+	private String pxTestPaper;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setPxKpoint(String value) {
+		this.pxKpoint = value;
+	}
+	
+	public String getPxKpoint() {
+		return this.pxKpoint;
+	}
+	
+	public void setDifficulty(String value) {
+		this.difficulty = value;
+	}
+	
+	public String getDifficulty() {
+		return this.difficulty;
+	}
+	
+	public void setType(String value) {
+		this.type = value;
+	}
+	
+	public String getType() {
+		return this.type;
+	}
+	
+	public void setTotalTopic(int value) {
+		this.totalTopic = value;
+	}
+	
+	public int getTotalTopic() {
+		return this.totalTopic;
+	}
+	
+	
+	
+	public double getOneScore() {
+		return oneScore;
+	}
+
+	public void setOneScore(double oneScore) {
+		this.oneScore = oneScore;
+	}
+
+	public void setPxTestPaper(String value) {
+		this.pxTestPaper = value;
+	}
+	
+	public String getPxTestPaper() {
+		return this.pxTestPaper;
+	}
+	
+}

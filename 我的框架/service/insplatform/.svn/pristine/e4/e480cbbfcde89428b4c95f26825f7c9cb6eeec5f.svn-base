@@ -1,0 +1,77 @@
+package com.insplatform.module.worktype.service.impl;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.worktype.model.Worktype;
+import com.insplatform.module.worktype.repository.WorktypeRepository;
+import com.insplatform.module.worktype.service.WorktypeService;
+
+@Service
+public class WorktypeServiceImpl extends BaseServiceImpl<Worktype> implements WorktypeService{
+	
+	@Autowired
+	private WorktypeRepository worktypeRepository;
+
+	@Override
+	public BaseRepository<Worktype> getRepository() {		
+		return worktypeRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAll(Condition condition) {			
+		return worktypeRepository.loadAll(condition);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Worktype get(Serializable id) {		
+		return worktypeRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Worktype entity) {	
+		return worktypeRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Worktype entity) {		
+		worktypeRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		worktypeRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		worktypeRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadTree(Condition condition) {
+		return worktypeRepository.loadTree(condition);
+	}
+
+}

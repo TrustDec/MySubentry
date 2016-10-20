@@ -1,0 +1,109 @@
+package com.insplatform.module.accidentcase.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.accidentcase.model.AccidentCase;
+import com.insplatform.module.accidentcase.repository.AccidentCaseRepository;
+import com.insplatform.module.accidentcase.service.AccidentCaseService;
+
+@Service
+public class AccidentCaseServiceImpl extends BaseServiceImpl<AccidentCase> implements AccidentCaseService{
+	
+	@Autowired
+	private AccidentCaseRepository accidentCaseRepository;
+
+	@Override
+	public BaseRepository<AccidentCase> getRepository() {		
+		return accidentCaseRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return accidentCaseRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return accidentCaseRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return accidentCaseRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public AccidentCase get(Serializable id) {		
+		return accidentCaseRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(AccidentCase entity) {	
+		return accidentCaseRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(AccidentCase entity) {		
+		accidentCaseRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		accidentCaseRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		accidentCaseRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAttachment(Condition condition) {
+		return accidentCaseRepository.loadAttachment(condition);
+	}
+
+	@Override
+	public void addAttachment(String id, String[] ids) {
+		accidentCaseRepository.addAttachment(id, ids);
+	}
+
+	@Override
+	public void deleteAttachment(String id, String[] ids) {
+		accidentCaseRepository.deleteAttachment(id, ids);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAccidentCaseMobile(String id) {
+		return accidentCaseRepository.loadAccidentCaseMobile(id);
+	}
+
+	@Override
+	public Map<String, Object> loadAccidentCaseListMobile(String idx) {
+		return accidentCaseRepository.loadAccidentCaseListMobile(idx);
+	}
+
+}

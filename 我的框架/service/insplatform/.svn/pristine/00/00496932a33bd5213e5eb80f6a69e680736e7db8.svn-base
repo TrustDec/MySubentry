@@ -1,0 +1,149 @@
+package com.insplatform.module.teacherclock.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.teacherclock.model.TeacherClock;
+import com.insplatform.module.teacherclock.repository.TeacherClockRepository;
+import com.insplatform.module.teacherclock.service.TeacherClockService;
+
+
+
+@Service
+public class TeacherClockServiceImpl extends BaseServiceImpl<TeacherClock> implements TeacherClockService{
+	
+	@Autowired
+	private TeacherClockRepository teacherClockRepository;
+
+	@Override
+	public BaseRepository<TeacherClock> getRepository() {		
+		return teacherClockRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return teacherClockRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return teacherClockRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id,Condition condition) {			
+		return teacherClockRepository.load(id,condition);
+	}
+	
+	@Override
+	public Map<String, Object> loadAllQueryGrid(Condition condition) {			
+		return teacherClockRepository.loadAllQueryGrid(condition);
+	}
+	
+	@Override
+	public Map<String, Object> loadAllQueryClockGrid(String id,String pxId,Condition condition) {			
+		return teacherClockRepository.loadAllQueryClockGrid(id, pxId, condition);
+	}
+	
+	@Override
+	public void addClockRecord(String[] userIds,String statu,String cid,String pxId,HttpServletRequest request) {
+		List<String> queryClockUserIds = teacherClockRepository.loadQueryClockRecord(cid, pxId);
+		for (String userId : userIds) {
+			if(!queryClockUserIds.contains(userId)){
+				TeacherClock tClock=new TeacherClock();
+				tClock.setClassCurricuId(cid);
+				tClock.setStatu(statu);
+				tClock.setUserid(userId);
+				tClock.setPxClassReport(pxId);
+				teacherClockRepository.save(tClock);
+			}else if(queryClockUserIds.contains(userId)){
+				String uid=teacherClockRepository.getOneQueryClockRecordId(cid,pxId,userId);
+				TeacherClock tClock=teacherClockRepository.get(uid);
+				tClock.setStatu(statu);
+				teacherClockRepository.update(tClock);
+			}
+		}
+	}
+	
+	@Override
+	public void addOneClockRecord(String statu,String cid,String pxId,String userId) {
+		String uid=teacherClockRepository.getOneQueryClockRecordId(cid,pxId,userId);
+		if(uid==null||uid==""){
+			TeacherClock tClock=new TeacherClock();
+			tClock.setClassCurricuId(cid);
+			tClock.setStatu(statu);
+			tClock.setUserid(userId);
+			tClock.setPxClassReport(pxId);
+			teacherClockRepository.save(tClock);
+		}else{
+			TeacherClock tClock=teacherClockRepository.get(uid);
+			tClock.setStatu(statu);
+			teacherClockRepository.update(tClock);
+		}
+	}
+	
+	@Override
+	public Map<String, Object> loadAdjustmentAllGrid(Condition condition) {			
+		return teacherClockRepository.loadAdjustmentAllGrid(condition);
+	}
+	
+	@Override
+	public Map<String, Object> loadOneAdjustment(String id,Condition condition) {			
+		return teacherClockRepository.loadOneAdjustment(id,condition);
+	}
+	
+	@Override
+	public Map<String, Object> loadOneEditAdjustment(String id,Condition condition) {			
+		return teacherClockRepository.loadOneEditAdjustment(id,condition);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TeacherClock get(Serializable id) {		
+		return teacherClockRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TeacherClock entity) {	
+		return teacherClockRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TeacherClock entity) {		
+		teacherClockRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		teacherClockRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		teacherClockRepository.deleteByIds(ids);
+	}
+
+}

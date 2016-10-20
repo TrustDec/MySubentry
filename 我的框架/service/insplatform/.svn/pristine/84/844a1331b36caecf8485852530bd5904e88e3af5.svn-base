@@ -1,0 +1,129 @@
+package com.insplatform.module.classcurriculum.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.common.utils.DateUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.classcurriculum.model.ClassCurriculum;
+import com.insplatform.module.classcurriculum.service.ClassCurriculumService;
+
+@Controller
+@RequestMapping("/px/classcurriculum")
+public class ClassCurriculumController extends BaseController{
+	
+	@Autowired
+	private ClassCurriculumService classCurriculumService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"pxClassReport");
+		return classCurriculumService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(classCurriculumService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(classCurriculumService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(ClassCurriculum classcurriculum, HttpServletRequest request){
+		classcurriculum.setUpdateTime(new Date());
+		classcurriculum.setCreateTime(new Date());
+		classcurriculum.setCreateUserId(this.getCurrentUser(request).getId());
+		classcurriculum.setCreateUserName(this.getCurrentUser(request).getName());
+		classCurriculumService.save(classcurriculum);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   @RequestParam("statTime") String statTime,
+		   @RequestParam("stopTime") String stopTime,
+		   HttpServletRequest request){
+		ClassCurriculum classcurriculum = classCurriculumService.get(id);
+		classcurriculum.setStatTime(DateUtil.stringtoDate(statTime, DateUtil.yyyyMMddHHmm));
+		classcurriculum.setStopTime(DateUtil.stringtoDate(stopTime, DateUtil.yyyyMMddHHmm));
+		classcurriculum.setUpdateTime(new Date());
+		classCurriculumService.update(classcurriculum);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		classCurriculumService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/addSelectTeachingPlan")
+	public @ResponseBody Map<String, Object> addSelectTeachingPlan(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		String[] ids = this.getSelectedItems(request, "idSer");
+		String classReportID=request.getParameter("id");
+		classCurriculumService.addSelectTeachingPlan(condition, classReportID, ids);
+		return this.getMessager().success();
+	}	
+
+	
+}

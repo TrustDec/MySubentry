@@ -1,0 +1,105 @@
+package com.insplatform.module.project.service.impl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.project.model.ProjectClassify;
+import com.insplatform.module.project.repository.ProjectClassifyRepository;
+import com.insplatform.module.project.repository.ProjectRepository;
+import com.insplatform.module.project.service.ProjectClassifyService;
+
+@Service
+public class ProjectClassifyServiceImpl extends BaseServiceImpl<ProjectClassify> implements ProjectClassifyService{
+	
+	@Autowired
+	private ProjectClassifyRepository projectClassifyRepository;
+	@Autowired
+	private ProjectRepository projectRepository;
+
+	@Override
+	public BaseRepository<ProjectClassify> getRepository() {		
+		return projectClassifyRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return projectClassifyRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return projectClassifyRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return projectClassifyRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ProjectClassify get(Serializable id) {		
+		return projectClassifyRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ProjectClassify entity) {	
+		return projectClassifyRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ProjectClassify entity) {		
+		projectClassifyRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		projectClassifyRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		projectClassifyRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public int deleteByIdCheck(String id) {
+		return projectClassifyRepository.deleteByIdCheck(id);
+	}
+
+	@Override
+	public Object loadAllListTemplate(Condition condition) {
+		List<Map<String, Object>> projectList = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> classifyList = projectClassifyRepository.loadAllList(condition);
+		for(Map<String,Object> classify : classifyList){
+			String projectClassifyId = (String) classify.get("id");
+			condition.put("projectClassifyId", projectClassifyId);
+			projectList = projectRepository.loadAllList(condition);
+			classify.put("projectList", projectList);
+		}
+		return classifyList;
+	}
+
+}

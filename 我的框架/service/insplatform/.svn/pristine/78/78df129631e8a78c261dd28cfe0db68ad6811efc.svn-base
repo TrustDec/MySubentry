@@ -1,0 +1,106 @@
+package com.insplatform.module.classreport.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.classreport.model.ClassReport;
+
+import com.insframework.system.map.Condition;
+
+
+public interface ClassReportRepository extends BaseRepository<ClassReport>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	
+	/**
+	 * 发送审批
+	 * @param ids
+	 */
+	 String updateSendState(String[] ids);
+	
+	
+	/**
+	 * 处理审批
+	 * @param type
+	 * @param ids
+	 */
+	void updateCpuState(String type,String[] ids);
+	
+	
+	/**
+	 * 审批
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadStateAllGrid(Condition condition);
+	
+	
+	/**
+	 * 教学计划
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadTeachingplanAllGrid(Condition condition);
+	
+	
+	
+
+	/**
+	 * 处理报名开始结束
+	 * @param type
+	 * @param ids
+	 */
+	void updateApplySign(String type,String[] ids);
+	
+	
+	
+	
+	/**
+	 * 学员报名
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadClasspplySignAllGrid(Condition condition);
+	
+	
+	/**
+	 * 获取审批状态是否可以进行审批
+	 * @param ids
+	 */
+	 String loadSendState(String[] ids);
+
+	/**
+	 * 加载数据班主任总结班级(审核通过的班级，学员的话获取学员所在的所有班级)
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAllGridBySummarize(Condition condition);
+	
+	
+}

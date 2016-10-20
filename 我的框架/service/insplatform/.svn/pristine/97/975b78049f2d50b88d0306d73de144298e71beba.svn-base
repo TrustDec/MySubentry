@@ -1,0 +1,120 @@
+package com.insplatform.module.classcurriculum.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+
+import com.insframework.system.map.Condition;
+import com.insplatform.module.classcurriculum.model.ClassCurriculumTeacher;
+import com.insplatform.module.classcurriculum.repository.ClassCurriculumTeacherRepository;
+
+
+@Repository
+public class ClassCurriculumTeacherRepositoryImpl extends BaseRepositoryImpl<ClassCurriculumTeacher> implements ClassCurriculumTeacherRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = " select  c.id,b.name,b.sex,b.edu,a.direction,a.lesson,a.remark " +
+				"  from px_teacher a ,  V_SYS_USER_INFO b ,PX_CLASS_CURRICULUM_TEACHER c where a.user_id = b.id and c.teacher_id=a.user_id and a.approval = '1' ";
+				if (condition.containsKey("pxClassCurriculum")) {
+					sql += " and c.px_class_curriculum = ? ";
+					condition.put("pxClassCurriculum",condition.get("pxClassCurriculum"));
+				}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_CLASS_CURRICULUM_TEACHER t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_CLASS_CURRICULUM_TEACHER t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ClassCurriculumTeacher get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ClassCurriculumTeacher entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ClassCurriculumTeacher entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+	@Override
+	public void add(String curriculumId, String[] ids) {
+
+		String[] sqlInsert = new String[ids.length];
+		if(!"".equals(ids[0].trim()))
+		{
+			for(int k = 0 ; k < ids.length ; k++)
+			{
+				String sqlDelete = "delete from PX_CLASS_CURRICULUM_TEACHER where teacher_id = '" + ids[k] + "' and px_class_curriculum = '" + curriculumId + "'";
+				jdbcAssistant.update(sqlDelete);
+			}
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "insert INTO PX_CLASS_CURRICULUM_TEACHER values('"+TextUtil.getUUID()+"','" + curriculumId + "','" + ids[i] + "')";
+			}
+			jdbcAssistant.batchUpdate(sqlInsert);
+		}
+		
+	}
+	
+	@Override
+	public void addAdjustment(String curriculumId, String[] ids) {
+
+		String[] sqlInsert = new String[ids.length];
+		if(!"".equals(ids[0].trim()))
+		{
+				String sqlDelete = "delete from PX_CLASS_CURRICULUM_TEACHER where  px_class_curriculum = '" + curriculumId + "'";
+				jdbcAssistant.update(sqlDelete);
+			
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "insert INTO PX_CLASS_CURRICULUM_TEACHER values('"+TextUtil.getUUID()+"','" + curriculumId + "','" + ids[i] + "')";
+			}
+			jdbcAssistant.batchUpdate(sqlInsert);
+		}
+		
+	}
+	
+}

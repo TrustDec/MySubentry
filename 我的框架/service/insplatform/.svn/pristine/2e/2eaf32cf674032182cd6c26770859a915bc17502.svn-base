@@ -1,0 +1,93 @@
+package com.insplatform.module.classcurriculum.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.classcurriculum.model.ClassCurriculum;
+import com.insplatform.module.classcurriculum.repository.ClassCurriculumRepository;
+import com.insplatform.module.classcurriculum.service.ClassCurriculumService;
+
+@Service
+public class ClassCurriculumServiceImpl extends BaseServiceImpl<ClassCurriculum> implements ClassCurriculumService{
+	
+	@Autowired
+	private ClassCurriculumRepository classCurriculumRepository;
+
+	@Override
+	public BaseRepository<ClassCurriculum> getRepository() {		
+		return classCurriculumRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return classCurriculumRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return classCurriculumRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return classCurriculumRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ClassCurriculum get(Serializable id) {		
+		return classCurriculumRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ClassCurriculum entity) {	
+		return classCurriculumRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ClassCurriculum entity) {		
+		classCurriculumRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		classCurriculumRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		classCurriculumRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public void addSelectTeachingPlan(Condition condition,
+			String classReportID, String[] ids) {
+		classCurriculumRepository.addSelectTeachingPlan(condition, classReportID, ids);
+		
+	}
+	
+	
+
+}

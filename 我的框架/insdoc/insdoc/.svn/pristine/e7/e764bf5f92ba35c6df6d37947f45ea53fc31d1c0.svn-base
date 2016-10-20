@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>insdoc</title>
+		<link rel="stylesheet" type="text/css" href="lib/extjs/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all.css"/>
+		<script src="lib/extjs/ext-all.js"></script>		
+		<script src="lib/extjs/packages/ext-theme-neptune/build/ext-theme-neptune.js"></script>
+		<script src="lib/extjs/ext-locale/ext-locale-zh_CN.js"></script>
+		<script src="js/app.js"></script>
+    </head>
+	<body>
+	</body>
+</html>

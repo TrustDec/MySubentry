@@ -1,0 +1,84 @@
+package com.insplatform.module.classreportbudget.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.classreportbudget.model.ClassReportBudget;
+import com.insplatform.module.classreportbudget.repository.ClassReportBudgetRepository;
+import com.insplatform.module.classreportbudget.service.ClassReportBudgetService;
+
+@Service
+public class ClassReportBudgetServiceImpl extends BaseServiceImpl<ClassReportBudget> implements ClassReportBudgetService{
+	
+	@Autowired
+	private ClassReportBudgetRepository classReportBudgetRepository;
+
+	@Override
+	public BaseRepository<ClassReportBudget> getRepository() {		
+		return classReportBudgetRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return classReportBudgetRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return classReportBudgetRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return classReportBudgetRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ClassReportBudget get(Serializable id) {		
+		return classReportBudgetRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ClassReportBudget entity) {	
+		return classReportBudgetRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ClassReportBudget entity) {		
+		classReportBudgetRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		classReportBudgetRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		classReportBudgetRepository.deleteByIds(ids);
+	}
+
+}

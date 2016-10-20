@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<ul>
+		<li class="li">12</li>
+		<li class="li">23</li>
+		<li class="li">34</li>
+		<li >45</li>
+		<li >56</li>
+		<li>76</li>
+		<li class="li">76887</li>
+	</ul>
+	<script>
+	var ul=document.getElementsByTagName('ul')[0];
+	for (var i = 0; i < ul.childNodes.length; i++) {
+		
+		if ( ul.childNodes[i].className=="li") {
+			alert(1);
+		};
+
+		
+	};
+	
+	</script>
+</body>
+</html>

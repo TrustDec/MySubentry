@@ -1,0 +1,120 @@
+package com.insplatform.module.yearplan.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.yearplan.model.YearPlanMonthProject;
+import com.insplatform.module.yearplan.repository.YearPlanMonthProjectRepository;
+import com.insplatform.module.yearplan.service.YearPlanMonthProjectService;
+
+@Service
+public class YearPlanMonthProjectServiceImpl extends BaseServiceImpl<YearPlanMonthProject> implements YearPlanMonthProjectService{
+	
+	@Autowired
+	private YearPlanMonthProjectRepository yearPlanMonthProjectRepository;
+
+	@Override
+	public BaseRepository<YearPlanMonthProject> getRepository() {		
+		return yearPlanMonthProjectRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return yearPlanMonthProjectRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return yearPlanMonthProjectRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return yearPlanMonthProjectRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public YearPlanMonthProject get(Serializable id) {		
+		return yearPlanMonthProjectRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(YearPlanMonthProject entity) {
+		boolean flag = yearPlanMonthProjectRepository.beforeSaveCheckPoject(entity);
+		if (!flag) {
+			return "hasThisProject";
+		}
+		return yearPlanMonthProjectRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(YearPlanMonthProject entity) {		
+		yearPlanMonthProjectRepository.update(entity);
+	}
+	
+	@Override
+	public String updatex(YearPlanMonthProject entity) {
+		boolean flag = yearPlanMonthProjectRepository.beforeSaveCheckPoject(entity);
+		if (!flag) {
+			return "hasThisProject";
+		}
+		yearPlanMonthProjectRepository.update(entity);
+		return "1";
+	}
+
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		yearPlanMonthProjectRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		yearPlanMonthProjectRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllOptionalProject(Condition condition) {
+		String sql = "select t.id, t.px_person_classify_name, t.name, t.cultivate_type, t.remark from px_project t ,px_project_classify p where p.id = t.project_classify_id ";
+		if(condition.containsKey("projectClassifyId")){
+			sql += " and t.project_classify_id = ? ";
+			condition.put("projectClassifyId",condition.get("projectClassifyId"));
+		}		
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("cultivateType")){
+			sql += " and t.cultivate_type like ? ";
+			condition.put("cultivateType", "%" + condition.get("cultivateType") + "%" );
+		}
+		if (condition.containsKey("yearPlanMonthId")) {
+			sql += " and t.id not in (select t.project_id from px_year_plan_month_project t where t.year_plan_month_id = ?)";
+		}
+		sql += " and p.is_delete = 'N' and t.is_delete = 'N' order by t.name ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+}

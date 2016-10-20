@@ -1,0 +1,95 @@
+package com.insplatform.module.classsummarize.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.classsummarize.model.ClassSummarizeFolderAtt;
+import com.insplatform.module.classsummarize.repository.ClassSummarizeFolderAttRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class ClassSummarizeFolderAttRepositoryImpl extends BaseRepositoryImpl<ClassSummarizeFolderAtt> implements ClassSummarizeFolderAttRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(String pid, Condition condition) {	
+		String sql = "select t.* from PX_CLASS_SUMMARIZE_FOLDER_ATT t where t.pid = '"+pid+"'";
+		
+		//"oldFileName","createUserName","startCreateTime","endCreateTime"
+		if (condition.containsKey("oldFileName")) {
+			sql += " and t.old_file_name like ?";
+			condition.put("oldFileName","%"+condition.get("oldFileName")+"%");
+		}
+		if (condition.containsKey("createUserName")) {
+			sql += " and t.create_user_name like ?";
+			condition.put("createUserName","%"+condition.get("createUserName")+"%");
+		}
+		if (condition.containsKey("startCreateTime")) {
+			sql += " and t.create_time >= to_date( ?, 'yyyy-mm-dd hh24:mi:ss')";
+		}
+		if (condition.containsKey("endCreateTime")) {
+			sql += " and t.create_time -1 < to_date( ?,'yyyy-mm-dd hh24:mi:ss')";
+		}
+		
+		sql+= " order by t.create_time desc";
+
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_CLASS_SUMMARIZE_FOLDER_ATT t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_CLASS_SUMMARIZE_FOLDER_ATT t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ClassSummarizeFolderAtt get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ClassSummarizeFolderAtt entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ClassSummarizeFolderAtt entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

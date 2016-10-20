@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        input.ng-invalid{
+            background-color: mediumvioletred;}
+    </style>
+    <script src="../js/angular.js"></script>
+</head>
+<!--AngularJS ng-model指令用于绑定应用程序数据到HTML控制器(input,select,textarea)的值.-->
+<body>
+<h1></h1>
+   <!-- <div ng-app="myApp" ng-controller="myCtrl">
+        name: <input ng-model="name">
+        <p>你输入了{{name}}</p>
+    </div>-->
+    <form ng-app="" name="myFrom" ng-init="myText = 'test@runoob.com'">
+        Email:  <input type="email" name="myAddress" ng-model="myText" required>
+        <span ng-show="myFrom.myAddress.$error.email">不是一个合法的邮箱地址</span>
+        <h1>状态</h1>
+        <p>{{myFrom.myAddress.$valid}}输入的值合法则为true</p>
+        <p>{{myFrom.myAddress.$dirty}}如果值改变则为true</p>
+        <p>{{myFrom.myAddress.$touched}}如果通过触屏点击则为true</p>
+        <input name="myName" ng-model="myText1" required>
+    </form>
+    <script>
+        var app=angular.module("myApp",[]);
+        app.controller("myCtrl",function ($scope) {
+            $scope.name="SmallRui";
+        });
+    </script>
+</body>
+</html>

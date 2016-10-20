@@ -1,0 +1,102 @@
+package com.insplatform.module.teachingteacher.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.teachingteacher.model.TeachingTeacher;
+import com.insplatform.module.teachingteacher.repository.TeachingTeacherRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TeachingTeacherRepositoryImpl extends BaseRepositoryImpl<TeachingTeacher> implements TeachingTeacherRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = " select  c.id,b.name,b.sex,b.edu,a.direction,a.lesson,a.remark " +
+				"  from px_teacher a ,  V_SYS_USER_INFO b ,PX_TEACHING_TEACHER c where a.user_id = b.id and c.teacher=a.user_id and a.approval = '1' ";
+				if (condition.containsKey("pxTeachingPlan")) {
+					sql += " and c.PX_TEACHING_PLAN = ? ";
+					condition.put("pxTeachingPlan",condition.get("pxTeachingPlan"));
+				}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TEACHING_TEACHER t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TEACHING_TEACHER t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TeachingTeacher get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TeachingTeacher entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TeachingTeacher entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public void add(String id, String[] ids) {
+
+		String[] sqlInsert = new String[ids.length];
+		if(!"".equals(ids[0].trim()))
+		{
+			for(int k = 0 ; k < ids.length ; k++)
+			{
+				String sqlDelete = "delete from PX_TEACHING_TEACHER where TEACHER = '" + ids[k] + "' and PX_TEACHING_PLAN = '" + id + "'";
+				jdbcAssistant.update(sqlDelete);
+			}
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "insert INTO PX_TEACHING_TEACHER values('"+TextUtil.getUUID()+"','" + id + "','" + ids[i] + "')";
+			}
+			jdbcAssistant.batchUpdate(sqlInsert);
+		}
+		
+	}
+	
+}

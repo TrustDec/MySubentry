@@ -1,0 +1,174 @@
+package com.insplatform.module.project.repository.impl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.project.model.ProjectItem;
+import com.insplatform.module.project.repository.ProjectItemRepository;
+
+@Repository
+public class ProjectItemRepositoryImpl extends BaseRepositoryImpl<ProjectItem>
+		implements ProjectItemRepository {
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {
+		String sql = "select t.* from PX_PROJECT_ITEM t where t.PROJECT_ID = '"
+				+ condition.get("projectId") + "' order by order_index";
+		return gridService.loadData(condition.getGridTransModel(), sql);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {
+		List<Object> queryParams = new ArrayList<Object>();
+		String sql = "select t.* from PX_PROJECT_ITEM t where 1=1";
+		String projectId = condition.get("projectId")+"";
+		if(TextUtil.isNotEmpty(projectId)){
+			sql += " and t.PROJECT_ID = ?";
+			queryParams.add(projectId);
+		}
+		sql += " order by t.order_index";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+
+	@Override
+	public Map<String, Object> load(String id) {
+		String sql = "select t.* from PX_PROJECT_ITEM t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[] { id });
+	}
+
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ProjectItem get(Serializable id) {
+		return super.get(id);
+	}
+
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ProjectItem entity) {
+		return super.save(entity);
+	}
+
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ProjectItem entity) {
+		super.update(entity);
+	}
+
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {
+		super.deleteById(id);
+	}
+
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public void addItemCourse(String id, String[] ids) {
+		for (int i = 0; i < ids.length; i++) {
+			String sql = "delete PX_PROJECT_ITEM_COURSE where item_id = '" + id
+					+ "' and course_id = '" + ids[i] + "'";
+			jdbcAssistant.update(sql);
+		}
+
+		Map<String, Object> map = null;
+		String sql = "";
+		String tmpl = "insert into PX_PROJECT_ITEM_COURSE values (?,?,'',";
+		for (int i = 0; i < ids.length; i++) {
+			sql = "select t.* from PX_PROJECT_ITEM_COURSE t"
+					+ " where t.item_id = ? and t.course_id = ?";
+			map = jdbcAssistant.queryOne(sql, new Object[] { id, ids[i] });
+			if (map == null) {
+				sql = "select nvl(max(t.order_index),0)+1 maxOrderIndex from px_project_item_course t where t.item_id = ?";
+				map = jdbcAssistant.queryOne(sql, new Object[] { id });
+
+				if (map == null || map.get("maxOrderIndex") == null) {
+					sql = tmpl + "1 )";
+				} else {
+					sql = tmpl + map.get("maxOrderIndex") + ")";
+				}
+				jdbcAssistant.update(sql, new Object[] { id, ids[i] });
+			}
+		}
+	}
+
+	@Override
+	public Map<String, Object> loadAllCourse(Condition condition) {
+		String sql = " select p.*,t.* from PX_PROJECT_ITEM_COURSE p,PX_COURSE t where 1=1 ";
+		if (condition.containsKey("courseClassifyId")) {
+			sql += "and p.item_id = '" + condition.get("courseClassifyId")
+					+ "'and p.course_id = t.id";
+		}
+		sql += " order by order_index";
+		return gridService.loadData(condition.getGridTransModel(), sql);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllCourseList(Condition condition) {
+		String sql = " select p.*,t.* from PX_PROJECT_ITEM_COURSE p,PX_COURSE t where 1=1 ";
+		if (condition.containsKey("courseClassifyId")) {
+			sql += "and p.item_id = '" + condition.get("courseClassifyId")
+					+ "'and p.course_id = t.id";
+		}
+		sql += " order by order_index";
+		return jdbcAssistant.query(sql);
+	}
+
+	@Override
+	public void deleteCourse(String id, String[] ids) {
+		for (int i = 0; i < ids.length; i++) {
+			String sql = "delete from PX_PROJECT_ITEM_COURSE where item_id = '"
+					+ id + "' and course_id = '" + ids[i] + "'";
+			jdbcAssistant.update(sql);
+		}
+	}
+
+	@Override
+	public void updateItemCourseIndex(String id, String rowIndex,
+			String currentId, String type) {
+
+		String sql = "select t.* from px_project_item_course t where t.item_id = ? and t.course_id = ?";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql, new Object[] {
+				id, currentId });
+		if (map == null)
+			return;
+		if ("up".equals(type)) {
+			sql = "select t.* from px_project_item_course t where t.item_id = ? and t.order_index < ? order by t.order_index desc";
+		} else {
+			sql = "select t.* from px_project_item_course t where t.item_id = ? and t.order_index > ? order by t.order_index";
+		}
+		Map<String, Object> otherMap = jdbcAssistant.queryOne(sql,
+				new Object[] { id, map.get("orderIndex") });
+		if (otherMap == null)
+			return;
+		String[] sqls = new String[2];
+		sqls[0] = "update px_project_item_course t set order_index = '"
+				+ otherMap.get("orderIndex") + "' where t.item_id = '" + id
+				+ "' and t.course_id = '" + currentId + "'";
+		sqls[1] = "update px_project_item_course t set order_index = '"
+				+ map.get("orderIndex") + "' where t.item_id = '" + id
+				+ "' and t.course_id = '" + otherMap.get("courseId") + "'";
+		jdbcAssistant.batchUpdate(sqls);
+	}
+
+}

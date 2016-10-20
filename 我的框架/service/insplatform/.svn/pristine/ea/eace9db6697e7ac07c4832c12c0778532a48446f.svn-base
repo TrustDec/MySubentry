@@ -1,0 +1,72 @@
+package com.insplatform.module.osta.register.notice.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.osta.register.notice.model.OstaRegWorktypeLevel;
+
+import com.insframework.system.map.Condition;
+
+
+public interface OstaRegWorktypeLevelRepository extends BaseRepository<OstaRegWorktypeLevel>{
+	
+	/**
+	 * 加载数据
+	 * @param ostaRegNoticeId 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(String ostaRegNoticeId, Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 根据通知id和工种id关联，已选的工种id
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadWorktypeLevel(Condition condition);
+
+	/**
+	 * 根据三个参数id查出一条数据
+	 * @param noticeId
+	 * @param worktypeId
+	 * @param worktypeLevelId
+	 * @return
+	 */
+	Map<String, Object> getOneByTreeId(String noticeId, String worktypeId,
+			String worktypeLevelId);
+
+	/**
+	 * 根据 noticeId 获取所有工种
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadWorktypeByNoticeId(String noticeId,
+			Condition condition);
+
+	/**
+	 * 获取工种级别
+	 * @param noticeId
+	 * @param worktypeId
+	 * @return
+	 */
+	List<Map<String, Object>> loadWorktypeLevelByNoticeId(String noticeId,
+			String worktypeId);
+	
+}

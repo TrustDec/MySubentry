@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/angular.js"></script>
+</head>
+<body>
+    <!-- ng-app:指令定义了应用,ng-controller定义了控制器 -->
+    <div ng-app="myApp" ng-controller="myCtrl">
+        First Name: <input type="text" ng-model="firstName"><br>
+        Last Name: <input type="text" ng-model="lastName"><br>
+        Full Name:{{firstName+" "+lastName}};
+    </div>
+    <script>
+        /*module:(模块)定义了angularJS应用.*/
+        var app=angular.module('myApp',[]);
+        /*controller:(控制器)用于控制AngularJS应用*/
+        app.controller('myCtrl',function($scope){
+            $scope.firstName="John";
+            $scope.lastName="Doe";
+        });
+    </script>
+</body>
+</html>

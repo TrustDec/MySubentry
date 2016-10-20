@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style type="text/css">
+	span{display: inline-block;border-right:2px solid #000;width:498px;height: auto;}
+	div{width:100px;height:100px;background: green;position: relative;}
+	</style>
+	<!-- <script src="js/jquery-2.2.1.min.js"></script> -->
+	<script src="js/jquery-1.11.2.js"></script>	
+	<script src="js/jquery.easing.1.3.js"></script>
+</head>
+<body>
+	<button>执行</button>
+	<button>返回</button>
+	<span>
+		<div></div>
+		<div style="background: yellow;"></div>
+		<div style="background: blue;"></div>
+		<div style="background: red;"></div>
+		<div style="background: yellow;"></div>
+		<div style="background: purple;"></div>
+	</span>
+	<script type="text/javascript">
+		$.fx.interval=1;
+		// $("button").eq(0).click(function(){
+		// 	// $("div").toggle(duration, complete, options, duration, easing, complete, showOrHide)
+		// 	$("div").eq(0).toggle(3000,"easeOutExpo");
+		// });
+		$("button").eq(0).click(function(){
+			$("div").eq(0).animate({left:"500px"},3000,
+				"easeInBack");
+			$("div").eq(1).animate({left:"500px"},3000,
+				"easeOutBack");
+			$("div").eq(2).animate({left:"500px"},3000,
+				"easeInOutBack");
+			$("div").eq(3).animate({left:"500px"},3000,
+				"easeInBounce");
+			$("div").eq(4).animate({left:"500px"},3000,
+				"easeOutBounce");
+			$("div").eq(5).animate({left:"500px"},3000,
+				"easeInOutBounce");
+		});
+		$("button").eq(1).click(function(){
+			$("div").eq(0).animate({left:"0"},3000,
+				"easeInBack");
+			$("div").eq(1).animate({left:"0"},3000,
+				"easeOutBack");
+			$("div").eq(2).animate({left:"0"},3000,
+				"easeInOutBack");
+			$("div").eq(3).animate({left:"0"},3000,
+				"easeInBounce");
+			$("div").eq(4).animate({left:"0"},3000,
+				"easeOutBounce");
+			$("div").eq(5).animate({left:"0"},3000,
+				"easeInOutBounce");
+		})
+	</script>
+</body>
+</html>

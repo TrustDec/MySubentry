@@ -1,0 +1,151 @@
+package com.insplatform.module.project.repository.impl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.project.model.Project;
+import com.insplatform.module.project.repository.ProjectRepository;
+
+
+@Repository
+public class ProjectRepositoryImpl extends BaseRepositoryImpl<Project> implements ProjectRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id, t.px_person_classify_name, t.name, t.cultivate_type, t.remark from px_project t ,px_project_classify p where p.id = t.project_classify_id ";
+		if(condition.containsKey("projectClassifyId")){
+			sql += " and t.project_classify_id = ? ";
+			condition.put("projectClassifyId",condition.get("projectClassifyId"));
+		}		
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("cultivateType")){
+			sql += " and t.cultivate_type like ? ";
+			condition.put("cultivateType", "%" + condition.get("cultivateType") + "%" );
+		}
+		sql += " and p.is_delete = 'N' and t.is_delete = 'N' order by t.name ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_PROJECT t where 1=1 and t.is_delete = 'N'";
+		List<Object> queryParams = new ArrayList<Object>();
+		if(condition.containsKey("projectClassifyId")){
+			sql += " and t.project_classify_id = ? ";
+			queryParams.add(condition.get("projectClassifyId"));
+		}	
+		return jdbcAssistant.query(sql, queryParams.toArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_PROJECT t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Project get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Project entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Project entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		String sql[] = new String[ids.length];
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+			sql[i] = "update px_project set is_delete = 'Y' where id = '" + ids[i] + "'";
+		}
+		jdbcAssistant.batchUpdate(sql);
+	}
+
+	@Override
+	public void add(String id, String[] ids) {
+		String[] sqlInsert = new String[ids.length];
+		if(!"".equals(ids[0].trim()))
+		{
+			for(int k = 0 ; k < ids.length ; k++)
+			{
+				String sqlDelete = "delete from PX_PROJECT_WORKTYPE where WORKTYPE_LEVEL_ID = '" + ids[k] + "' and project_id = '" + id + "'";
+				jdbcAssistant.update(sqlDelete);
+			}
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "insert INTO PX_PROJECT_WORKTYPE values('" + id + "','" + ids[i] + "')";
+			}
+			jdbcAssistant.batchUpdate(sqlInsert);
+		}
+	}
+
+	@Override
+	public Map<String, Object> loadWorkType(Condition condition) {
+	   String sql = "select * from V_PX_WORKTYPE v where 1=1 ";
+	   if(condition.containsKey("projectId")){
+		   sql += " and v.id in (select worktype_level_id from px_project_worktype where project_id = ?)";
+	   }   			
+	   return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public void delete(String id, String[] ids) {
+		if(!"".equals(ids[0].trim()))
+		{
+			for(int k = 0 ; k < ids.length ; k++)
+			{
+				String sqlDelete = "delete from PX_PROJECT_WORKTYPE where WORKTYPE_LEVEL_ID = '" + ids[k] + "' and project_id = '" + id + "'";
+				jdbcAssistant.update(sqlDelete);
+			}
+		}
+	}
+
+	@Override
+	public List<Map<String, Object>> selectInfo(String str) {
+		String [] ids = str.split(",");
+		String sql = "select t.name from sys_dict t where id in(";
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+			sql += "'" + ids[i] +"',";
+		}
+		sql = sql.substring(0, sql.length()-1);
+		sql += ")";
+		return jdbcAssistant.query(sql);
+	}
+}

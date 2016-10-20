@@ -1,0 +1,135 @@
+package com.insplatform.module.classreport.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.classreport.model.ClassReportUser;
+import com.insplatform.module.classreport.repository.ClassReportUserRepository;
+import com.insplatform.module.classreport.service.ClassReportUserService;
+
+@Service
+public class ClassReportUserServiceImpl extends BaseServiceImpl<ClassReportUser> implements ClassReportUserService{
+	
+	@Autowired
+	private ClassReportUserRepository classReportUserRepository;
+
+	@Override
+	public BaseRepository<ClassReportUser> getRepository() {		
+		return classReportUserRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return classReportUserRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return classReportUserRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return classReportUserRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ClassReportUser get(Serializable id) {		
+		return classReportUserRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ClassReportUser entity) {	
+		return classReportUserRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ClassReportUser entity) {		
+		classReportUserRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		classReportUserRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		classReportUserRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadClassReportAllGrid(Condition condition) {
+		// TODO Auto-generated method stub
+		return classReportUserRepository.loadClassReportAllGrid(condition);
+	}
+
+	@Override
+	public void updateApply(String type, String[] ids,Condition condition) {
+		classReportUserRepository.updateApply(type, ids, condition);
+		
+	}
+
+	@Override
+	public void add(String id, String[] ids, Condition condition) {
+		classReportUserRepository.add(id, ids, condition);
+		
+	}
+
+	@Override
+	public void updateCpuState(String type, String[] ids) {
+		classReportUserRepository.updateCpuState(type, ids);
+		
+	}
+
+	@Override
+	public void delete(String[] ids) {
+		classReportUserRepository.delete(ids);
+		
+	}
+
+	@Override
+	public Map<String, Object> loadSecondApproveUserAllGrid(Condition condition) {
+		return classReportUserRepository.loadSecondApproveUserAllGrid(condition);
+	}
+
+	@Override
+	public void updateSecondApproveUse(String type, String[] ids) {
+		classReportUserRepository.updateSecondApproveUse(type, ids);
+		
+	}
+
+	@Override
+	public void updateUserGroup(String[] ids, Condition condition) {
+		classReportUserRepository.updateUserGroup(ids, condition);
+		
+	}
+	
+	
+	
+
+
+}

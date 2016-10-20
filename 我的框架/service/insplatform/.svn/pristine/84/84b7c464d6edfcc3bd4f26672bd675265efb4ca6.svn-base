@@ -1,0 +1,77 @@
+
+package com.insplatform.system.main.controller;
+
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insplatform.system.main.service.MainSupportService;
+
+/**
+ * 主页面附加控制器
+ * @author guom
+ *
+ */
+@Controller
+public class MainSupportController extends BaseController{
+	
+	@Autowired
+	private MainSupportService mainService;			
+	
+	/**
+	 * 改变主题
+	 * @param request
+	 */	
+	@RequestMapping("/msupport/changeStyle")
+	@ResponseBody			
+	public Map<String,Object> changeStyle(HttpServletRequest request){
+		String style = request.getParameter("style");
+		if(TextUtil.isNotEmpty(style)){
+			request.getSession().setAttribute("EXT_STYLE", style);
+		}
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 检查旧密码
+	 * @param request
+	 */
+	@RequestMapping("/msupport/checkOldPwd")
+	public @ResponseBody Map<String, Object> checkOldPwd(
+		   @RequestParam("account") String account,
+		   @RequestParam("password") String password){
+		boolean flag = mainService.checkOldPwd(account, password);
+		if(flag){
+			return this.getMessager().success();
+		}else{
+			return this.getMessager().error();
+		}
+	}
+	
+	/**
+	 * 修改密码
+	 * @param request
+	 */
+	@RequestMapping("/msupport/changePwd")	
+	public @ResponseBody Map<String, Object> changePwd(
+		   @RequestParam("account") String account,
+		   @RequestParam("password") String password){
+		boolean flag = mainService.changePwd(account, password);
+		if(flag){
+			return this.getMessager().success();
+		}else{			
+			return this.getMessager().error();
+		}		
+	}
+	
+	
+}

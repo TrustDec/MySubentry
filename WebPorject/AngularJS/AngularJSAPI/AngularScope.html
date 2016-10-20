@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/angular.js"></script>
+</head>
+<body>
+    <!--作用域-->
+    <div ng-app="myApp" ng-controller="myCtrl">
+        <input ng-model="carname">
+        <h1>{{carname}}</h1>
+    </div>i
+    <script>
+        var app=angular.module("myApp",[]);
+        app.controller("myCtrl",function($scope){
+            $scope.carname="Volvo";
+        });
+    </script>
+</body>
+</html>

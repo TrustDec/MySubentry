@@ -1,0 +1,81 @@
+package com.insplatform.module.testpaper.service;
+
+import java.util.*;
+
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.testpaper.model.TestPaperQuestion;
+
+public interface TestPaperQuestionService extends BaseService<TestPaperQuestion>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	
+	/**
+	 * 随机增加试题
+	 * @param condition
+	 */
+	void addRandomQuestion(Condition condition);
+	
+	
+	/**
+	 * 增加试题
+	 * @param condition
+	 */
+	void addQuestion(Condition condition,String [] ids);
+	
+	/**
+	 * 试题选择器
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllQuestionGridChooser(Condition condition);
+	
+	
+	/**
+	 * 检查试卷是否完整
+	 * @param condition
+	 * @return
+	 */
+	String getPaperState(Condition condition);
+	
+	/**
+	 * 获取试题录数量
+	 * @param condition
+	 * @return
+	 */
+	int getQuestionSum(Condition condition);
+	
+
+	/**
+	 * 批量更新试卷分数
+	 * @param ids
+	 * @param score
+	 */
+	void updateScore(String ids[],double score);
+}

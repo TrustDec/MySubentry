@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>平台使用手册</title>
+<link href="../common/include.css" rel="stylesheet" />
+</head>
+<body id="bodyId">
+<h1>TabLayout(布局)</h1> 
+<h3>介绍</h3>
+<p>
+tab选项卡
+</p>
+<img src="../../img/tablayout.jpg" />
+<h3>示例代码</h3>
+<pre class="brush:js;">
+Ext.define('App.demo.layout.tablayout.View',{
+	
+	init: function(){
+		var view = Ext.create('Ins.layout.tab.TabLayout',{
+			//存放tab视图
+			views:[
+				App.getView('App.demo.layout.tablayout.TabCount1'),
+				App.getView('App.demo.layout.tablayout.TabCount2'),
+				App.getView('App.demo.layout.tablayout.TabCount3')
+			],
+			//tab所在位置'top','bottom','left','right'
+			direction : 'bottom',
+			//绑定Tab切换时的方法，获取切换到的tab名称
+			onTabChange:function(tabTitle){alert(tabTitle);},
+			//是否使用背景色，有时会被容器中的视图覆盖而看不到效果
+			useAppBg:true
+		});
+		//获取当前激活的Tab的标题
+		var selectTitle = view.getSelectedTabTitle();
+		alert(selectTitle);
+		//根据下标切换到对应的Tab，下标是从0开始的
+		view.selectTabByIndex(1);
+		return view;
+	}
+});
+</pre>
+<h3>类名</h3>
+<code>Ins.layout.tab.TabLayout</code>
+<h4>别名</h4>
+<code>alias : [ "widget.ins_tablayout" ]</code>
+<h3>继承自</h3>
+<code>Ext.tab.Panel</code>
+<h3>构造对象</h3>
+<pre class="brush:js;">
+		var view = Ext.create('Ins.layout.tab.TabLayout',{
+			//存放tab视图
+			views:[],
+			//tab所在位置'top','bottom','left','right'
+			direction : 'bottom',
+			//绑定Tab切换时的方法，获取切换到的tab名称
+			onTabChange:function(tabTitle){},
+			//是否使用背景色，有时会被容器中的视图覆盖而看不到效果
+			useAppBg:true
+		});
+</pre>
+<h3>属性</h3>
+<table class="table table-bordered table-striped table-hover table-hover">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>属性名</th><th>属性值类型</th><th>描述</th><th>默认值</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>views</td>
+<td>view[ ]</td>
+<td>存放tab视图</td>
+<td>[ ]</td>
+</tr>
+<tr>
+<td>direction</td>
+<td>String</td>
+<td>选项卡显示位置，顶部 top，底部bottom，左边left，右边 right</td>
+<td>顶部top</td>
+</tr>
+<tr>
+<td>useAppBg</td>
+<td>boolean</td>
+<td>是否使用系统默认背景</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+
+<h3>方法</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>方法名称</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>selectTabByIndex(int)</td>
+<td>根据下标切换到对应的Tab，下标是从0开始的，参数类型为非负整数</td>
+</tr>
+<tr>
+<td>String</td>
+<td>getSelectedTabTitle()</td>
+<td>获取当前选中的选项卡title值</td>
+</tr>
+</tbody>
+</table>
+
+<h3>事件</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>事件名称</th><th>绑定方法</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>String</td>
+<td>onTabChange</td>
+<td>function(String tabTitle){ }</td>
+<td>参数类型String，绑定Tab切换时的方法，获取切换到的tab名称，参数为当前激活的tab的title值</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<script type="text/javascript" src="../common/include.js"></script>
+</body>
+</html>

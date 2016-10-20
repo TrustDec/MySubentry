@@ -1,0 +1,60 @@
+package com.insplatform.module.yearplan.repository;
+
+import java.util.List;
+import java.util.Map;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yearplan.model.YearPlanMonth;
+
+
+public interface YearPlanMonthRepository extends BaseRepository<YearPlanMonth>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 根据年计划获取月份
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllListByYearPlanId(String yearPlanId);
+
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 保存前校验当前年度计划是否已经存在该月份
+	 * @param monthName
+	 * @param yearPlanId
+	 * @return
+	 */
+	boolean beforeSaveCheckMonth(YearPlanMonth yearplanmonth);
+
+	/**
+	 * 获取本计划已有月份
+	 * @param yearPlanId
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllMonth(String yearPlanId);
+	
+}

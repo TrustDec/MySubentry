@@ -1,0 +1,41 @@
+package com.insplatform.module.identifymanager.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.identifymanager.model.IdentifyManager;
+
+import com.insframework.system.map.Condition;
+
+
+public interface IdentifyManagerRepository extends BaseRepository<IdentifyManager>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	boolean hasAddUser(String userId);
+
+	boolean hasEditUser(String id, String userId);
+	
+}

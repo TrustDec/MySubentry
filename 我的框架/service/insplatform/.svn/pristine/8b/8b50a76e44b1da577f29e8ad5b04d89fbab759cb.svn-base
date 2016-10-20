@@ -1,0 +1,61 @@
+package com.insplatform.module.yearplan.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.yearplan.model.YearPlanMonthProject;
+
+import com.insframework.system.map.Condition;
+
+
+public interface YearPlanMonthProjectRepository extends BaseRepository<YearPlanMonthProject>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 根据年度需求计划id，对二级单位年度需求汇总结果再次汇总出每个项目对应的人数并插入年度计划的月度计划表中;
+	 * @param uuid 插入表中的id 用该uuid加行号的方式存入
+	 * @param yearDemandId 年度需求计划id
+	 * @param month 需要处理的月份
+	 * @return
+	 */
+	int saveBatchByYearDemandId(String uuid, String yearDemandId, int month);
+
+	/**
+	 * 批量复制月份项目
+	 * @param yearPlanMonthId
+	 * @param oldYearPlanMonthId
+	 * @return
+	 */
+	int createCopy(String yearPlanMonthId, String oldYearPlanMonthId);
+
+	/**
+	 * 查看该月份是否已经添加过该项目
+	 * @param entity
+	 * @return
+	 */
+	boolean beforeSaveCheckPoject(YearPlanMonthProject entity);
+	
+}

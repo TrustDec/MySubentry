@@ -1,0 +1,200 @@
+package com.insplatform.module.yearplan.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yearplan.model.YearPlan;
+import com.insplatform.module.yearplan.model.YearPlanMonth;
+import com.insplatform.module.yearplan.repository.YearPlanMonthProjectRepository;
+import com.insplatform.module.yearplan.repository.YearPlanMonthRepository;
+import com.insplatform.module.yearplan.repository.YearPlanRepository;
+import com.insplatform.module.yearplan.service.YearPlanService;
+
+@Service
+public class YearPlanServiceImpl extends BaseServiceImpl<YearPlan> implements YearPlanService{
+	
+	@Autowired
+	private YearPlanRepository yearPlanRepository;
+	
+	@Autowired
+	private YearPlanMonthRepository yearPlanMonthRepository;
+	
+	@Autowired
+	private YearPlanMonthProjectRepository yearPlanMonthProjectRepository;
+
+
+	@Override
+	public BaseRepository<YearPlan> getRepository() {		
+		return yearPlanRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return yearPlanRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGridByNeedApprove(Condition condition) {			
+		return yearPlanRepository.loadAllGridByNeedApprove(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return yearPlanRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return yearPlanRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public YearPlan get(Serializable id) {		
+		return yearPlanRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(YearPlan entity) {
+		return yearPlanRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(YearPlan entity) {		
+		yearPlanRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		yearPlanRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		yearPlanRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadUsableYearDemand(Condition condition) {
+		return yearPlanRepository.loadUsableYearDemand(condition);
+	}
+
+	@Override
+	public String saveYearPlanAndMonthAndProject(YearPlan yearplan) {
+		boolean flag = yearPlanRepository.beforeSaveCheckYear(yearplan.getYear());
+		if (!flag) {
+			return "hasThisYear";
+		}
+		
+		String yearDemandId = yearplan.getYearDemandId();
+		String yearPlanId = yearPlanRepository.save(yearplan).toString();
+		if (TextUtil.isEmpty(yearDemandId)) {
+			//没有需求id
+			return yearPlanId;
+		}
+		
+		int num = 0;
+		String yearPlanMonthId = null;
+		YearPlanMonth yearPlanMonth = null;
+		for (int i = 0; i < 12; i++) {
+			yearPlanMonth = new YearPlanMonth();
+			yearPlanMonth.setMonthName(i+1);
+			yearPlanMonth.setYearPlanId(yearPlanId);
+			yearPlanMonthId = yearPlanMonthRepository.save(yearPlanMonth).toString();
+			num = yearPlanMonthProjectRepository.saveBatchByYearDemandId(yearPlanMonthId, yearDemandId,i+1);
+			if (num==0) {
+				yearPlanMonthRepository.deleteById(yearPlanMonthId);
+			}
+		}
+		return yearPlanId;
+	}
+
+	@Override
+	public int deleteYearPlan(String[] ids) {
+		int noDel = 0;
+		boolean flag = false;
+		for (String id : ids) {
+			flag = yearPlanRepository.whetherItCanBeDeleted(id); 
+			if (flag) {
+				yearPlanRepository.deleteById(id);
+			}else {
+				noDel++;
+			}
+		}
+		return noDel;
+	}
+
+	@Override
+	public int updateSendApproval(String id) {
+		boolean flag = yearPlanRepository.beforeSendApprovalCheck(id);
+		if (!flag) {
+			return -1;
+		}
+		return yearPlanRepository.updateState(id,"B");
+	}
+
+	@Override
+	public int updateApproval(String id, String type) {
+		if ("tg".equals(type)) {
+			return yearPlanRepository.updateState(id,"C");
+		}else if ("btg".equals(type)) {
+			return yearPlanRepository.updateState(id,"D");
+		}
+		return 0;
+	}
+
+	@Override
+	public String updateCreateCopy(String id, CurrentUser user) {
+		Serializable yearPlanId = yearPlanRepository.createCopy(id,user);
+		if (yearPlanId==null) {
+			return "-1";
+		}
+		List<Map<String, Object>> months = yearPlanMonthRepository.loadAllListByYearPlanId(id);
+		YearPlanMonth obj = null;
+		String oldYearPlanMonthId = null;
+		String yearPlanMonthId = null;
+		for (Map<String, Object> month : months) {
+			obj = new YearPlanMonth();
+			obj.setYearPlanId(yearPlanId+"");
+			obj.setMonthName(Integer.parseInt(month.get("monthName").toString()));
+			oldYearPlanMonthId = month.get("id")+"";
+			yearPlanMonthId = (String) yearPlanMonthRepository.save(obj);
+			yearPlanMonthProjectRepository.createCopy(yearPlanMonthId,oldYearPlanMonthId);
+		}
+		return yearPlanId+"";
+	}
+	
+	@Override
+	public int updateBatchApproval(String[] ids, String type) {
+		int num = 0;
+		for (int i = 0; i < ids.length; i++) {
+			num += this.updateApproval(ids[i],type);
+		}
+		return num;
+	}
+
+
+}

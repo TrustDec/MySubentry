@@ -1,0 +1,64 @@
+package com.insplatform.module.yearplan.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_YEAR_PLAN_MONTH_PROJECT")
+public class YearPlanMonthProject implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String yearPlanMonthId;
+	private String projectId;
+	private int personNumber;
+	private int programBudget;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setYearPlanMonthId(String value) {
+		this.yearPlanMonthId = value;
+	}
+	
+	public String getYearPlanMonthId() {
+		return this.yearPlanMonthId;
+	}
+	
+	public void setProjectId(String value) {
+		this.projectId = value;
+	}
+	
+	public String getProjectId() {
+		return this.projectId;
+	}
+	
+	public void setPersonNumber(int value) {
+		this.personNumber = value;
+	}
+	
+	public int getPersonNumber() {
+		return this.personNumber;
+	}
+	
+	public void setProgramBudget(int value) {
+		this.programBudget = value;
+	}
+	
+	public int getProgramBudget() {
+		return this.programBudget;
+	}
+	
+}

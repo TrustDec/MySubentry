@@ -1,0 +1,73 @@
+package com.insplatform.system.role.repository;
+
+
+import java.util.List;
+import java.util.Map;
+
+
+import com.insframework.system.base.repository.BaseRepository;
+
+import com.insplatform.system.role.model.Role;
+
+public interface RoleRepository extends BaseRepository<Role>{
+	
+	
+	/**
+	 * 加载角色管理中的角色(需要根据用户id进行过滤)
+	 * @return
+	 */
+	List<Map<String, Object>> loadByMgt(String userId);
+	
+	/**
+	 * 加载用户关联的角色
+	 * @return
+	 */
+	List<String> loadUserRoleIds(String userId);
+		
+	/**
+	 * 根据编码获取角色
+	 * @param code
+	 * @return
+	 */
+	Map<String, Object> loadRoleByCode(String code);
+	
+	/**
+	 * 将用户添加到角色中
+	 * @param roleId
+	 * @param userIds
+	 */
+	void addRoleUser(String roleId, String...userIds);
+	
+	/**
+	 * 删除角色下的用户
+	 * @param id
+	 * @param userIds
+	 */
+	void deleteRoleUser(String id, String...userIds);	
+	
+	/**
+	 * 检查角色名称或编码是否重复
+	 * @param name
+	 * @param code
+	 * @param id
+	 * @return 如果重复，返回true，不重复返回false
+	 */
+	boolean checkNameAndCode(String name, String code, String id);
+	
+	/**
+	 * 检查用户是否是系统管理员
+	 * @param userId
+	 * @return
+	 */
+	boolean checkUserIsSysAdmin(String userId);
+	
+	/**
+	 * 检查用户是否是子公司管理员
+	 * @param userId
+	 * @return
+	 */
+	boolean checkUserIsOrgAdmin(String userId);
+	
+	
+	
+}

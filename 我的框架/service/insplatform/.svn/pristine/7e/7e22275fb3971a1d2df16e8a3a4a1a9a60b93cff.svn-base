@@ -1,0 +1,46 @@
+package com.insplatform.module.testpaper.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TEST_PAPER_KPOINT")
+public class TestPaperKpoint implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String kpoint;
+	private String pxTestPaper;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setKpoint(String value) {
+		this.kpoint = value;
+	}
+	
+	public String getKpoint() {
+		return this.kpoint;
+	}
+	
+	public void setPxTestPaper(String value) {
+		this.pxTestPaper = value;
+	}
+	
+	public String getPxTestPaper() {
+		return this.pxTestPaper;
+	}
+	
+}

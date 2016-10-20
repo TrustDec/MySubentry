@@ -1,0 +1,61 @@
+//点对象
+{
+	"type":"Point",
+	"coordinates":[-105,39]
+}
+//面对象
+{
+	"type":"LineString",
+	"coordinates":[[-105,39],[-107,39]]
+}
+//线
+{
+	"type":"Polygon",
+	"coordinates":[
+				[
+					[-105,39],[-107,39],[-102,56]
+				],
+				[
+					[-205,200],[-207,139],[-202,156]
+				]
+			]
+}
+//几何体集合
+{
+	"type":"GeometryCollection",
+	"geometries":[
+		{
+			"type":"Point",
+			"coordinates":[-105,39]
+		},
+		{
+			"type":"LineString",
+			"coordinates":[[-105,39],[-107,39]]
+		},
+		{
+			"type":"Polygon",
+			"coordinates":[
+						[
+							[-105,39],[-107,39],[-102,56]
+						],
+						[
+							[-205,200],[-207,139],[-202,156]
+						]
+					]
+		}
+
+	]
+
+}
+//特征
+{
+	"type":"Feature",
+	"properties":{
+		"name":"北京"
+	},
+	"geometry":{
+		"type":"Point",
+		"coordinates":[ 116.3671875, 39.977120098439634]
+	}
+}
+//特征集合

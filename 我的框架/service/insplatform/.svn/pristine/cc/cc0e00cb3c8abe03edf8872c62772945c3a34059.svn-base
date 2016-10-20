@@ -1,0 +1,25 @@
+package com.insplatform.module.osta.worktype.service;
+
+import java.util.Map;
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.worktype.model.OstaWorktype;
+
+public interface OstaWorktypeService extends BaseService<OstaWorktype>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAll(Condition condition);
+
+	/**
+	 * 获取工种分类和工种类型两级树
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAllTree(Condition condition);
+}

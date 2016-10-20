@@ -1,0 +1,96 @@
+package com.insplatform.module.bbs.questionanswer.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.bbs.questionanswer.model.BbsQuestionAnswer;
+import com.insplatform.module.bbs.questionanswer.repository.BbsQuestionAnswerRepository;
+import com.insplatform.module.bbs.questionanswer.service.BbsQuestionAnswerService;
+
+@Service
+public class BbsQuestionAnswerServiceImpl extends BaseServiceImpl<BbsQuestionAnswer> implements BbsQuestionAnswerService{
+	
+	@Autowired
+	private BbsQuestionAnswerRepository bbsQuestionAnswerRepository;
+
+	@Override
+	public BaseRepository<BbsQuestionAnswer> getRepository() {		
+		return bbsQuestionAnswerRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return bbsQuestionAnswerRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return bbsQuestionAnswerRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return bbsQuestionAnswerRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public BbsQuestionAnswer get(Serializable id) {		
+		return bbsQuestionAnswerRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(BbsQuestionAnswer entity) {	
+		return bbsQuestionAnswerRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(BbsQuestionAnswer entity) {		
+		bbsQuestionAnswerRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		bbsQuestionAnswerRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		bbsQuestionAnswerRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public int accept(String id) {
+		return bbsQuestionAnswerRepository.accept(id);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAcceptApply(String pid) {
+		String sql = "select t.* from px_bbs_question_answer t " +
+				" where t.pid = ? and t.isnot_accept = 'Y'";
+		return jdbcAssistant.query(sql,new Object[]{pid});
+	}
+
+}

@@ -1,0 +1,99 @@
+package com.insplatform.module.examiner.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.examiner.model.ExaminerWorktype;
+import com.insplatform.module.examiner.repository.ExaminerWorktypeRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class ExaminerWorktypeRepositoryImpl extends BaseRepositoryImpl<ExaminerWorktype> implements ExaminerWorktypeRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id,t.examiner_id,t.technics_title,t.qualify,t.certificate_num,t.work_type_id,t.work_type_name," +
+				"(select name from SYS_DICT where id = t.work_level) as work_level," +
+				"to_char(t.get_time,'yyyy-mm-dd') as get_time,to_char(t.start_time,'yyyy-mm-dd') as start_time," +
+				"to_char(t.end_time,'yyyy-mm-dd') as end_time,t.remark " +
+				" from px_examiner_worktype t where 1=1";
+
+		if(condition.containsKey("examinerId")){
+			sql += " and t.examiner_id =  ? ";
+			condition.put("examinerId",  condition.get("examinerId") );
+		}
+		
+		if(condition.containsKey("workLevel")){
+			sql += " and t.work_level =  ? ";
+			condition.put("workLevel",  condition.get("workLevel") );
+		}
+		
+		if(condition.containsKey("technicsTitle")){
+			sql += " and t.technics_title =  ? ";
+			condition.put("technicsTitle",  condition.get("technicsTitle") );
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_EXAMINER_WORKTYPE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.id,t.examiner_id,t.technics_title,t.qualify,t.certificate_num,t.work_type_id,t.work_type_name," +
+				"(select name from SYS_DICT where id = t.work_level) as work_level," +
+				"to_char(t.get_time,'yyyy-mm-dd') as get_time,to_char(t.start_time,'yyyy-mm-dd') as start_time," +
+				"to_char(t.end_time,'yyyy-mm-dd') as end_time,t.remark " +
+				" from px_examiner_worktype t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ExaminerWorktype get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ExaminerWorktype entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ExaminerWorktype entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

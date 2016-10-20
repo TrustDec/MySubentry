@@ -1,0 +1,166 @@
+package com.insplatform.module.examination.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.examination.service.ExaminationService;
+/**
+ * 考试控制类
+ * @author lh
+ *
+ */
+@Controller
+@RequestMapping("/px/exam")
+public class ExamController extends BaseController{
+	
+	@Autowired
+	private ExaminationService examinationService;
+	
+	
+	
+	/**
+	 * 考试列表
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadMyExamList")
+	public @ResponseBody Map<String, Object> loadMyExamList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"page");
+		return examinationService.loadMyExamList(condition);
+	}
+	
+	
+	
+	/**
+	 * 我的成绩列表
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadMyExamScoreList")
+	public @ResponseBody Map<String, Object> loadMyExamScoreList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"page");
+		return examinationService.loadMyExamScoreList(condition);
+	}	
+	
+	
+	/**
+	 * 获取答案解析
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/getExamAnalysisInfo")
+	public @ResponseBody Map<String, Object> getExamAnalysisInfo(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id","sign");
+		 Map<String, Object> detailMap= examinationService.getExamAnalysisInfo(condition);
+		 return this.getMessager().success().put("data", detailMap);
+	}
+	
+
+	/**
+	 * 获取考试剩余次数
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/getExamTime")
+	public @ResponseBody Map<String, Object> getExamTime(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		int time= examinationService.getExamTime(condition);
+		return this.getMessager().success().put("time", time);
+	}
+	
+	
+	/**
+	 * 获取考试试题信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/getExamDetail")
+	public @ResponseBody Map<String, Object> getExamDetail(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		 Map<String, Object> detailMap= examinationService.getExamDetail(condition);
+		return this.getMessager().success().put("deta", detailMap)
+				                           .put("time",detailMap.get("time"));
+	}
+	
+	
+	
+	/**
+	 * 临时保存试卷信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/saveTempExamDetail")
+	public @ResponseBody Map<String, Object> saveTempExamDetail(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"radioListAnswer","moreListAnswer","judgeListAnswer","answersListAnswer","uuid","examId");
+		examinationService.saveTemp(condition);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 保存试卷信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/saveExamDetail")
+	public @ResponseBody Map<String, Object> saveExamDetail(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"radioListAnswer","moreListAnswer","judgeListAnswer","answersListAnswer","uuid","examId","stattime");
+		Map<String, Object> dataMap=examinationService.saveEaxm(condition);
+		return this.getMessager().success().put("uuid", dataMap.get("uuid"));
+	}
+	
+	
+	
+
+	/**
+	 * 获取考试结果
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/getExamResultInfo")
+	public @ResponseBody Map<String, Object> getExamResultInfo(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		Map<String, Object> dataMap=examinationService.getExamResultInfo(condition);
+		return this.getMessager().success().put("data", dataMap);
+	}
+	
+	/**
+	 * 考试次数--
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/updateExamInfoEffective")
+	public @ResponseBody Map<String, Object> updateExamInfoEffective(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		Map<String, Object> dataMap=examinationService.updateExamInfoEffective(condition);
+		return this.getMessager().success().put("state", dataMap.get("state"));
+	}
+}

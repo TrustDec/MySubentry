@@ -1,0 +1,55 @@
+package com.insplatform.module.osta.register.demand.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.curruser.CurrentUser;
+import com.insplatform.module.osta.register.demand.model.OstaRegDemandWrite;
+
+import com.insframework.system.map.Condition;
+
+
+public interface OstaRegDemandWriteRepository extends BaseRepository<OstaRegDemandWrite>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param user 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id, CurrentUser user);
+	
+	/**
+	 * 根据pid和userId填报主记录
+	 * @param pid
+	 * @param id
+	 * @return
+	 */
+	Map<String, Object> loadByPidAndUserId(String pid, String userId);
+
+	/**
+	 * 根据考评员需求id和当前登录人id创建一条填报主记录
+	 * @param pid
+	 * @param id
+	 * @return
+	 */
+	String addANewRecord(String pid, String userId);
+	
+}

@@ -1,0 +1,88 @@
+package com.insplatform.module.teachassessmenttea.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+
+import com.insframework.system.map.Condition;
+import com.insplatform.module.teachassessmenttea.model.TeachassessmentTea;
+import com.insplatform.module.teachassessmenttea.repository.TeachassessmentTeaRepository;
+
+
+@Repository
+public class TeachassessmentTeaRepositoryImpl extends BaseRepositoryImpl<TeachassessmentTea> implements TeachassessmentTeaRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "   select q.px_address,q.population,q.px_content,q.px_class_report,q.px_project,q.user_number,q.name,q.proname, " 
+		        	+"  q.teacher_id,q.px_year,q.px_month,q.px_organization,q.remark,q.class_Teacher,j.id as id from (  " 
+			      	+"  select distinct * from (select d.px_address, d.population,  d.px_content,   d.px_class_report, d.px_project, d.user_number, "
+					+"  d.name,   d.proname,  e.teacher_id ,    d.px_year,d.px_month,d.px_organization,d.remark,d.class_Teacher "
+					+"  from (select      a.id,   a.px_class_report,   b.name,   b.px_address,    b.px_content,   f.name proname, "
+					+"  (select u.name from SYS_USER u where u.id=b.class_teacher) as class_Teacher ,   b.px_year,b.px_month , "
+					+"  (select tt.name from PX_PROJECT tt where  tt.id=b.px_project) as px_project,  "
+					+"  (select count(*) from PX_CLASS_REPORT_user tt where tt.px_class_repor=b.id ) as user_number,"
+					+"  b.population,b.px_organization,b.remark  from PX_CLASS_CURRICULUM a, PX_CLASS_REPORT b, px_project f "
+					+"  where f.id = b.px_project    and b.id = a.px_class_report  and b.state = '审批通过' and  a.stop_time < sysdate) d "
+					+"  left join (select teacher_id, px_class_curriculum   from PX_CLASS_CURRICULUM_TEACHER) e  on d.id = e.px_class_curriculum "
+					+"  where 1 = 1  and e.teacher_id = '"+condition.getCurrentUser().getId()+"' ) " 
+					+"  ) q left join px_teachassessment_tea j on  j.pname_id=q.px_class_report      ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TEACHASSESSMENT_TEA t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TEACHASSESSMENT_TEA t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TeachassessmentTea get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TeachassessmentTea entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TeachassessmentTea entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

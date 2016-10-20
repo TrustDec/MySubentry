@@ -1,0 +1,127 @@
+package com.insplatform.module.osta.register.write.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.attachment.service.AttachmentsService;
+import com.insplatform.module.osta.register.write.model.OstaRegNoticeWrite;
+import com.insplatform.module.osta.register.write.repository.OstaRegNoticeWriteRepository;
+import com.insplatform.module.osta.register.write.service.OstaRegNoticeWriteService;
+import com.insplatform.system.dict.model.Dict;
+import com.insplatform.system.dict.repository.DictRepository;
+
+@Service
+public class OstaRegNoticeWriteServiceImpl extends BaseServiceImpl<OstaRegNoticeWrite> implements OstaRegNoticeWriteService{
+	
+	@Autowired
+	private OstaRegNoticeWriteRepository ostaRegNoticeWriteRepository;
+	
+	@Autowired
+	private DictRepository dictRepository;
+	
+	@Autowired
+	private AttachmentsService attachmentsService;
+
+
+	@Override
+	public BaseRepository<OstaRegNoticeWrite> getRepository() {		
+		return ostaRegNoticeWriteRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return ostaRegNoticeWriteRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return ostaRegNoticeWriteRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return ostaRegNoticeWriteRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaRegNoticeWrite get(Serializable id) {		
+		return ostaRegNoticeWriteRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaRegNoticeWrite entity) {
+		Dict dict = dictRepository.get(entity.getOstaWorktypeLevelId());
+		entity.setOstaWorktypeLevelName(dict.getName());
+		return ostaRegNoticeWriteRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaRegNoticeWrite entity) {
+		OstaRegNoticeWrite obj = ostaRegNoticeWriteRepository.get(entity.getId());
+		if (!obj.getOstaWorktypeLevelId().equals(entity.getOstaWorktypeLevelId())) {
+			Dict dict = dictRepository.get(entity.getOstaWorktypeLevelId());
+			entity.setOstaWorktypeLevelName(dict.getName());
+		}
+		ostaRegNoticeWriteRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		ostaRegNoticeWriteRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		ostaRegNoticeWriteRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllGridByNoticeId(Condition condition) {
+		String noticeId = "noHasNoticeId";
+		if (condition.containsKey("noticeId")) {
+			noticeId = condition.get("noticeId").toString();
+			condition.remove("noticeId");
+		}
+		return ostaRegNoticeWriteRepository.loadAllGridByNoticeId(noticeId,condition);
+	}
+	
+	@Override
+	public String saveAndFiles(OstaRegNoticeWrite obj,
+			HttpServletRequest request){
+		String id = ostaRegNoticeWriteRepository.save(obj).toString();
+		attachmentsService.batchSaveFiles(id,request);
+		return id;
+	}
+
+	@Override
+	public void updateAndFiles(OstaRegNoticeWrite obj,
+			HttpServletRequest request) {
+		ostaRegNoticeWriteRepository.update(obj);
+		attachmentsService.batchSaveFiles(obj.getId(),request);
+	}
+
+}

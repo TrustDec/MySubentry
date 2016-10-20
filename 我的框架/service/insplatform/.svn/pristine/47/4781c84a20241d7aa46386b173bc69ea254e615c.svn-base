@@ -1,0 +1,60 @@
+package com.insplatform.module.everyday.repository;
+
+import java.util.Map;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.everyday.model.EverydaySetting;
+
+public interface EverydaySettingRepository extends
+		BaseRepository<EverydaySetting> {
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAll(Condition condition);
+
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	Map<String, Object> loadTodayExam(String date);
+
+	/**
+	 * 
+	 * @param userId
+	 * @param settingId
+	 * @param myAnswer
+	 * @param isRight
+	 */
+	Map<String, Object> addCurrentRecourse(String userId, String settingId, String myAnswer,
+			String isRight);
+
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	Map<String, Object> checkHasTodayExam(String userId, String date);
+
+	/**
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	Map<String, Object> loadMyEverydayExam(String userId, String idx);
+
+	/**
+	 * 
+	 * @param userId
+	 * @param id
+	 * @return
+	 */
+	Map<String, Object> loadMyEverydayExamInfo(String userId, String id);
+
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style>
+		
+	</style>
+	<script src="js/jquery.js"></script>
+</head>
+<body>
+	<div id="box"></div>
+	<script type="text/javascript">
+		$.getJSON("file:///F:/JQuery%20Porject/form.html",function(data){
+
+			var html='<ul>';
+			for (var i = 0; i < data.length; i++) {
+				html+='<li>'+data[i]+'</li>';
+			}
+			html+='</ul>';
+			alert(html);
+			$("#box").html(html);
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+package com.insplatform.module.trainingevaluate.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluate;
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluateResult;
+import com.insplatform.module.trainingevaluate.repository.TrainingEvaluateResultRepository;
+import com.insplatform.module.trainingevaluate.service.TrainingEvaluateResultService;
+
+@Service
+public class TrainingEvaluateResultServiceImpl extends BaseServiceImpl<TrainingEvaluateResult> implements TrainingEvaluateResultService{
+	
+	@Autowired
+	private TrainingEvaluateResultRepository trainingEvaluateResultRepository;
+
+	@Override
+	public BaseRepository<TrainingEvaluateResult> getRepository() {		
+		return trainingEvaluateResultRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return trainingEvaluateResultRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return trainingEvaluateResultRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return trainingEvaluateResultRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingEvaluateResult get(Serializable id) {		
+		return trainingEvaluateResultRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingEvaluateResult entity) {	
+		return trainingEvaluateResultRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingEvaluateResult entity) {		
+		trainingEvaluateResultRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		trainingEvaluateResultRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		trainingEvaluateResultRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> getEvaluateResults(Condition condition) {
+		return trainingEvaluateResultRepository.getEvaluateResults(condition);
+	}
+
+	@Override
+	public void saveEvaluateResult(TrainingEvaluate trainingEvaluate,
+			Condition condition) {
+		trainingEvaluateResultRepository.saveEvaluateResult(trainingEvaluate,condition);
+	}
+
+	@Override
+	public void updateEvaluateResult(Condition condition) {
+		trainingEvaluateResultRepository.updateEvaluateResult(condition);
+	}
+
+}

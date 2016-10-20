@@ -1,0 +1,20 @@
+package com.insplatform.module.worktype.repository;
+
+import java.util.List;
+import java.util.Map;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.worktype.model.WorktypeClassify;
+
+public interface WorktypeClassifyRepository extends BaseRepository<WorktypeClassify>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAll(Condition condition);
+	
+}

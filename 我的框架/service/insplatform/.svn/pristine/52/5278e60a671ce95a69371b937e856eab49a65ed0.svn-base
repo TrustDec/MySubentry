@@ -1,0 +1,128 @@
+package com.insplatform.module.osta.register.write.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.register.write.model.OstaRegNoticeWrite;
+import com.insplatform.module.osta.register.write.service.OstaRegNoticeWriteService;
+
+@Controller
+@RequestMapping("/px/ostaregnoticewrite")
+public class OstaRegNoticeWriteController extends BaseController{
+	
+	@Autowired
+	private OstaRegNoticeWriteService ostaRegNoticeWriteService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGridByNoticeId")
+	public @ResponseBody Map<String, Object> loadAllGridByNoticeId(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"noticeId","stuName","stuIdcard",
+				"ostaWorktypeName","ostaWorktypeLevelName",
+				"createUserName","startCreateTime","endCreateTime");
+		
+		return ostaRegNoticeWriteService.loadAllGridByNoticeId(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return ostaRegNoticeWriteService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(ostaRegNoticeWriteService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(ostaRegNoticeWriteService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(OstaRegNoticeWrite ostaregnoticewrite, HttpServletRequest request){
+		CurrentUser user = this.getCurrentUser(request);
+		ostaregnoticewrite.setCreateUserId(user.getId());
+		ostaregnoticewrite.setCreateUserName(user.getName());
+		Date date = new Date();
+		ostaregnoticewrite.setCreateTime(date);
+		ostaregnoticewrite.setUpdateTime(date);
+		ostaRegNoticeWriteService.saveAndFiles(ostaregnoticewrite,request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		OstaRegNoticeWrite ostaregnoticewrite = ostaRegNoticeWriteService.get(id);
+		this.bindObject(request, ostaregnoticewrite);
+		ostaregnoticewrite.setUpdateTime(new Date());
+		ostaRegNoticeWriteService.updateAndFiles(ostaregnoticewrite,request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		ostaRegNoticeWriteService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	
+}
