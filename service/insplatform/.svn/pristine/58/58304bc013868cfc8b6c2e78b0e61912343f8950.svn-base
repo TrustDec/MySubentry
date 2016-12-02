@@ -1,0 +1,161 @@
+package com.insplatform.module.project.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.course.course.repository.CourseRepository;
+import com.insplatform.module.project.model.Project;
+import com.insplatform.module.project.repository.ProjectClassifyRepository;
+import com.insplatform.module.project.repository.ProjectItemRepository;
+import com.insplatform.module.project.repository.ProjectRepository;
+import com.insplatform.module.project.service.ProjectService;
+
+@Service
+public class ProjectServiceImpl extends BaseServiceImpl<Project> implements ProjectService{
+	
+	@Autowired
+	private ProjectRepository projectRepository;
+	@Autowired
+	private ProjectClassifyRepository projectClassifyRepository;
+	@Autowired
+	private ProjectItemRepository projectItemRepository;
+	@Autowired
+	private CourseRepository courseRepository;
+
+	@Override
+	public BaseRepository<Project> getRepository() {		
+		return projectRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return projectRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return projectRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return projectRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Project get(Serializable id) {		
+		return projectRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Project entity) {	
+		return projectRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Project entity) {		
+		projectRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		projectRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		projectRepository.deleteByIds(ids);
+	}
+
+	public void add(String id, String[] ids) {
+		projectRepository.add(id ,ids);
+	}
+
+	@Override
+	public Map<String, Object> loadWorkType(Condition condition) {
+		return projectRepository.loadWorkType(condition);
+	}
+
+	@Override
+	public void delete(String id, String[] ids) {
+		projectRepository.delete(id ,ids);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectInfo(String str) {
+		return projectRepository.selectInfo(str);
+	}
+
+	@Override
+	public Object loadAllListTemplate(Condition condition) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<Map<String,Object>> data = new ArrayList<Map<String,Object>>();
+		List<Map<String, Object>> courseList = null;
+		Map<String,Object> map=null;
+		int coursesCount = 0;
+		List<Map<String, Object>> projectItemList = projectItemRepository.loadAllList(condition);
+		for(Map<String, Object> projectItem:projectItemList){
+			map = new HashMap<String,Object>();
+			condition.put("courseClassifyId", projectItem.get("id"));
+			courseList = projectItemRepository.loadAllCourseList(condition);
+			map.put("item", projectItem);
+			map.put("courseList", courseList);
+			map.put("hasStudyedItem", 0);//默认此课程目录学习状态为未学习
+			data.add(map);
+			coursesCount += courseList.size();
+			int studyCourses = 0;//已学习课程数量
+			for(Map<String,Object> mm : courseList){
+				String courseId = (String) mm.get("courseId");
+				boolean hasStudyedCourse = courseRepository.hasStudyedCourse(condition.getCurrentUser().getId(), courseId);
+				if(hasStudyedCourse){
+					studyCourses++;
+					mm.put("hasStudyed", true);
+				}else{
+					mm.put("hasStudyed", false);
+				}
+				String info = (String) mm.get("info");
+				mm.put("info", TextUtil.subStr(info, 200));
+			}
+			if(studyCourses == 0){
+				map.put("hasStudyedItem", 1);//未学
+			}else if(studyCourses == courseList.size()){
+				map.put("hasStudyedItem", 3);//已学完
+			}else{
+				map.put("hasStudyedItem", 2);//正在学
+			}
+		}
+		Map<String, Object> project = load((String) condition.get("projectId"));
+		Map<String, Object> projectClassify = projectClassifyRepository.load((String) project.get("projectClassifyId"));
+		result.put("list", data);
+		result.put("project", project);
+		result.put("projectClassify", projectClassify);
+		result.put("coursesCount", coursesCount);
+		return result;
+	}
+
+
+}

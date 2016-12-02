@@ -1,0 +1,198 @@
+package com.insplatform.module.course.coursekpointrel.service.impl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.course.coursekpointrel.model.CourseKpointRel;
+import com.insplatform.module.course.coursekpointrel.repository.CourseKpointRelRepository;
+import com.insplatform.module.course.coursekpointrel.service.CourseKpointRelService;
+
+@Service
+public class CourseKpointRelServiceImpl extends BaseServiceImpl<CourseKpointRel> implements CourseKpointRelService{
+	
+	@Autowired
+	private CourseKpointRelRepository courseKpointRelRepository;
+
+	@Override
+	public BaseRepository<CourseKpointRel> getRepository() {		
+		return courseKpointRelRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return courseKpointRelRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return courseKpointRelRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return courseKpointRelRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public CourseKpointRel get(Serializable id) {		
+		return courseKpointRelRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(CourseKpointRel entity) {	
+		return courseKpointRelRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(CourseKpointRel entity) {		
+		courseKpointRelRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		courseKpointRelRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		courseKpointRelRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllTreeGrid(Condition condition) {
+		return courseKpointRelRepository.loadAllTreeGrid(condition);
+	}
+
+	@Override
+	public Map<String, Object> loadAllTreeGridBySelectKpoint(Condition condition) {
+		List<Map<String, Object>> data = courseKpointRelRepository.loadAllTreeGridBySelectKpoint(condition);
+		List<Map<String, Object>> treeData = buildTreeData(data);
+		
+		
+		//给菜数据加图标
+		for(Map<String, Object> node : treeData){
+			if (node.get("sortNumber")==null) {
+				node.put("checked", false);
+			}else{
+				node.put("checked", null);
+			}
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("children", treeService.parse(treeData, null, true, false));
+		return map;
+	}
+	/**
+	 * 组合树
+	 * @param data
+	 * @param chekced	是否可以复选
+	 * @return
+	 */
+	private List<Map<String, Object>> buildTreeData(List<Map<String, Object>> data){
+		//使用set去重
+		Set<Map<String, Object>> set = new HashSet<Map<String, Object>>();
+		//先将集合加入set中，保证数据完整性
+		set.addAll(data);
+		//确保每个节点的父节点都递归出来
+//		for(Map<String, Object> node : data){			
+//			addSuperNode(node, set, type);
+//		}
+		List<Map<String, Object>> finalList = new ArrayList<Map<String, Object>>();		
+		finalList.addAll(set);	
+		//排序
+//		Collections.sort(finalList, new Comparator<Map<String, Object>>() {
+//			@Override
+//			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+//				try{
+//					if(((BigDecimal)o1.get("orderIndex")).doubleValue() 
+//							> ((BigDecimal)o2.get("orderIndex")).doubleValue()){						
+//						return 1;
+//					}else if(((BigDecimal)o1.get("orderIndex")).doubleValue() 
+//							< ((BigDecimal)o2.get("orderIndex")).doubleValue()){						
+//						return -1;
+//					}else{
+//						return 0;
+//					}
+//				}catch(Exception ex){					
+//					return  0;
+//				}	
+//			}
+//		});	
+		return finalList;
+	}
+
+	@Override
+	public void saveBatch(String courseId, String[] ids, String[] kpointCatalogues) {
+		String[] courseKpointIds = courseKpointRelRepository.batchSave(courseId,ids,kpointCatalogues);
+		courseKpointRelRepository.batchSaveResource(courseKpointIds,ids);
+	}
+
+	@Override
+	public void updateKpointUpOrDown(String id,String type) {
+		courseKpointRelRepository.kpointUpOrDown(id, type);
+	}
+
+	@Override
+	public void saveKpointSortNumber(String[] ids) {
+		courseKpointRelRepository.saveKpointSortNumber(ids);
+		
+	}
+
+	/**
+	 * 向set中加入节点，并且递归加入其父节点
+	 * @param node
+	 * @param set
+	 */
+//	private void addSuperNode(Map<String, Object> node, Set<Map<String, Object>> set, String type){
+//		//如果是跟节点，直接加入，并返回
+//		if(node.get("pid") == null){
+//			set.add(node);
+//			return;
+//		}
+//		
+//		//加入自己
+//		set.add(node);
+//		
+//		//先看此set中是否有当前节点的父节点
+//		boolean hasSuper = false;
+//		for(Map<String, Object> s : set){			
+//			if(node.get("pid").toString().equals(s.get("id").toString())){
+//				hasSuper = true;
+//				break;
+//			}
+//		}
+//		
+//		if(!hasSuper){
+//			//查询此节点关联的所有父节点
+////			List<Map<String, Object>> supers = menuRepository.loadSupersByIdAsOracle(node.get("id").toString(), type);
+////			set.addAll(supers);		
+//		}
+//		
+//	}
+
+}

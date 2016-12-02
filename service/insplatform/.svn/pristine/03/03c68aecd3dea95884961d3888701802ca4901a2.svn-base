@@ -1,0 +1,64 @@
+package com.insplatform.module.course.coursekpointrel.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_COURSE_KPOINT_REL")
+public class CourseKpointRel implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private String courseId;
+	private String kpointId;
+	private double sortNumber;
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String kpointCatalogue;
+
+	public void setCourseId(String value) {
+		this.courseId = value;
+	}
+	
+	public String getCourseId() {
+		return this.courseId;
+	}
+	
+	public void setKpointId(String value) {
+		this.kpointId = value;
+	}
+	
+	public String getKpointId() {
+		return this.kpointId;
+	}
+	
+	public void setSortNumber(double value) {
+		this.sortNumber = value;
+	}
+	
+	public double getSortNumber() {
+		return this.sortNumber;
+	}
+	
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setKpointCatalogue(String value) {
+		this.kpointCatalogue = value;
+	}
+	
+	public String getKpointCatalogue() {
+		return this.kpointCatalogue;
+	}
+	
+}

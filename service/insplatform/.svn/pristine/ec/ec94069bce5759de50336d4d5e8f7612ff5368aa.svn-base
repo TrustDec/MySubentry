@@ -1,0 +1,328 @@
+package com.insplatform.module.testpaper.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.testpaper.model.TestPaperQuestion;
+import com.insplatform.module.testpaper.repository.TestPaperQuestionRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TestPaperQuestionRepositoryImpl extends BaseRepositoryImpl<TestPaperQuestion> implements TestPaperQuestionRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id,t.title, t.difficulty, t.type,t.que_source,t.question_score, t.remark ,k.name as kpointname from PX_TEST_PAPER_QUESTION t left join PX_KPOINT k on t.kpoint_id = k.id where t.px_test_paper=?";
+		condition.put("pxTestPaper", condition.get("pxTestPaper"));
+		if(condition.containsKey("title")){
+			sql += " and t.title like ? ";
+			condition.put("title", "%" + condition.get("title") + "%" );
+		}
+		if(condition.containsKey("type")){
+			sql += " and t.type = ? ";
+			condition.put("type", condition.get("type") );
+		}
+		if(condition.containsKey("difficulty")){
+			sql += " and t.difficulty = ? ";
+			condition.put("difficulty", condition.get("difficulty") );
+		}
+		if(condition.containsKey("questionScore")){
+			sql += " and t.question_score = ? ";
+			condition.put("questionScore", condition.get("questionScore") );
+		}
+		if(condition.containsKey("kpointname")){
+			sql += " and k.name like ? ";
+			condition.put("kpointname", "%" + condition.get("kpointname") + "%" );
+		}
+		
+		return gridService.loadData(condition.getGridTransModel(), sql,condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TEST_PAPER_QUESTION t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TEST_PAPER_QUESTION t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TestPaperQuestion get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TestPaperQuestion entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TestPaperQuestion entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+
+
+	@Override
+	public Map<String, Object> loadAllQuestionGridChooser(Condition condition) {
+		String sql = "select t.*,k.name as kpoint_name from PX_QUESTION t " +
+				" left join PX_KPOINT k on t.kpoint_id = k.id left join PX_TEST_PAPER_KPOINT tt on tt.kpoint=k.id " +
+				" where 1=1 and tt.px_test_paper=?";
+		condition.put("pxTestPaper",  condition.get("pxTestPaper"));
+		if(condition.containsKey("title")){
+			sql += " and t.title like ? ";
+			condition.put("title", "%" + condition.get("title") + "%" );
+		}
+		if(condition.containsKey("createUserName")){
+			sql += " and t.create_user_name like ? ";
+			condition.put("createUserName", "%" + condition.get("createUserName") + "%" );
+		}
+		if(condition.containsKey("type")){
+			sql += " and t.type = ? ";			
+		}
+		if(condition.containsKey("difficulty")){
+			sql += " and t.difficulty = ? ";			
+		}
+		if(condition.containsKey("kpointName")){
+			sql += " and k.name like ? ";
+			condition.put("kpointName", "%" + condition.get("kpointName") + "%" );
+		}
+		sql += " order by t.update_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public void addQuestion(Condition condition,String [] ids) {
+		String pxTestPaper=condition.get("pxTestPaper").toString();
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+			chechkState(ids[i], pxTestPaper, condition,1,"人工选");
+		}
+		
+	}
+	
+	
+	@Override
+	public void addRandomQuestion(Condition condition) {
+		String pxTestPaper=condition.get("pxTestPaper").toString();
+		jdbcAssistant.execute("delete px_test_paper_question t where t.px_test_paper='"+pxTestPaper+"'");
+		String sql="select t.*, t.rowid from PX_TEST_PAPER_REGULATION t where t.px_test_paper='"+pxTestPaper+"'";
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		for(Map<String, Object> map : list){
+			String difficulty=map.get("difficulty").toString();
+			String type=map.get("type").toString();
+			String total_topic=map.get("totalTopic").toString();
+			double oneScore=Double.parseDouble(map.get("oneScore").toString());
+			String pxKpoint=map.get("pxKpoint").toString();
+			String questSql="select * from (select t.id,t.title from PX_QUESTION t where t.type='"+type+"' and t.difficulty='"+difficulty+"' and t.kpoint_id='"+pxKpoint+"' order by dbms_random.value) where rownum<="+total_topic+" ";
+			List<Map<String, Object>> questList=jdbcAssistant.query(questSql);
+			for(Map<String, Object> questMap : questList){
+				String questId=questMap.get("id").toString();
+				chechkState(questId, pxTestPaper, condition,oneScore,"随机选");
+			}
+			
+			
+		}
+		
+	}
+	
+	/**
+	 * 检查是否可以进行选择试题，并增加相应的试题
+	 * @param id
+	 * @param pxTestPaper
+	 * @param condition
+	 * @param socre
+	 * @param questionType
+	 * @return
+	 */
+	boolean chechkState(String id, String pxTestPaper,Condition condition,double socre,String questionType)
+	{
+		boolean result=true;
+		//试卷信息
+		Map<String, Object> paperMap=getQuestionInfo(pxTestPaper);
+		//试卷试题总数
+		int paperTotal=Integer.parseInt(paperMap.get("totalTopic").toString());
+		//试卷总分数
+		double paperTotalScore=Double.parseDouble(paperMap.get("totalScore").toString());
+		//试题库信息
+		int questSum=getQuestionSumState(pxTestPaper);
+		double questScore=getQuestionScoreState(pxTestPaper);
+		if(!(paperTotalScore>=questScore+socre))
+		{
+			result=false;
+		}
+		if(!(paperTotal>=questSum+1))
+		{
+			result=false;
+		}
+		if(result)
+		{
+			add(id, pxTestPaper, condition,socre,questionType);
+		}
+		
+		return false;
+		
+	}
+	
+	
+	@Override
+	public int getQuestionSumState(String id) {
+		String paperSql="select count(*) as  shuliang from PX_TEST_PAPER_QUESTION t where t.px_test_paper='"+id+"'";
+		Map<String, Object> paperMap=jdbcAssistant.queryOne(paperSql);
+		//试卷试题总数
+		int paperTotal=Integer.parseInt(paperMap.get("shuliang").toString());
+		return paperTotal;
+	}
+
+	@Override
+	public double getQuestionScoreState(String id) {
+		String paperSql="select sum(t.question_score) as  questionScore from PX_TEST_PAPER_QUESTION t where t.px_test_paper='"+id+"'";
+		Map<String, Object> paperMap=jdbcAssistant.queryOne(paperSql);
+		double questionScore=0;
+		if(paperMap.get("questionScore")!=null)
+		{
+			questionScore=Double.parseDouble(paperMap.get("questionScore").toString());
+		}
+		return questionScore;
+	}
+
+	@Override
+	public Map<String, Object> getQuestionInfo(String id) {
+		String paperSql="select * from PX_TEST_PAPER t where t.id='"+id+"'";
+		Map<String, Object> paperMap=jdbcAssistant.queryOne(paperSql);
+		return paperMap;
+	}
+
+	@Override
+	public void add(String id, String pxTestPaper,Condition condition,double socre,String questionType) {
+		String sql="select * from PX_TEST_PAPER_QUESTION t where t.px_question='"+id+"' and t.px_test_paper='"+pxTestPaper+"'";
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		if(list.size()==0)
+		{
+			String questSql="select * from PX_QUESTION t where t.id='"+id+"'";
+			 Map<String, Object> questMap=jdbcAssistant.queryOne(questSql);
+				String questId=questMap.get("id").toString();
+				String questTitle=questMap.get("title").toString();
+				String difficulty=questMap.get("difficulty").toString();
+				String type=questMap.get("type").toString();
+				String pxKpoint=questMap.get("kpointId").toString();
+				String questRemark="";
+				if(questMap.get("remark")!=null)
+				{
+					questRemark=questMap.get("remark").toString();
+				}
+				String questImg="";
+				if(questMap.get("img")!=null)
+				{
+					questImg=questMap.get("img").toString();
+				}
+				String tempUuid=TextUtil.getUUID();
+				String questInsertSql="insert into px_test_paper_question   (id, title, difficulty, type, remark, img, create_user_id, create_user_name, create_time, kpoint_id, px_test_paper, question_score, que_source,px_question) " +
+						"values ('"+tempUuid+"', '"+questTitle+"', '"+difficulty+"', '"+type+"', '"+questRemark+"', '"+questImg+"', '"+condition.getCurrentUser().getId()+"', '"+condition.getCurrentUser().getName()+"', sysdate, '"+pxKpoint+"', '"+pxTestPaper+"', "+socre+", '"+questionType+"','"+questId+"')";
+				jdbcAssistant.execute(questInsertSql);
+				String questAnswerSql="select * from PX_QUESTION_ANSWER t where t.que_id='"+questId+"' order by no";
+				List<Map<String, Object>> questAnswerList=jdbcAssistant.query(questAnswerSql);
+				for(Map<String, Object> questAnswerMap : questAnswerList){
+					String answer="";
+					if(questAnswerMap.get("answer")!=null)
+					{
+						answer=questAnswerMap.get("answer").toString();
+					}
+					String isRight=questAnswerMap.get("isRight").toString();
+					String img="";
+					if(questAnswerMap.get("img")!=null)
+					{
+						img=questAnswerMap.get("img").toString();
+					}
+					String no=questAnswerMap.get("no").toString();
+					String questAnserSql="insert into px_test_paper_question_answer (id, answer, is_right, img, que_id, no) " +
+							"values ('"+TextUtil.getUUID()+"', '"+answer+"', '"+isRight+"', '"+img+"', '"+tempUuid+"', '"+no+"')";
+					jdbcAssistant.execute(questAnserSql);
+				}
+				
+				
+			}
+		
+	}
+
+	@Override
+	public String getPaperState(Condition condition) {
+		String result="";
+		String pxTestPaper=condition.get("pxTestPaper").toString();
+		//试卷信息
+		Map<String, Object> paperMap=getQuestionInfo(pxTestPaper);
+		//试卷试题总数
+		int paperTotal=Integer.parseInt(paperMap.get("totalTopic").toString());
+		//试卷总分数
+		double paperTotalScore=Double.parseDouble(paperMap.get("totalScore").toString());
+		//试题库信息
+		int questSum=getQuestionSumState(pxTestPaper);
+		double questScore=getQuestionScoreState(pxTestPaper);
+		if(paperTotalScore!=questScore)
+		{
+			result="分数超出或者小于试卷总分";
+		}
+		if(paperTotal!=questSum)
+		{
+			result="试题数量超出或者小于试卷总分";
+		}
+		return result;
+	}
+
+	@Override
+	public int getQuestionSum(Condition condition) {
+		String pxTestPaper=condition.get("pxTestPaper").toString();
+		int questSum=getQuestionSumState(pxTestPaper);
+		return questSum;
+	}
+
+	@Override
+	public void updateScore(String[] ids, double score) {
+		String[] sqlInsert = new String[ids.length];
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "update PX_TEST_PAPER_QUESTION set question_score="+score+" where id = '"+ids[i]+"'";
+			}
+		jdbcAssistant.batchUpdate(sqlInsert);
+		
+		
+	}
+	
+	
+	
+}

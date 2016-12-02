@@ -1,0 +1,93 @@
+package com.insplatform.module.evaluationwork.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.evaluationwork.model.EvaluationWork;
+import com.insplatform.module.evaluationwork.repository.EvaluationWorkRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class EvaluationWorkRepositoryImpl extends BaseRepositoryImpl<EvaluationWork> implements EvaluationWorkRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id,t.class_name,t.examiner_id,t.examiner_name,t.work_record,t.comments,t.create_user_id," +
+				"t.create_user_name,to_char(t.create_time,'yyyy-MM-dd') as create_time,t.update_time from px_evaluation_work t where 1=1 ";
+		
+		if(condition.containsKey("className")){
+			sql += " and t.CLASS_NAME like ? ";
+			condition.put("className", "%" + condition.get("className") + "%" );
+		}
+		
+		if(condition.containsKey("examinerName")){
+			sql += " and t.EXAMINER_NAME like ? ";
+			condition.put("examinerName", "%" + condition.get("examinerName") + "%" );
+		}
+		
+		if(condition.containsKey("createUserName")){
+			sql += " and t.CREATE_USER_NAME like ? ";
+			condition.put("createUserName", "%" + condition.get("createUserName") + "%" );
+		}
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_EVALUATION_WORK t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_EVALUATION_WORK t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public EvaluationWork get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(EvaluationWork entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(EvaluationWork entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

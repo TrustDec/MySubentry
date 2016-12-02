@@ -1,0 +1,120 @@
+package com.insplatform.module.bbs.articlemycollect.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.bbs.articlemycollect.model.BbsArticleMycollect;
+import com.insplatform.module.bbs.articlemycollect.service.BbsArticleMycollectService;
+
+@Controller
+@RequestMapping("/px/bbs/articlemycollect")
+public class BbsArticleMycollectController extends BaseController{
+	
+	@Autowired
+	private BbsArticleMycollectService bbsArticleMycollectService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return bbsArticleMycollectService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(bbsArticleMycollectService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(bbsArticleMycollectService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")
+	public @ResponseBody Map<String, Object> add(BbsArticleMycollect bbsarticlemycollect,HttpServletRequest request){
+		CurrentUser user = getCurrentUser(request);
+		bbsarticlemycollect.setUserId(user.getId());
+		bbsArticleMycollectService.save(bbsarticlemycollect);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		BbsArticleMycollect bbsarticlemycollect = bbsArticleMycollectService.get(id);
+		this.bindObject(request, bbsarticlemycollect);
+		bbsArticleMycollectService.update(bbsarticlemycollect);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		bbsArticleMycollectService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/remove")
+	public @ResponseBody Map<String, Object> remove(HttpServletRequest request){
+		String articleId = request.getParameter("articleId");
+		String userId = getCurrentUser(request).getId();
+		bbsArticleMycollectService.uncollect(articleId, userId);
+		return this.getMessager().success();
+	}
+
+	
+}

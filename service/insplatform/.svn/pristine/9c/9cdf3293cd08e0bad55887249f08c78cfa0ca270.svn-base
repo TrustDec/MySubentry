@@ -1,0 +1,55 @@
+package com.insplatform.module.kpoint.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_KPOINT")
+public class Kpoint implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String name;
+	private String remark;
+	private String parentId;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	
+	public void setParentId(String value) {
+		this.parentId = value;
+	}
+	
+	public String getParentId() {
+		return this.parentId;
+	}
+	
+}

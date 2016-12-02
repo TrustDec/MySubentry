@@ -1,0 +1,203 @@
+package com.insplatform.module.subcompanymontharrange.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_SUBCOMPANY_MONTH_SBOOK")
+public class SubcompanyMonthSbook implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String pxcompany;
+	private String pxproject;
+	private String pxcontent;
+	private int pxnum;
+	private String pxtype;
+	private String pxday;
+	private java.util.Date bgTime;
+	private java.util.Date edTime;
+	private String pxclassroom;
+	private String pxteacher;
+	private int pxmoney;
+	private String remark;
+	private String arrangeId;
+	private int pxyear;
+	private int pxmonth;
+	
+	
+
+	public int getPxyear() {
+		return pxyear;
+	}
+
+	public void setPxyear(int pxyear) {
+		this.pxyear = pxyear;
+	}
+
+	public int getPxmonth() {
+		return pxmonth;
+	}
+
+	public void setPxmonth(int pxmonth) {
+		this.pxmonth = pxmonth;
+	}
+
+	public int getPxnum() {
+		return pxnum;
+	}
+
+	public void setPxnum(int pxnum) {
+		this.pxnum = pxnum;
+	}
+
+	public int getPxmoney() {
+		return pxmoney;
+	}
+
+	public void setPxmoney(int pxmoney) {
+		this.pxmoney = pxmoney;
+	}
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setPxcompany(String value) {
+		this.pxcompany = value;
+	}
+	
+	public String getPxcompany() {
+		return this.pxcompany;
+	}
+	
+	public void setPxproject(String value) {
+		this.pxproject = value;
+	}
+	
+	public String getPxproject() {
+		return this.pxproject;
+	}
+	
+	public void setPxcontent(String value) {
+		this.pxcontent = value;
+	}
+	
+	public String getPxcontent() {
+		return this.pxcontent;
+	}
+	
+	
+	public void setPxtype(String value) {
+		this.pxtype = value;
+	}
+	
+	public String getPxtype() {
+		return this.pxtype;
+	}
+	
+	public void setPxday(String value) {
+		this.pxday = value;
+	}
+	
+	public String getPxday() {
+		return this.pxday;
+	}
+	
+	public void setBgTime(java.util.Date value) {
+		this.bgTime = value;
+	}
+	
+	public java.util.Date getBgTime() {
+		return this.bgTime;
+	}
+	
+	public void setEdTime(java.util.Date value) {
+		this.edTime = value;
+	}
+	
+	public java.util.Date getEdTime() {
+		return this.edTime;
+	}
+	
+	public void setPxclassroom(String value) {
+		this.pxclassroom = value;
+	}
+	
+	public String getPxclassroom() {
+		return this.pxclassroom;
+	}
+	
+	public void setPxteacher(String value) {
+		this.pxteacher = value;
+	}
+	
+	public String getPxteacher() {
+		return this.pxteacher;
+	}
+	
+	
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	
+	public void setArrangeId(String value) {
+		this.arrangeId = value;
+	}
+	
+	public String getArrangeId() {
+		return this.arrangeId;
+	}
+	
+}

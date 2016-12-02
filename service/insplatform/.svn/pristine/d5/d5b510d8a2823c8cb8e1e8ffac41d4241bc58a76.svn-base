@@ -1,0 +1,46 @@
+package com.insplatform.module.classcurriculum.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_CLASS_CURRICULUM_TEACHER")
+public class ClassCurriculumTeacher implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String pxClassCurriculum;
+	private String teacherId;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setPxClassCurriculum(String value) {
+		this.pxClassCurriculum = value;
+	}
+	
+	public String getPxClassCurriculum() {
+		return this.pxClassCurriculum;
+	}
+	
+	public void setTeacherId(String value) {
+		this.teacherId = value;
+	}
+	
+	public String getTeacherId() {
+		return this.teacherId;
+	}
+	
+}

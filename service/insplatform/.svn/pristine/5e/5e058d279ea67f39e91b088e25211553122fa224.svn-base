@@ -1,0 +1,32 @@
+package com.insplatform.system.authz.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.system.base.controller.BaseController;
+import com.insplatform.system.authz.service.AuthzService;
+
+@Controller
+@RequestMapping("/system/authz")
+public class AuthzController extends BaseController{
+	
+	@Autowired
+	private AuthzService authzService;
+	
+	/**
+	 * 加载所有操作的map  key：code value：{resourcePath: xxx, name:　xxx}
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping("/loadAllOperateMap")
+	public @ResponseBody Map<String, Object> loadAllOperateMap(HttpServletRequest request){
+		return authzService.loadAllOperateMap(this.getCondition(request));
+	}
+	
+}

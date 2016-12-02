@@ -1,0 +1,127 @@
+package com.insplatform.module.training.start.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.component.service.file.UploadService;
+import com.insframework.component.service.file.bean.FileBean;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.training.start.model.TrainingStartSpeak;
+import com.insplatform.module.training.start.repository.TrainingStartSpeakRepository;
+import com.insplatform.module.training.start.service.TrainingStartSpeakService;
+
+@Service
+public class TrainingStartSpeakServiceImpl extends BaseServiceImpl<TrainingStartSpeak> implements TrainingStartSpeakService{
+	
+	@Autowired
+	private TrainingStartSpeakRepository trainingStartSpeakRepository;
+
+	
+	@Autowired
+	private UploadService uploadService;
+	
+	@Override
+	public BaseRepository<TrainingStartSpeak> getRepository() {		
+		return trainingStartSpeakRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return trainingStartSpeakRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return trainingStartSpeakRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return trainingStartSpeakRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingStartSpeak get(Serializable id) {		
+		return trainingStartSpeakRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingStartSpeak entity) {	
+		return trainingStartSpeakRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingStartSpeak entity) {		
+		trainingStartSpeakRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		trainingStartSpeakRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		trainingStartSpeakRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Serializable save(TrainingStartSpeak obj, HttpServletRequest request) {
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		obj.setFileName(file.getOriginalFilename());
+		FileBean fileBean = null;
+		try {
+			fileBean = uploadService.uploadByDoc(file);			
+		} catch (Exception e) {		
+			e.printStackTrace();
+		}
+		obj.setFilePath(fileBean.getUrl());
+		String id = (String) super.save(obj);
+		return id;
+	}
+
+	@Override
+	public void update(TrainingStartSpeak obj, HttpServletRequest request) {
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		if(TextUtil.isNotEmpty(file.getOriginalFilename()))
+		{
+			obj.setFileName(file.getOriginalFilename());
+			FileBean fileBean = null;
+			try {
+				fileBean = uploadService.uploadByDoc(file);			
+			} catch (Exception e) {		
+				e.printStackTrace();
+			}
+			obj.setFilePath(fileBean.getUrl());
+		}
+		super.update(obj);
+		
+	}
+
+}

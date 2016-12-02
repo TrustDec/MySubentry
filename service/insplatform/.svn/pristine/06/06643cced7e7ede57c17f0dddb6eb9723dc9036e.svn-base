@@ -1,0 +1,264 @@
+package com.insplatform.module.trainingimplement.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingUserRoster;
+import com.insplatform.module.trainingimplement.service.TrainingUserRosterService;
+
+@Controller
+@RequestMapping("/px/traininguserroster")
+public class TrainingUserRosterController extends BaseController {
+
+	@Autowired
+	private TrainingUserRosterService trainingUserRosterService;
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody
+	Map<String, Object> loadAllGrid(HttpServletRequest request,
+			HttpServletResponse response) {
+		Condition condition = this.getCondition(request);
+		return trainingUserRosterService.loadAllGrid(condition);
+	}
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody
+	Map<String, Object> loadAllList(HttpServletRequest request,
+			HttpServletResponse response) {
+		Condition condition = this.getCondition(request);
+		String id = request.getParameter("id");
+		condition.put("id", id);
+		return this.getMessager().success()
+				.data(trainingUserRosterService.loadAllList(condition));
+	}
+	
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllListIsChecking")
+	public @ResponseBody
+	Map<String, Object> loadAllListIsChecking(HttpServletRequest request,
+			HttpServletResponse response) {
+		Condition condition = this.getCondition(request);
+		String id = request.getParameter("id");
+		condition.put("id", id);
+		return this.getMessager().success()
+				.data(trainingUserRosterService.loadAllListIsChecking(condition));
+	}
+	
+	
+	
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/userGroup")
+	public @ResponseBody
+	Map<String, Object> userGroup(HttpServletRequest request,
+			HttpServletResponse response) {
+		String ids[] = this.getSelectedItems(request, "id");
+		String userGroup = request.getParameter("userGroup");
+		String trainingSchemeId = request.getParameter("pxClassReport");
+		Condition condition = this.getCondition(request);
+		trainingUserRosterService.userGroup(condition,ids,userGroup,trainingSchemeId);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody
+	Map<String, Object> load(@RequestParam("id") String id) {
+		return this.getMessager().success()
+				.data(trainingUserRosterService.load(id));
+	}
+	
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/loadEdit")
+	public @ResponseBody
+	Map<String, Object> loadEdit(@RequestParam("id") String id, HttpServletRequest request) {
+		String trainingSchemeId = request.getParameter("trainingSchemeId");
+		return this.getMessager().success()
+				.data(trainingUserRosterService.loadEdit(id, trainingSchemeId));
+	}
+
+	/**
+	 * 新增
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")
+	public @ResponseBody
+	Map<String, Object> add(TrainingUserRoster traininguserroster,
+			HttpServletRequest request) {
+		String[] ids = this.getSelectedItems(request, "idSer");
+		String id = request.getParameter("id");
+		trainingUserRosterService.add(id, ids);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 编辑
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")
+	public @ResponseBody
+	Map<String, Object> update(@RequestParam("id") String id,
+			HttpServletRequest request) {
+		String phone = request.getParameter("phone");
+		trainingUserRosterService.update(phone,id);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 删除
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")
+	public @ResponseBody
+	Map<String, Object> delete(HttpServletRequest request) {
+		String[] ids = this.getSelectedItems(request);
+		trainingUserRosterService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 学员是否签到
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/isChecking")
+	public @ResponseBody
+	Map<String, Object> isChecking(HttpServletRequest request) {
+		String id = request.getParameter("userId");
+		String[] ids = this.getSelectedItems(request, "idSer");
+		String statu = request.getParameter("statu");
+		trainingUserRosterService.isChecking(id, ids, statu);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 加载学员考勤表
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/addOrUpadteUser")
+	public @ResponseBody
+	Map<String, Object> addOrUpadteUser(HttpServletRequest request) {
+		String id = request.getParameter("id");
+		String courseId = request.getParameter("courseId");
+		trainingUserRosterService.addOrUpadteUser(id, courseId);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllQueryClockGrid")
+	public @ResponseBody
+	Map<String, Object> loadAllQueryClockGrid(HttpServletRequest request,
+			HttpServletResponse response) {
+		Condition condition = this.getCondition(request, "id", "courseId",
+				"name");
+		return this.getMessager().success()
+				.data(trainingUserRosterService.loadAllQueryClockGrid(condition));
+	}
+
+	/**
+	 * 学员考勤
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/isCheckingChecked")
+	public @ResponseBody
+	Map<String, Object> isCheckingChecked(HttpServletRequest request) {
+		String id = request.getParameter("userId");
+		String schemeId = request.getParameter("schemeId");
+		String statu = request.getParameter("statu");
+		String courseId = request.getParameter("courseId");
+		String[] idSer = this.getSelectedItems(request, "idSer");
+		trainingUserRosterService.isCheckingChecked(id, schemeId, statu,idSer,
+				courseId);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 成绩
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/updateResult")
+	public @ResponseBody
+	Map<String, Object> updateResult(HttpServletRequest request) {
+		String id = request.getParameter("id");
+		String result = request.getParameter("result");
+		String remark = request.getParameter("remark");
+		return this.getMessager().data(trainingUserRosterService.updateResult(id, result, remark));
+	}
+	
+	/**
+	 * 查看成绩
+	 * 
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/loadData")
+	public @ResponseBody
+	Map<String, Object> loadData(HttpServletRequest request) {
+		String id = request.getParameter("id");
+		return this.getMessager().success().data(trainingUserRosterService.loadData(id));
+	}
+}

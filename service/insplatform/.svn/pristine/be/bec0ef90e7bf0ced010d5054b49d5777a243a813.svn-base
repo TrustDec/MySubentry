@@ -1,0 +1,240 @@
+package com.insplatform.module.monthplan.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.monthplan.model.MonthPlan;
+import com.insplatform.module.monthplan.repository.MonthPlanRepository;
+
+
+@Repository
+public class MonthPlanRepositoryImpl extends BaseRepositoryImpl<MonthPlan> implements MonthPlanRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id, t.year, t.month, t.title, t.budget, t.create_user_id, " +
+				" t.create_user_name, t.create_time, t.update_time, t.state,t.state statex," +
+				" (select count(mpj.id) from px_month_plan_project mpj where mpj.month_plan_id = t.id) project_num," +
+				" (select sum(mpj.person_number) from px_month_plan_project mpj where mpj.month_plan_id = t.id) person_num" +
+				" from px_month_plan t where 1=1";
+		
+		if (condition.containsKey("year")) {
+			sql += " and t.year like ?";
+			condition.put("year","%"+condition.get("year")+"%");
+		}
+		if (condition.containsKey("month")) {
+			sql += " and t.year = ?";
+		}
+		if (condition.containsKey("title")) {
+			sql += " and t.title like ?";
+			condition.put("title","%"+condition.get("title")+"%");
+		}
+		if (condition.containsKey("createUserName")) {
+			sql += " and t.create_user_name like ?";
+			condition.put("createUserName","%"+condition.get("createUserName")+"%");
+		}
+		if (condition.containsKey("state")) {
+			sql += " and t.state = ?";
+		}
+		if (condition.containsKey("startCreateTime")) {
+			sql += " and t.create_time >= to_date( ?, 'yyyy-mm-dd hh24:mi:ss')";
+		}
+		if (condition.containsKey("endCreateTime")) {
+			sql += " and t.create_time -1 < to_date( ?,'yyyy-mm-dd hh24:mi:ss')";
+		}
+		
+		sql += " order by t.update_time desc";
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(),new ValueMapper() {
+			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				approveState(record);
+				monthNameValueMapper(record);
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+	@Override
+	public Map<String, Object> loadAllGridByNeedApprove(Condition condition) {
+		String sql = "select t.id, t.year, t.month, t.title, t.budget, t.create_user_id, " +
+				" t.create_user_name, t.create_time, t.update_time, t.state,t.state statex," +
+				" (select count(mpj.id) from px_month_plan_project mpj where mpj.month_plan_id = t.id) project_num," +
+				" (select sum(mpj.person_number) from px_month_plan_project mpj where mpj.month_plan_id = t.id) person_num" +
+				" from px_month_plan t where (t.state='B' or t.state = 'C') ";
+		
+		if (condition.containsKey("year")) {
+			sql += " and t.year like ?";
+			condition.put("year","%"+condition.get("year")+"%");
+		}
+		if (condition.containsKey("month")) {
+			sql += " and t.year = ?";
+		}
+		if (condition.containsKey("title")) {
+			sql += " and t.title like ?";
+			condition.put("title","%"+condition.get("title")+"%");
+		}
+		if (condition.containsKey("createUserName")) {
+			sql += " and t.create_user_name like ?";
+			condition.put("createUserName","%"+condition.get("createUserName")+"%");
+		}
+		if (condition.containsKey("state")) {
+			sql += " and t.state = ?";
+		}
+		if (condition.containsKey("startCreateTime")) {
+			sql += " and t.create_time >= to_date( ?, 'yyyy-mm-dd hh24:mi:ss')";
+		}
+		if (condition.containsKey("endCreateTime")) {
+			sql += " and t.create_time -1 < to_date( ?,'yyyy-mm-dd hh24:mi:ss')";
+		}
+		
+		sql += " order by t.update_time desc";
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(),new ValueMapper() {
+			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				approveState(record);
+				monthNameValueMapper(record);
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+	
+	private void approveState(Map<String, Object> record) {
+		String state = record.get("state")+"";
+		if ("A".equals(state)) {
+			record.put("state", "未提交审批");
+		}else if ("B".equals(state)) {
+			record.put("state", "审批中");
+		}else if ("C".equals(state)) {
+			record.put("state", "审批通过");
+		}else if ("D".equals(state)) {
+			record.put("state", "审批不通过");
+		}
+	}
+	private void monthNameValueMapper(Map<String, Object> record) {
+		String[] monthAry = new String[]{"0","一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"};
+		String index = record.get("month").toString();
+		int i = Integer.parseInt(index);
+		record.put("month", monthAry[i]);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_MONTH_PLAN t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_MONTH_PLAN t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id},new ValueMapper() {
+			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				monthNameValueMapper(record);
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public MonthPlan get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(MonthPlan entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(MonthPlan entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public boolean beforeSaveCheckMonth(MonthPlan entity) {
+		String sql = "select t.id from px_month_plan t where t.year = ? and t.month = ?";
+		Map<String,Object> map = jdbcAssistant.queryOne(sql,new Object[]{entity.getYear(),entity.getMonth()});
+		if (map==null) {
+			return true;
+		}else if (entity.getId()!=null&&entity.getId().equals(map.get("id"))) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int getMonthStudyPersonNumber(String monthPlanId) {
+		String sql = "select sum(mpj.person_number) person_number  from px_month_plan t" +
+				" left join px_month_plan_project mpj on mpj.month_plan_id = t.id" +
+				" where t.id = ?";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql,new Object[]{monthPlanId});
+		if (map!=null&&map.get("personNumber")!=null) {
+			return Integer.parseInt(map.get("personNumber").toString());
+		}
+		return 0;
+	}
+
+	@Override
+	public int updateMonthBudget(String monthPlanId, double monthPersonNum) {
+		String sql = "update px_month_plan set budget = ? where id = ?";
+		return jdbcAssistant.update(sql,new Object[]{monthPersonNum, monthPlanId});
+	}
+	@Override
+	public boolean whetherItCanBeDeleted(String id) {
+		MonthPlan mp = super.get(id);
+		return "A".equals(mp.getState())||"D".equals(mp.getState())?true:false;
+	}
+	
+	@Override
+	public boolean beforeSendApprovalCheck(String id) {
+		String sql = "select t.id from px_month_plan_project t where t.month_plan_id = ?";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql, new Object[]{id});
+		if (map==null) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int updateState(String id, String state) {
+		String sql = "update px_month_plan set state = ? where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{state, id});
+	}
+
+	
+}

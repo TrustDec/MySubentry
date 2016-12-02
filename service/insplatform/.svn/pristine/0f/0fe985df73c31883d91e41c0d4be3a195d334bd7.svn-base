@@ -1,0 +1,52 @@
+package com.insplatform.module.classroom.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+
+import com.insframework.system.map.Condition;
+import com.insplatform.module.classroom.model.ClassroomEquipment;
+
+public interface ClassroomEquipmentRepository extends
+		BaseRepository<ClassroomEquipment> {
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 当主表删除教室时，教室设备一起删除
+	 * 
+	 * @param ids
+	 */
+	void deleteByClassroomIds(String[] ids);
+	
+	/**
+	 * 删除教室对应设备
+	 * @param ids
+	 */
+	void deleteByEuqipIds(String[] ids);
+
+}

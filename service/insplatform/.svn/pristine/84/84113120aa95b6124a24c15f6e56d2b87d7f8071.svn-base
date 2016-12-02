@@ -1,0 +1,143 @@
+package com.insplatform.module.monthplan.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.monthplan.model.MonthPlanProject;
+import com.insplatform.module.monthplan.repository.MonthPlanProjectRepository;
+
+
+@Repository
+public class MonthPlanProjectRepositoryImpl extends BaseRepositoryImpl<MonthPlanProject> implements MonthPlanProjectRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select pj.name project_name, t.id, t.month_plan_id, t.project_id, t.person_number" +
+				" from px_month_plan_project t" +
+				" left join px_project pj on pj.id = t.project_id" +
+				" where t.month_plan_id = ?";
+		if (condition.containsKey("projectName")) {
+			sql += " and pj.name like ?";
+			condition.put("projectName","%"+condition.get("projectName")+"%");
+		}
+		
+		sql += " order by pj.name";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> loadAllOptionalProject(Condition condition) {
+		String sql = "select t.id, t.px_person_classify_name, t.name, t.cultivate_type, t.remark" +
+				" from px_project t" +
+				" left join px_project_classify p on p.id = t.project_classify_id" +
+				" where 1=1";
+				
+		if(condition.containsKey("projectClassifyId")){
+			sql += " and t.project_classify_id = ? ";
+			condition.put("projectClassifyId",condition.get("projectClassifyId"));
+		}		
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("cultivateType")){
+			sql += " and t.cultivate_type like ? ";
+			condition.put("cultivateType", "%" + condition.get("cultivateType") + "%" );
+		}
+		sql += " and t.id not in (select project_id from px_month_plan_project where month_plan_id = ?)";
+//				" and t.id in (" +
+//				" select mpj.project_id from px_year_plan yp" +
+//				" left join px_year_plan_month ym on ym.year_plan_id = yp.id" +
+//				" left join px_year_plan_month_project mpj on mpj.year_plan_month_id = ym.id" +
+//				" where yp.id = ? )";
+		
+		sql += " order by t.name ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_MONTH_PLAN_PROJECT t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select pj.name project_name, t.id, t.month_plan_id, t.project_id, t.person_number" +
+				" from px_month_plan_project t" +
+				" left join px_project pj on pj.id = t.project_id" +
+				" where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public MonthPlanProject get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(MonthPlanProject entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(MonthPlanProject entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public int batchSaveMonthProjectFromYearPlan(String monthPlanId,
+			String yearPlanId, int month) {
+		String sql = "insert into px_month_plan_project" +
+				" (id, month_plan_id, project_id, person_number)" +
+				" select ?||rownum,?,mpj.project_id,person_number " +
+				" from px_year_plan_month_project mpj" +
+				" inner join px_year_plan_month mp on mp.id = mpj.year_plan_month_id" +
+				" and mp.year_plan_id = ? and mp.month_name = ?";
+		return jdbcAssistant.update(sql, new Object[]{monthPlanId,monthPlanId,yearPlanId,month});
+	}
+
+	@Override
+	public boolean beforeSaveCheckPoject(MonthPlanProject entity) {
+		String sql = "select t.id from px_month_plan_project t" +
+				" where t.project_id = ? and t.month_plan_id = ? ";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql, new Object[]{entity.getProjectId(),entity.getMonthPlanId()});
+		if (map==null) {
+			return true;
+		}else if (entity.getId()!=null&&entity.getId().equals(map.get("id"))) {
+			return true;
+		}
+		return false;
+	}
+	
+}

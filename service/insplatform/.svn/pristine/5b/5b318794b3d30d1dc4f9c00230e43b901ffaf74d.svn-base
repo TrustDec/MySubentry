@@ -1,0 +1,139 @@
+package com.insplatform.system.user.service.impl;
+
+import java.io.Serializable;
+import java.util.Map;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.system.organization.repository.OrganizationRepository;
+import com.insplatform.system.role.RoleConstant;
+import com.insplatform.system.role.repository.RoleRepository;
+import com.insplatform.system.user.UserBizLevelConstant;
+import com.insplatform.system.user.model.User;
+import com.insplatform.system.user.repository.UserRepository;
+import com.insplatform.system.user.service.UserBizDataAuthzService;
+import com.insplatform.system.user.service.UserService;
+
+@Service
+public class UserServiceImpl extends BaseServiceImpl<User> implements UserService{
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	private OrganizationRepository organizationRepository;
+	
+	@Autowired
+	private UserBizDataAuthzService userBizDataAuthzService;
+
+	@Override
+	public BaseRepository<User> getRepository() {		
+		return userRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAll(Condition condition) {			
+		return userRepository.loadAll(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {
+		return userRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类方法
+	 */
+	@Override
+	public User get(Serializable id) {		
+		return userRepository.get(id);
+	}
+	
+	
+	@Override
+	public String save(User entity, String orgId) {		
+		String id = (String) userRepository.save(entity);
+		//设置默认数据权限级别
+		userBizDataAuthzService.saveUserBizLevel(id, UserBizLevelConstant.MYSELF.getValue());
+		//设置默认角色		
+		Map<String, Object> defaultRole = roleRepository.loadRoleByCode(RoleConstant.DEFAULT.getValue());
+		roleRepository.addRoleUser(defaultRole.get("id").toString(), new String[]{id});	
+		//设置机构
+		saveUserOrg(id, orgId);
+		return id;
+	}
+	
+	
+	@Override
+	public void update(User entity, String orgId) {		
+		userRepository.update(entity);
+		//设置机构
+		saveUserOrg(entity.getId(), orgId);
+	}
+	
+	/**
+	 * 设置用户机构
+	 * @param userId
+	 * @param orgId
+	 */
+	private void saveUserOrg(String userId, String orgId){	
+		Map<String, Object> userOrg = organizationRepository.loadUserOrg(userId);
+		if(userOrg!=null){
+			organizationRepository.deleteOrgUser(userOrg.get("id").toString(), new String[]{userId});		
+		}		
+		organizationRepository.addOrgUser(orgId, new String[]{userId});		
+	}
+		
+	
+	/**
+	 * 重写父类方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		userRepository.deleteByIds(ids);
+	}
+	
+	@Override
+	public boolean checkHasAccount(String account, String id) {		
+		return userRepository.checkHasAccount(account, id);
+	}
+
+	@Override
+	public byte[] getPhotoById(String id) {		
+		return userRepository.getPhotoById(id);
+	}
+
+	@Override
+	public void savePhoto(String id, String photoReal) throws Exception{		
+		userRepository.savePhoto(id, photoReal);		
+	}
+
+	@Override
+	public void resetPassword(String[] selectedItems) {
+		userRepository.resetPassword(selectedItems)	;
+	}
+
+	@Override
+	public String loadUserIdByAccount(String account) {
+		String sql = "select id from sys_user where account = '"+account+"'";
+		String id = jdbcAssistant.queryAsString(sql);
+		return id;
+	}
+
+	@Override
+	public Map<String, Object> loadAllChooser(Condition condition) {
+		return userRepository.loadAllChooser(condition);
+	}
+
+	
+	
+
+}

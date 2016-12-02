@@ -1,0 +1,152 @@
+package com.insplatform.module.osta.eval.sign.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insframework.system.map.Messager;
+import com.insplatform.module.osta.eval.sign.model.OstaEvalSign;
+import com.insplatform.module.osta.eval.sign.repository.OstaEvalSignRepository;
+import com.insplatform.module.osta.eval.sign.service.OstaEvalSignService;
+import com.insplatform.module.worktype.model.WorktypeLevel;
+import com.insplatform.module.worktype.repository.WorktypeClassifyRepository;
+import com.insplatform.module.worktype.repository.WorktypeLevelRepository;
+
+@Service
+public class OstaEvalSignServiceImpl extends BaseServiceImpl<OstaEvalSign> implements OstaEvalSignService{
+	
+	@Autowired
+	private OstaEvalSignRepository ostaEvalSignRepository;
+	
+	@Autowired
+	private WorktypeClassifyRepository worktypeClassifyRepository;
+	
+	@Autowired
+	private WorktypeLevelRepository worktypeLevelRepository;
+
+	@Override
+	public BaseRepository<OstaEvalSign> getRepository() {		
+		return ostaEvalSignRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return ostaEvalSignRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return ostaEvalSignRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return ostaEvalSignRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaEvalSign get(Serializable id) {		
+		return ostaEvalSignRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaEvalSign entity) {	
+		return ostaEvalSignRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaEvalSign entity) {		
+		ostaEvalSignRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		ostaEvalSignRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		ostaEvalSignRepository.deleteByIds(ids);
+	}
+	
+	@Override
+	public Map<String, Object> deleteByIdsx(String[] ids) {
+		int errNum = 0;
+		if (ids==null||ids.length==0) {
+			return new Messager().put("err", "errParm");
+		}
+		boolean flag = false;
+		int result = 0;
+		int hasSon = 0;
+		for (String id : ids) {
+			flag = ostaEvalSignRepository.beforeCheckDeleteByIdsx(id);
+			if (flag) {
+				try {
+					result = ostaEvalSignRepository.deleteByIdx(id);
+					if (result==0) {
+						errNum++;
+					}
+				} catch (Exception e) {
+					errNum++;
+				}
+			}else {
+				hasSon++;
+			}
+		}
+		return new Messager().put("errNum", errNum).put("hasSon", hasSon);
+	}
+
+	@Override
+	public Map<String, Object> mySave(OstaEvalSign entity) {
+		setWorktypeLevelName(entity);
+		Serializable id = ostaEvalSignRepository.save(entity);
+		return new Messager().put("id", id);
+	}
+	
+	private void setWorktypeLevelName(OstaEvalSign entity) {
+		Map<String, Object> map = worktypeClassifyRepository.getOneByWorkTypeId(entity.getWorktypeId());
+		entity.setWorktypeClassId(map.get("id")+"");
+		entity.setWorktypeClassName(map.get("name")+"");
+		
+		String worktypeLevelId = entity.getTrainingLevelId();
+		if (TextUtil.isNotEmpty(worktypeLevelId)) {
+			try {
+				WorktypeLevel wtl = worktypeLevelRepository.get(worktypeLevelId);
+				entity.setTrainingLevelName(wtl.getName());
+			} catch (Exception e) {
+				System.out.println("工种级别名称获取失败");
+			}
+		}
+	}
+
+	@Override
+	public Map<String, Object> myUpdate(OstaEvalSign entity) {
+		setWorktypeLevelName(entity);
+		ostaEvalSignRepository.update(entity);
+		return new Messager();
+	}
+
+
+}

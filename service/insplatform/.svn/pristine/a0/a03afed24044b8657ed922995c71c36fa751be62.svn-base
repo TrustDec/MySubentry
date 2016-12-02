@@ -1,0 +1,108 @@
+package com.insplatform.module.course.courseworktype.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.course.courseworktype.model.CourseWorktype;
+import com.insplatform.module.course.courseworktype.repository.CourseWorktypeRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class CourseWorktypeRepositoryImpl extends BaseRepositoryImpl<CourseWorktype> implements CourseWorktypeRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select * from V_PX_WORKTYPE where id in (select t.worktype_id from PX_COURSE_WORKTYPE t where t.course_id = ?)";
+		if(condition.containsKey("worktypeId")){
+			sql += " and worktype_id = ? ";
+		}
+		if(condition.containsKey("worktypeClassifyId")){
+			sql += " and worktype_classify_id = ? ";
+		}
+		if(condition.containsKey("fullName")){
+			sql += " and full_name like ? ";
+			condition.put("fullName", "%" + condition.get("fullName") + "%");
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_COURSE_WORKTYPE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_COURSE_WORKTYPE t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public CourseWorktype get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(CourseWorktype entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(CourseWorktype entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {
+		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public void BatchSave(String courseId, String[] ids) {
+		if (ids!=null&&ids.length>0) {
+			String sql = "insert into px_course_worktype(course_id, worktype_id) values (?,?)";
+			for (int i = 0; i < ids.length; i++) {
+				try {
+					jdbcAssistant.update(sql, new Object[]{courseId,ids[i]});
+				} catch (Exception e) {
+					System.out.println("该工种无需添加");
+				}
+			}
+		}
+	}
+
+	@Override
+	public List<Map<String, Object>> loadCourseWorktypes(String courseId) {
+		String sql = "select v.ID,v.full_name,v.worktype_classify_id,v.worktype_classify_name from V_PX_WORKTYPE v" +
+				     " where id in (select worktype_id from PX_COURSE_WORKTYPE where course_id = '"+courseId+"')";
+		return jdbcAssistant.query(sql);
+	}
+
+}

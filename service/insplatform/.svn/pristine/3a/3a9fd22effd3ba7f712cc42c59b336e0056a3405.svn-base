@@ -1,0 +1,45 @@
+package com.insplatform.module.classcurriculum.service;
+
+import java.util.*;
+
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.classcurriculum.model.ClassCurriculum;
+
+public interface ClassCurriculumService extends BaseService<ClassCurriculum>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	
+	/**
+	 * 选择教学计划保存
+	 * @param condition
+	 * @param classReportID
+	 * @param ids
+	 */
+	void addSelectTeachingPlan(Condition condition, String classReportID,String[] ids);
+}

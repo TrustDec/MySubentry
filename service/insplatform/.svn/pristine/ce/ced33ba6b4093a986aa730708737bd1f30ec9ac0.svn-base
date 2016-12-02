@@ -1,0 +1,148 @@
+package com.insplatform.module.osta.register.demand.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.register.demand.model.OstaRegDemand;
+import com.insplatform.module.osta.register.demand.repository.OstaRegDemandRepository;
+
+
+@Repository
+public class OstaRegDemandRepositoryImpl extends BaseRepositoryImpl<OstaRegDemand> implements OstaRegDemandRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {
+		String sql = "select t.id, t.year, t.title, t.release, t.release releasex, t.create_user_id, t.create_user_name," +
+				" t.create_time, t.update_time, t.details, t.write_able,t.remarks" +
+				" from px_osta_reg_demand t where 1=1";
+		
+		//"year","title","release","createUserName"
+		if (condition.containsKey("operType")) {
+			sql += " and t.release = 'Y'";
+			condition.remove("operType");
+		}
+
+		if (condition.containsKey("year")) {
+			sql += " and t.year like ?";
+			condition.put("year","%"+condition.get("year")+"%");
+		}
+		if (condition.containsKey("title")) {
+			sql += " and t.title like ?";
+			condition.put("title","%"+condition.get("title")+"%");
+		}
+		if (condition.containsKey("release")) {
+			sql += " and t.release = ?";
+		}
+		if (condition.containsKey("createUserName")) {
+			sql += " and t.create_user_name like ?";
+			condition.put("createUserName","%"+condition.get("createUserName")+"%");
+		}
+		
+		sql += " order by t.update_time desc";
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(), new ValueMapper() {
+			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				if ("Y".equals(record.get("release"))) {
+					record.put("release", "已发布");
+				}else if ("N".equals(record.get("release"))) {
+					record.put("release", "未发布");
+				}
+				return null;
+			}
+		});
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from px_osta_reg_demand t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from px_osta_reg_demand t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaRegDemand get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaRegDemand entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaRegDemand entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public boolean beforeCheckUpdateRelease(String id, String value) {
+		return true;
+	}
+
+	@Override
+	public int updateRelease(String id, String typeValue) {
+		String sql = "update px_osta_reg_demand set release = ?, write_able = 'Y' where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{typeValue, id});
+	}
+
+	@Override
+	public boolean beforeCheckUpdateWriteAble(String id, String value) {
+		return true;
+	}
+
+	@Override
+	public int updateWriteAble(String id, String value) {
+		String sql = "update px_osta_reg_demand set write_able = ? where id = ?";
+		return jdbcAssistant.update(sql, value, id);
+	}
+
+	@Override
+	public boolean beforeCheckDeleteByIdsx(String id) {
+		return true;
+	}
+
+	@Override
+	public int deleteByIdx(String id) {
+		String sql = "delete px_osta_reg_demand where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{id});
+	}
+	
+}

@@ -1,0 +1,121 @@
+package com.insplatform.module.bbs.questionmylove.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.bbs.questionmylove.model.BbsQuestionMylove;
+import com.insplatform.module.bbs.questionmylove.service.BbsQuestionMyloveService;
+
+@Controller
+@RequestMapping("/px/bbs/questionmylove")
+public class BbsQuestionMyloveController extends BaseController{
+	
+	@Autowired
+	private BbsQuestionMyloveService bbsQuestionMyloveService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return bbsQuestionMyloveService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(bbsQuestionMyloveService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(bbsQuestionMyloveService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")
+	public @ResponseBody Map<String, Object> add(BbsQuestionMylove bbsquestionmylove,HttpServletRequest request){
+		CurrentUser user = super.getCurrentUser(request);
+		bbsquestionmylove.setCreatePersonId(user.getId());
+		bbsquestionmylove.setCreatePersonName(user.getName());
+		bbsQuestionMyloveService.save(bbsquestionmylove);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		BbsQuestionMylove bbsquestionmylove = bbsQuestionMyloveService.get(id);
+		this.bindObject(request, bbsquestionmylove);
+		bbsQuestionMyloveService.update(bbsquestionmylove);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		bbsQuestionMyloveService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/remove")
+	public @ResponseBody Map<String, Object> remove(@RequestParam("questionId") String questionId,HttpServletRequest request){
+		String userId = getCurrentUser(request).getId();
+		bbsQuestionMyloveService.unfollow(questionId, userId);
+		return this.getMessager().success();
+	}
+
+
+	
+}

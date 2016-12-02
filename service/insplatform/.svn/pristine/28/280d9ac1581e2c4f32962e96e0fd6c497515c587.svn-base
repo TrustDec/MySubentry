@@ -1,0 +1,81 @@
+package com.insplatform.module.everyday.model;
+
+import java.io.Serializable;
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_EVERYDAY_SETTING")
+public class EverydaySetting implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id(strategy = ID_STRATEGY.UUID)
+	private String id;
+	private String dateNo;
+	private String questionTitle;
+	private String questionType;
+	private String questionDifficulty;
+	private String questionAnswer;
+	private String img;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getDateNo() {
+		return dateNo;
+	}
+
+	public void setDateNo(String dateNo) {
+		this.dateNo = dateNo;
+	}
+
+	public String getQuestionTitle() {
+		return questionTitle;
+	}
+
+	public void setQuestionTitle(String questionTitle) {
+		this.questionTitle = questionTitle;
+	}
+
+	public String getQuestionType() {
+		return questionType;
+	}
+
+	public void setQuestionType(String questionType) {
+		this.questionType = questionType;
+	}
+
+	public String getQuestionDifficulty() {
+		return questionDifficulty;
+	}
+
+	public void setQuestionDifficulty(String questionDifficulty) {
+		this.questionDifficulty = questionDifficulty;
+	}
+
+	public String getQuestionAnswer() {
+		return questionAnswer;
+	}
+
+	public void setQuestionAnswer(String questionAnswer) {
+		this.questionAnswer = questionAnswer;
+	}
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+}

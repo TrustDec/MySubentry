@@ -1,0 +1,100 @@
+package com.insplatform.module.training.curriculum.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.training.curriculum.model.TrainingCurriculumTeacher;
+import com.insplatform.module.training.curriculum.repository.TrainingCurriculumTeacherRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TrainingCurriculumTeacherRepositoryImpl extends BaseRepositoryImpl<TrainingCurriculumTeacher> implements TrainingCurriculumTeacherRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = " select  c.id,b.name,b.sex,b.edu,a.direction,a.lesson,a.remark" +
+				"  from px_teacher a ,  V_SYS_USER_INFO b ,PX_TRAINING_CURRICULUM_TEACHER c where a.user_id = b.id and c.teacher_id=a.user_id and a.approval = '1' ";
+				if (condition.containsKey("pxTrainingCurriculum")) {
+					sql += " and c.px_training_curriculum = ? ";
+					condition.put("pxTrainingCurriculum",condition.get("pxTrainingCurriculum"));
+				}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_CURRICULUM_TEACHER t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TRAINING_CURRICULUM_TEACHER t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingCurriculumTeacher get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingCurriculumTeacher entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingCurriculumTeacher entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public void addTeacher(String[] ids, Condition condition) {
+	
+		String pxTrainingCurriculum=condition.get("pxTrainingCurriculum").toString();
+		for (int i = 0; i < ids.length; i++) {
+			
+			String sql="select * from PX_TRAINING_CURRICULUM_TEACHER t  where t.px_training_curriculum='"+pxTrainingCurriculum+"' and t.teacher_id='"+ids[i]+"'";
+			List<Map<String, Object>> list=jdbcAssistant.query(sql);
+			if(list.size()==0)
+			{
+				String insertSql ="insert into PX_TRAINING_CURRICULUM_TEACHER  (id, px_training_curriculum, teacher_id) " +
+						"values ('"+TextUtil.getUUID()+"', '"+pxTrainingCurriculum+"', '"+ids[i]+"')";
+				jdbcAssistant.execute(insertSql);
+			}
+		}
+		
+	}
+	
+}

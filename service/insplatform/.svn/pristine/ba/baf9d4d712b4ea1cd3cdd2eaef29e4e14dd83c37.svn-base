@@ -1,0 +1,116 @@
+package com.insplatform.module.headteacherlog.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.insframework.component.service.file.UploadService;
+import com.insframework.component.service.file.bean.FileBean;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.headteacherlog.model.HeadteacherLog;
+import com.insplatform.module.headteacherlog.repository.HeadteacherLogRepository;
+import com.insplatform.module.headteacherlog.service.HeadteacherLogService;
+
+@Service
+public class HeadteacherLogServiceImpl extends BaseServiceImpl<HeadteacherLog> implements HeadteacherLogService{
+	
+	@Autowired
+	private HeadteacherLogRepository headteacherLogRepository;
+	@Autowired
+	private UploadService uploadService;
+	
+	@Override
+	public BaseRepository<HeadteacherLog> getRepository() {		
+		return headteacherLogRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {
+		return headteacherLogRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return headteacherLogRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {
+		return headteacherLogRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public HeadteacherLog get(Serializable id) {		
+		return headteacherLogRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	public Serializable save(HeadteacherLog entity,HttpServletRequest request) {	
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		entity.setOriginalName(file.getOriginalFilename());
+		FileBean fileBean = null;
+		try {
+			fileBean = uploadService.uploadByDoc(file);			
+		} catch (Exception e) {		
+			e.printStackTrace();
+		}
+		entity.setAttachment(fileBean.getUrl());
+		String id = (String) super.save(entity);
+		return id;
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(HeadteacherLog entity,HttpServletRequest request) {		
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		if(file != null && file.getSize() > 0){
+			entity.setOriginalName(file.getOriginalFilename());			
+			FileBean fileBean = null;
+			try {
+				fileBean = uploadService.uploadByVideo(file);			
+			} catch (Exception e) {		
+				e.printStackTrace();
+			}
+			entity.setAttachment(fileBean.getUrl());			
+		}
+		headteacherLogRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		headteacherLogRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		headteacherLogRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllClassesInfo(Condition condition) {
+		return headteacherLogRepository.loadAllClassesInfo(condition);
+	}
+
+}

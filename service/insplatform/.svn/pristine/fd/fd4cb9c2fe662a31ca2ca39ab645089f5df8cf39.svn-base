@@ -1,0 +1,144 @@
+package com.insplatform.module.osta.eval.sign.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.eval.sign.model.OstaEvalSignPerson;
+import com.insplatform.module.osta.eval.sign.repository.OstaEvalSignPersonRepository;
+
+
+@Repository
+public class OstaEvalSignPersonRepositoryImpl extends BaseRepositoryImpl<OstaEvalSignPerson> implements OstaEvalSignPersonRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id, t.user_id, t.user_name, t.id_card, t.phone," +
+				" t.company_id, t.company_name, t.sex, t.age, t.edu, t.pid," +
+				" t.create_user_id, t.create_user_name, t.create_time" +
+				" from px_osta_eval_sign_person t where 1=1 and t.pid ='"+condition.get("pid")+"'";
+		condition.remove("pid");
+//		"userName","idCard","companyName",
+//		"createUserName","startCreateTime","endCreateTime");
+		if (condition.containsKey("userName")) {
+			sql += " and t.user_name like ?";
+			condition.put("userName","%"+condition.get("userName")+"%");
+		}
+		if (condition.containsKey("idCard")) {
+			sql += " and t.id_card like ?";
+			condition.put("idCard","%"+condition.get("idCard")+"%");
+		}
+		if (condition.containsKey("companyName")) {
+			sql += " and t.company_name like ?";
+			condition.put("companyName","%"+condition.get("companyName")+"%");
+		}
+		if (condition.containsKey("createUserName")) {
+			sql += " and t.create_user_name like ?";
+			condition.put("createUserName","%"+condition.get("createUserName")+"%");
+		}
+		if (condition.containsKey("startCreateTime")) {
+			sql += " and t.create_time >= to_date( ?, 'yyyy-mm-dd hh24:mi:ss')";
+		}
+		if (condition.containsKey("endCreateTime")) {
+			sql += " and t.create_time -1 < to_date( ?,'yyyy-mm-dd hh24:mi:ss')";
+		}
+		
+		sql+= " order by t.create_time desc";
+
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(),new ValueMapper() {
+			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				if(record.get("sex") != null){
+					if("1".equals(record.get("sex").toString())){
+						record.put("sex", "男");
+					}else if("2".equals(record.get("sex").toString())){
+						record.put("sex", "女");
+					}
+				}				
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_EVAL_SIGN_PERSON t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_OSTA_EVAL_SIGN_PERSON t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaEvalSignPerson get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaEvalSignPerson entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaEvalSignPerson entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public boolean beforeCheckAddBatch(String userId, String pid) {
+		String sql = "select t.id from px_osta_eval_sign_person t where t.user_id = ? and t.pid = ?";
+		return jdbcAssistant.queryOne(sql, new Object[]{userId,pid})==null;
+	}
+
+	@Override
+	public String addBatch(String userId, String pid, CurrentUser user) {
+		String id = TextUtil.getUUID();
+		String sql = "insert into px_osta_eval_sign_person" +
+				" (id, user_id, user_name, id_card, phone, company_id," +
+				" company_name, sex, age, edu, pid," +
+				" create_user_id, create_user_name, create_time)" +
+				" select '"+id+"',u.id,u.name,u.id_card,u.phone,u.company_id," +
+				" u.company_name,u.sex,to_char(sysdate,'yyyy')-substr(id_card,7,4),u.edu,?," +
+				" '"+user.getId()+"','"+user.getName()+"',sysdate" +
+				" from v_sys_user_info u" +
+				" where u.id = ?";
+		return jdbcAssistant.update(sql, new Object[]{pid,userId})==1?id:null;
+	}
+	
+}

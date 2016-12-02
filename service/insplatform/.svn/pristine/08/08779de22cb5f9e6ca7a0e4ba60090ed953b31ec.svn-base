@@ -1,0 +1,110 @@
+package com.insplatform.module.testpaper.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.testpaper.model.TestPaperQuestion;
+
+import com.insframework.system.map.Condition;
+
+
+public interface TestPaperQuestionRepository extends BaseRepository<TestPaperQuestion>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	/**
+	 * 随机增加试题
+	 * @param condition
+	 */
+	void addRandomQuestion(Condition condition);
+	
+	
+	
+	/**
+	 * 试题选择器
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllQuestionGridChooser(Condition condition);
+	
+	
+	/**
+	 * 增加试题
+	 * @param condition
+	 */
+	void addQuestion(Condition condition,String [] ids);
+	
+	
+	/**
+	 * 增加试题公共方法
+	 * @param id
+	 * @param pxTestPaper
+	 * @param condition
+	 * @param socre
+	 * @param type
+	 */
+	void add(String id,String pxTestPaper,Condition condition,double socre,String questionType);
+	
+	/**
+	 * 获取试卷试题数量状态
+	 * @param id
+	 * @return
+	 */
+	int getQuestionSumState(String id);
+	/**
+	 * 获取试卷试题分数状态
+	 * @param id
+	 * @return
+	 */
+	double  getQuestionScoreState(String id);
+	/**
+	 * 取试卷信息
+	 * @param id
+	 * @return
+	 */
+	Map<String, Object> getQuestionInfo(String id);
+	/**
+	 * 检查试卷是否完整
+	 * @param condition
+	 * @return
+	 */
+	String getPaperState(Condition condition);
+	
+	/**
+	 * 获取试题录数量
+	 * @param condition
+	 * @return
+	 */
+	int getQuestionSum(Condition condition);
+	
+	/**
+	 * 批量更新试卷分数
+	 * @param ids
+	 * @param score
+	 */
+	void updateScore(String ids[],double score);
+	
+}

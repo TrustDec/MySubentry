@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>时钟</title>
+	<style>
+		body{background:#000033;}
+		#box{width:400px;height:200px;position:absolute;top:50%;left:50%;margin:-100px  0px 0px -200px ;text-align: center;}
+		#box1{margin:35px 10px ;}
+	</style>
+	<script>
+	window.onload=function(){
+		var box=document.getElementById('box');
+		var num=box.getElementsByClassName('num');
+		var img1=box2.getElementsByClassName('num1');
+		var xq=["seven","one","two","three","four","five","six"];
+		function time(){
+			var date=new Date();
+			var year=date.getFullYear();
+			var month=date.getMonth();
+			var day=date.getDate();
+			var house=date.getHours();
+			var minutes=date.getMinutes();
+			var seconds=date.getSeconds();
+			var xq1=date.getUTCDay();
+			var str=''+year+toDouble(month+1)+toDouble(day)+toDouble(house)+toDouble(minutes)+toDouble(seconds);
+			for (var i = 0; i < str.length; i++) {
+				num[i].src="images/"+str.charAt(i)+".png";
+			}		
+			img1[0].src="images/"+xq[xq1]+".png";
+			setTimeout(time,1000);
+		}
+		time();
+	}
+	function toDouble(num){
+		if(num<10){
+			return '0'+num;
+		}else{
+			return num;
+		}
+	}
+	</script>
+</head>
+<body>
+	<div id="box">
+	<img src="images/title.png" >
+		<div id="box1">
+			<img src="images/0.png"   class="num">
+			<img src="images/0.png"  class="num">
+			<img src="images/0.png"  class="num" >
+			<img src="images/0.png"   class="num">
+			<img src="images/year.png"   >
+			<img src="images/0.png"   class="num">
+			<img src="images/0.png"   class="num">
+			<img src="images/month.png"   >
+			<img src="images/0.png"  class="num" >
+			<img src="images/0.png"  class="num" >
+			<img src="images/seven.png"   >		
+		</div>
+		<div id="box2">
+			<img src="images/0.png" class="num" >
+			<img src="images/0.png" class="num"  >
+			<img src="images/sign.png"   >
+			<img src="images/0.png"   class="num">
+			<img src="images/0.png" class="num"  >
+			<img src="images/sign.png"   >
+			<img src="images/0.png"  class="num" >
+			<img src="images/0.png"   class="num">
+			<img src="images/week.png"   >
+			<img src="images/one.png"   class="num1">
+			
+		</div>
+	</div>
+</body>
+</html>

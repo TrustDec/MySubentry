@@ -1,0 +1,94 @@
+package com.insplatform.module.trainbaseexamplace.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.trainbaseexamplace.model.TrainbaseExamPlace;
+import com.insplatform.module.trainbaseexamplace.repository.TrainbaseExamPlaceRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TrainbaseExamPlaceRepositoryImpl extends BaseRepositoryImpl<TrainbaseExamPlace> implements TrainbaseExamPlaceRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_TRAINBASE_EXAM_PLACE t where 1=1";
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINBASE_EXAM_PLACE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TRAINBASE_EXAM_PLACE t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainbaseExamPlace get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainbaseExamPlace entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainbaseExamPlace entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+	@Override
+	public boolean beforeDeleteCheck(String[] ids) {
+		String sql = "select count(1) from px_trainbase_exam_room t where t.place_id in (";
+		for (int i=0;i<ids.length;i++) {
+			sql += "?,";
+		}
+		sql = sql.substring(0, sql.length()-1);
+		sql +=")";
+		int count = jdbcAssistant.queryAsInt(sql,ids);
+		
+		if(count > 0) return true;
+		return false;
+	}
+	
+}

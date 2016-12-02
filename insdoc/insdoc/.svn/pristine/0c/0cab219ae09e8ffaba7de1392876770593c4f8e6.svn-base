@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>平台使用手册</title>
+<link href="../common/include.css" rel="stylesheet" />
+</head>
+<body id="bodyId">
+<h1>Window窗口</h1> 
+<h3>介绍</h3>
+<p>
+window窗口
+</p>
+<img src="../../img/window.jpg" />
+<h3>示例代码</h3>
+<pre class="brush:js;">
+Ext.define('App.demo.window.View',{
+	
+	init: function(){
+		var view = Ext.create('Ins.window.Window',{
+			title:"我的Window",
+			views : [
+				App.getView('App.demo.window.Form')
+			],
+			//标题工具按钮
+			headButtons : [{
+			    type:'help',
+			    tooltip: '获取帮助文档',
+			    callback: function(panel, tool, event) {
+			    	Message.msg("帮助文档");
+			    }
+			}],
+			//工具栏按钮
+			actionButtons : [{
+				text: '保存',
+					iconCls: 'icon-save',
+					handler: function(){
+						Message.msg("保存");
+					}
+			},{
+				text: '对其到中央方法',
+					iconCls: 'icon-save',
+					handler: function(){
+						//对齐到中央
+						view.alignToCenter();
+					}
+			}],
+			//工具栏按钮方向
+			actionButtonsAlign : 'bottom',
+			//工具栏样式 footer/default 。。。。
+			actionButtonsStyle: 'footer',
+			//窗口显示前事件
+			onBeforeShow : function(me, eOpts){
+				alert("触发事件:windown的onBeforeShow");
+				console.log("触发事件:windown的onBeforeShow");
+				console.log(me);
+				console.log(eOpts);
+				//返回true表示可以打开，false将阻止窗口打开。void和true等效；
+				return true;
+			},
+			//窗口关闭前事件
+			onBeforeHide : function(me, eOpts){
+				alert("触发事件:windown的onBeforeHide，返回false将阻止窗口影藏");
+				console.log("触发事件:windown的onBeforeHide");
+				console.log(me);
+				console.log(eOpts);
+				//返回true表示可以隐藏，false将阻止窗口隐藏。void和true等效；
+				return false;
+			}
+		});
+		view.show();
+		return null;
+	}	
+});
+</pre>
+<h3>类名</h3>
+<code>Ins.window.Window</code>
+<h4>别名</h4>
+<code>alias : [ "widget.ins_window" ]</code>
+<h3>继承自</h3>
+<code>Ext.window.Window</code>
+<h3>构造对象</h3>
+<pre class="brush:js;">
+		var view = Ext.create('Ins.window.Window',{
+			title:"我的Window",
+			views : [],
+			//标题工具按钮
+			headButtons : [],
+			//工具栏按钮
+			actionButtons : [],
+			//工具栏按钮方向
+			actionButtonsAlign : 'bottom',
+			//工具栏样式 footer/default 。。。。
+			actionButtonsStyle: 'footer',
+			//窗口显示前事件
+			onBeforeShow : function(me, eOpts){
+				//返回true表示可以打开，false将阻止窗口打开。void和true等效；
+				return true;
+			},
+			//窗口关闭前事件
+			onBeforeHide : function(me, eOpts){
+				//返回true表示可以隐藏，false将阻止窗口隐藏。void和true等效；
+				return false;
+			}
+		});
+</pre>
+<h3>属性</h3>
+<table class="table table-bordered table-striped table-hover table-hover">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>属性名</th><th>属性值类型</th><th>描述</th><th>默认值</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>title</td>
+<td>String</td>
+<td>窗口标题</td>
+<td>未命名窗体</td>
+</tr>
+<tr>
+<td>views</td>
+<td>view[ ]</td>
+<td>面板组件</td>
+<td>[ ]</td>
+</tr>
+<tr>
+<td>hideTitle</td>
+<td>boolean</td>
+<td>是否隐藏标题</td>
+<td>false</td>
+</tr>
+<tr>
+<td>headButtons</td>
+<td>button[]</td>
+<td>标题工具按钮</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>actionButtons</td>
+<td>button[]</td>
+<td>工具栏按钮</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>actionButtonsAlign</td>
+<td>String</td>
+<td>工具栏按钮方向</td>
+<td>'bottom'</td>
+</tr>
+<tr>
+<td>actionButtonsStyle</td>
+<td>String</td>
+<td>工具栏样式 footer/default 。。。。</td>
+<td>'footer'</td>
+</tr>
+<tr>
+<td>useAppBg</td>
+<td>boolean</td>
+<td>使用背景色</td>
+<td>false</td>
+</tr>
+<tr>
+<td>closeAction</td>
+<td>String</td>
+<td>点击关闭工具时的操作</td>
+<td>'hide'</td>
+</tr>
+<tr>
+<td>collapsible</td>
+<td>boolean</td>
+<td>是否显示折叠工具</td>
+<td>true</td>
+</tr>
+<tr>
+<td>resizable</td>
+<td>boolean</td>
+<td>是否允许缩放</td>
+<td>true</td>
+</tr>
+<tr>
+<td>modal</td>
+<td>boolean</td>
+<td>是否显示遮罩</td>
+<td>false</td>
+</tr>
+<tr>
+<td>layout</td>
+<td>String</td>
+<td>布局</td>
+<td>'fit'</td>
+</tr>
+<tr>
+<td>headerPosition</td>
+<td>String</td>
+<td>标题方向</td>
+<td>'top'</td>
+</tr>
+<tr>
+<td>maximizable</td>
+<td>boolean</td>
+<td>是否显示最大化工具</td>
+<td>false</td>
+</tr>
+<tr>
+<td>minimizable</td>
+<td>boolean</td>
+<td>是否显示最小化工具</td>
+<td>false</td>
+</tr>
+<tr>
+<td>constrain</td>
+<td>boolean</td>
+<td>添加约束</td>
+<td>true</td>
+</tr>
+<tr>
+<td>constrainHeader</td>
+<td>boolean</td>
+<td>和constrain配合使用</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+
+<h3>方法</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>方法名称</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>alignToCenter()</td>
+<td>将窗口移动至当前浏览器中间显示</td>
+</tr>
+<tr>
+<td>void</td>
+<td>show()</td>
+<td>显示窗口</td>
+</tr>
+<tr>
+<td>void</td>
+<td>hide()</td>
+<td>隐藏窗口</td>
+</tr>
+</tbody>
+</table>
+
+<h3>事件</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>事件名称</th><th>绑定方法</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>onBeforeShow</td>
+<td>function(me, eOpts){ }</td>
+<td>窗口显示前触发的事件，参数类型me组件本身，返回true表示允许窗口打开，false将阻止窗口打开。void和true等效；</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>onBeforeHide</td>
+<td>function(me, eOpts){ }</td>
+<td>窗口关闭前触发的事件，参数类型me组件本身，返回true表示允许窗口隐藏，false将阻止窗口隐藏。void和true等效；</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<script type="text/javascript" src="../common/include.js"></script>
+</body>
+</html>

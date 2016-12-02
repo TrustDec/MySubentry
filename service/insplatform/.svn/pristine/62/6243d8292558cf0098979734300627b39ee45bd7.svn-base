@@ -1,0 +1,99 @@
+package com.insplatform.module.yearplan.service;
+
+import java.util.*;
+
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.yearplan.model.YearPlan;
+
+public interface YearPlanService extends BaseService<YearPlan>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGridByNeedApprove(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 获取可用的年度需求
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadUsableYearDemand(Condition condition);
+
+	/**
+	 * 根据年度需求生成年度计划
+	 * @param yearplan
+	 * @return
+	 */
+	String saveYearPlanAndMonthAndProject(YearPlan yearplan);
+
+	/**
+	 * 根据id删除数据
+	 * 返回不满足删除条件的数量
+	 * @param ids
+	 * @return
+	 */
+	int deleteYearPlan(String[] ids);
+
+	/**
+	 * 发送审批如果失败返回-1
+	 * @param id
+	 * @return
+	 */
+	int updateSendApproval(String id);
+
+	/**
+	 * 根据类型修改审批状态
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	int updateApproval(String id, String type);
+
+	/**
+	 * 创建副本
+	 * @param id
+	 * @param user 
+	 * @return
+	 */
+	String updateCreateCopy(String id, CurrentUser user);
+	
+	/**
+	 * 批量修改审批状态
+	 * @param ids
+	 * @param type
+	 * @return
+	 */
+	int updateBatchApproval(String[] ids, String type);
+
+}

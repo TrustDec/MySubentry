@@ -1,0 +1,118 @@
+package com.insplatform.module.training.cost.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TRAINING_COST_INFO")
+public class TrainingCostInfo implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String pxTrainingScheme;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String address;
+	private String isPhoto;
+	private String isVideo;
+	private String stayType;
+	private String isCar;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setPxTrainingScheme(String value) {
+		this.pxTrainingScheme = value;
+	}
+	
+	public String getPxTrainingScheme() {
+		return this.pxTrainingScheme;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setAddress(String value) {
+		this.address = value;
+	}
+	
+	public String getAddress() {
+		return this.address;
+	}
+	
+	public void setIsPhoto(String value) {
+		this.isPhoto = value;
+	}
+	
+	public String getIsPhoto() {
+		return this.isPhoto;
+	}
+	
+	public void setIsVideo(String value) {
+		this.isVideo = value;
+	}
+	
+	public String getIsVideo() {
+		return this.isVideo;
+	}
+	
+	public void setStayType(String value) {
+		this.stayType = value;
+	}
+	
+	public String getStayType() {
+		return this.stayType;
+	}
+	
+	public void setIsCar(String value) {
+		this.isCar = value;
+	}
+	
+	public String getIsCar() {
+		return this.isCar;
+	}
+	
+}

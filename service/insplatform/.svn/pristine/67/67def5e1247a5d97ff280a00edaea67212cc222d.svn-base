@@ -1,0 +1,163 @@
+package com.insplatform.module.course.course.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_COURSE")
+public class Course implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String title;
+	private String info;
+	private String info2;
+	private String difficulty;
+	private String img;
+	private String release;
+	private double courseTime;
+	private String tag;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String courseType;
+	private String isDelete = "N";
+	private String courseClassify;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setTitle(String value) {
+		this.title = value;
+	}
+	
+	public String getTitle() {
+		return this.title;
+	}
+	
+	public void setInfo(String value) {
+		this.info = value;
+	}
+	
+	public String getInfo() {
+		return this.info;
+	}
+	
+	public void setInfo2(String value) {
+		this.info2 = value;
+	}
+	
+	public String getInfo2() {
+		return this.info2;
+	}
+	
+	public void setDifficulty(String value) {
+		this.difficulty = value;
+	}
+	
+	public String getDifficulty() {
+		return this.difficulty;
+	}
+	
+	public void setImg(String value) {
+		this.img = value;
+	}
+	
+	public String getImg() {
+		return this.img;
+	}
+	
+	public void setRelease(String value) {
+		this.release = value;
+	}
+	
+	public String getRelease() {
+		return this.release;
+	}
+	
+	public void setCourseTime(double value) {
+		this.courseTime = value;
+	}
+	
+	public double getCourseTime() {
+		return this.courseTime;
+	}
+	
+	public void setTag(String value) {
+		this.tag = value;
+	}
+	
+	public String getTag() {
+		return this.tag;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setCourseType(String value) {
+		this.courseType = value;
+	}
+	
+	public String getCourseType() {
+		return this.courseType;
+	}
+	
+	public String getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(String isDelete) {
+		this.isDelete = isDelete;
+	}
+
+	public String getCourseClassify() {
+		return courseClassify;
+	}
+
+	public void setCourseClassify(String courseClassify) {
+		this.courseClassify = courseClassify;
+	}
+	
+}

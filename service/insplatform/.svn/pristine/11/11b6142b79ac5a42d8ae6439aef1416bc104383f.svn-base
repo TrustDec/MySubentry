@@ -1,0 +1,42 @@
+package com.insplatform.system.main.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.spring.jdbc.JdbcAssistant;
+import com.insframework.common.utils.SecurityUtil;
+import com.insplatform.system.login.service.LoginService;
+
+@Service
+public class MainSupportService {
+	
+	@Autowired
+	private JdbcAssistant jdbcAssistant;
+	@Autowired
+	private LoginService loginService;
+	
+	
+	/**
+	 * 检查旧密码是否正确
+	 * @param account
+	 * @param password
+	 * @return
+	 */
+	public boolean checkOldPwd(String account, String password){
+		return loginService.check(account, password);
+	}
+	
+	
+	/**
+	 * 修改密码
+	 * @param account
+	 * @param password
+	 * @return
+	 */
+	public boolean changePwd(String account, String newPwd){
+		String sql = "update SYS_USER set password=? where account=?";			
+		jdbcAssistant.update(sql, new Object[]{SecurityUtil.encrypt(newPwd) , account});
+		return true;
+	}
+	
+}

@@ -1,0 +1,155 @@
+package com.insplatform.module.osta.register.notice.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.register.notice.model.OstaRegWorktypeLevel;
+import com.insplatform.module.osta.register.notice.service.OstaRegWorktypeLevelService;
+
+@Controller
+@RequestMapping("/px/ostaregworktypelevel")
+public class OstaRegWorktypeLevelController extends BaseController{
+	
+	@Autowired
+	private OstaRegWorktypeLevelService ostaRegWorktypeLevelService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadWorktypeLevelByNoticeId")
+	public @ResponseBody Map<String, Object> loadWorktypeLevelByNoticeId(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"noticeId","worktypeId");
+		return this.getMessager().success().data(ostaRegWorktypeLevelService.loadWorktypeLevelByNoticeId(condition));
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadWorktypeByNoticeId")
+	public @ResponseBody Map<String, Object> loadWorktypeByNoticeId(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"noticeId");
+		
+		return ostaRegWorktypeLevelService.loadWorktypeByNoticeId(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadWorktypeLevel")
+	public @ResponseBody Map<String, Object> loadWorktypeLevel(
+			HttpServletRequest request, HttpServletResponse response){
+		String ostaRegNoticeId = request.getParameter("ostaRegNoticeId");
+		String worktypId = request.getParameter("worktypId");
+		if (TextUtil.isEmpty(worktypId)||TextUtil.isEmpty(ostaRegNoticeId)) {
+			worktypId = "noWorktypId";
+			ostaRegNoticeId = "noOstaRegNoticeId";
+		}
+		Condition condition = this.getCondition(request);
+		condition.put("worktypId", worktypId);
+		condition.put("ostaRegNoticeId", ostaRegNoticeId);
+		
+		return ostaRegWorktypeLevelService.loadWorktypeLevel(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"","","");
+		String ostaRegNoticeId = request.getParameter("ostaRegNoticeId");
+		return ostaRegWorktypeLevelService.loadAllGrid(ostaRegNoticeId,condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(ostaRegWorktypeLevelService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(ostaRegWorktypeLevelService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(OstaRegWorktypeLevel ostaregworktypelevel, HttpServletRequest request){
+		ostaRegWorktypeLevelService.saveBatch(ostaregworktypelevel);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		OstaRegWorktypeLevel ostaregworktypelevel = ostaRegWorktypeLevelService.get(id);
+		this.bindObject(request, ostaregworktypelevel);
+		ostaRegWorktypeLevelService.update(ostaregworktypelevel);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		ostaRegWorktypeLevelService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	
+}

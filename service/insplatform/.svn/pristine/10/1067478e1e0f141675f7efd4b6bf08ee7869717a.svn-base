@@ -1,0 +1,128 @@
+package com.insplatform.module.weekly.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.component.service.file.UploadService;
+import com.insframework.component.service.file.bean.FileBean;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.weekly.model.Weekly;
+import com.insplatform.module.weekly.repository.WeeklyRepository;
+import com.insplatform.module.weekly.service.WeeklyService;
+
+@Service
+public class WeeklyServiceImpl extends BaseServiceImpl<Weekly> implements WeeklyService{
+	
+	@Autowired
+	private WeeklyRepository weeklyRepository;
+	@Autowired
+	private UploadService uploadService;
+
+	@Override
+	public BaseRepository<Weekly> getRepository() {		
+		return weeklyRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return weeklyRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return weeklyRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return weeklyRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Weekly get(Serializable id) {		
+		return weeklyRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Weekly entity) {	
+		return weeklyRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Weekly entity) {		
+		weeklyRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		weeklyRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		weeklyRepository.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllClassesInfo(Condition condition) {
+		return weeklyRepository.loadAllClassesInfo(condition);
+	}
+
+	@Override
+	public Serializable save(Weekly weekly, HttpServletRequest request) {
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		weekly.setOriginalName(file.getOriginalFilename());
+		FileBean fileBean = null;
+		try {
+			fileBean = uploadService.uploadFile(file);			
+		} catch (Exception e) {		
+			e.printStackTrace();
+		}
+		weekly.setWeekly(fileBean.getUrl());
+		String id = (String) super.save(weekly);
+		return id;
+	}
+
+	@Override
+	public void update(Weekly weekly, HttpServletRequest request) {
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		if(TextUtil.isNotEmpty(file.getOriginalFilename())){
+			weekly.setOriginalName(file.getOriginalFilename());
+			FileBean fileBean = null;
+			try {
+				fileBean = uploadService.uploadFile(file);			
+			} catch (Exception e) {		
+				e.printStackTrace();
+			}
+			weekly.setWeekly(fileBean.getUrl());
+		}
+		weeklyRepository.update(weekly);		
+	}
+
+}

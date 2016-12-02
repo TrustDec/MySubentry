@@ -1,0 +1,26 @@
+package com.insplatform.module.kpoint.service;
+
+import java.util.Map;
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.kpoint.model.Kpoint;
+
+public interface KpointService extends BaseService<Kpoint>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAll(Condition condition);
+	
+	/**
+	 * 检查知识点下是否存在资源
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	boolean checkHasResource(String id, String type);
+}

@@ -1,0 +1,331 @@
+package com.insplatform.module.bbs.article.service.impl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.utils.DateUtil;
+import com.insframework.common.utils.LuceneUtil;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.common.utils.pager.Pager;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.bbs.article.model.BbsArticle;
+import com.insplatform.module.bbs.article.repository.BbsArticleRepository;
+import com.insplatform.module.bbs.article.service.BbsArticleService;
+import com.insplatform.module.bbs.articlecomment.repository.BbsArticleCommentRepository;
+import com.insplatform.module.constant.LuceneIndex;
+import com.insplatform.system.dict.DictConstant;
+import com.insplatform.system.dict.model.Dict;
+import com.insplatform.system.dict.repository.DictRepository;
+
+@Service
+public class BbsArticleServiceImpl extends BaseServiceImpl<BbsArticle> implements BbsArticleService{
+	
+	@Autowired
+	private BbsArticleRepository bbsArticleRepository;
+	
+	@Autowired
+	private DictRepository dictRepository;
+	
+	@Autowired
+	private BbsArticleCommentRepository bbsArticleCommentRepository;
+
+	@Override
+	public BaseRepository<BbsArticle> getRepository() {		
+		return bbsArticleRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return bbsArticleRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return bbsArticleRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return bbsArticleRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public BbsArticle get(Serializable id) {		
+		return bbsArticleRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(BbsArticle entity) {	
+		//调用父类的save方法
+		Serializable id = super.save(entity);
+		
+		//建全文检索的索引
+		entity.setId(id+"");
+		
+		if ("Y".equals(entity.getIspublish())) {
+			//建全文检索的索引
+			this.createLuceneIndex(entity);
+		}
+		return id;
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(BbsArticle entity) {	
+		super.update(entity);
+		if ("Y".equals(entity.getIspublish())) {
+			//建全文检索的索引
+			this.createLuceneIndex(entity);
+		}
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+		this.deleteLuceneIndex(id+"");
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		bbsArticleRepository.deleteByIds(ids);
+		this.deleteLuceneIndex(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllTemplate(Condition condition) {
+		String pageString = condition.get("page")+"";
+		String myArticleQuery = condition.get("myArticleQuery")+"";
+		String articleClassify = condition.get("articleClassify")+"";
+		String sort = condition.get("sort")+"";
+		if(TextUtil.isEmpty(pageString)){
+			pageString = "1";
+		}		
+		int page = Integer.parseInt(pageString);
+		if (!"myArticle".equals(myArticleQuery)&&!"myCollect".equals(myArticleQuery)) {
+			myArticleQuery = "all";
+		}
+		Dict dict = null;
+		if (TextUtil.isNotEmpty(articleClassify)) {
+			try {
+				dict = dictRepository.get(articleClassify);
+			} catch (Exception e) {
+			}
+		}
+		if (dict==null) {
+			articleClassify = "all";
+			condition.put("articleClassify", "");
+		}
+		if (!"hot".equals(sort)) {
+			sort = "last";
+			condition.put("sort", "");
+		}
+
+		
+		Pager<Map<String, Object>> pager = new Pager<Map<String, Object>>(0, page, 10);		
+		/*查询结果*/
+		pager = bbsArticleRepository.loadAllTemplate(condition,pager);
+		Map<String, Object> dataMap = pager.toMap();
+		
+		//生成单数
+		String baseUrl = "#bbs/article/list";
+		/*生成个人归属查询菜单*/
+		String startUrl = baseUrl;
+		String endUrl = "/"+articleClassify+"/last/1";
+		List<Map<String, Object>> myArticleQueryList = new ArrayList<Map<String,Object>>();
+		setQueryUrlAndText("全部","all",startUrl+"/all"+endUrl,myArticleQueryList);
+		setQueryUrlAndText("我的文章","myArticle",startUrl+"/myArticle"+endUrl,myArticleQueryList);
+		setQueryUrlAndText("我的收藏","myCollect",startUrl+"/myCollect"+endUrl,myArticleQueryList);
+		dataMap.put("myArticleQueryList", myArticleQueryList);
+		
+		/*生成文章分类查询菜单*/
+		startUrl = baseUrl+"/"+myArticleQuery+"/";
+		endUrl = "/last/1";
+		List<Map<String,Object>> classifyList = dictRepository.loadDictByClassify(DictConstant.PX_ARTICLE_CLASSIFY.getValue());
+		for (int i = 0; i < classifyList.size(); i++) {
+			classifyList.get(i).put("url", startUrl+classifyList.get(i).get("value")+endUrl);
+		}
+		Map<String, Object> classifyAll = new HashMap<String, Object>();
+		classifyAll.put("text", "全部");
+		classifyAll.put("value", "all");
+		classifyAll.put("url", startUrl+"all"+endUrl);
+		classifyList.add(0, classifyAll);
+		dataMap.put("classifyList", classifyList);
+		/*最新，最热*/
+		dataMap.put("zuixin", "#bbs/article/list/"+myArticleQuery+"/"+articleClassify+"/last/1");
+		dataMap.put("zuire", "#bbs/article/list/"+myArticleQuery+"/"+articleClassify+"/hot/1");
+		dataMap.put("articleInfoUrl", myArticleQuery+"/"+articleClassify);
+		//设置上一页/下一页/首页/尾页url地址
+		String url = "#bbs/article/list/"+myArticleQuery+"/"+articleClassify+"/"+sort+"/";
+		if(pager.isHasNextPage()){
+			dataMap.put("nextPageUrl", url+(page+1));
+		}else{
+			dataMap.put("nextPageUrl", "javascript:;");
+		}		
+		if(pager.isHasPreviousPage()){
+			dataMap.put("previousPageUrl", url + (page-1));
+		}else{
+			dataMap.put("previousPageUrl", "javascript:;");
+		}		
+		if(pager.isFirstPage()){
+			dataMap.put("firstPageUrl", "javascript:;");
+		}else{
+			dataMap.put("firstPageUrl", url +"1");
+		}		
+		if(pager.isLastPage()){
+			dataMap.put("lastPageUrl", "javascript:;");
+		}else{
+			dataMap.put("lastPageUrl", url+pager.getPageCount());
+		}
+		
+		//设置导航页
+		int [] navigatePageNumbers = pager.getNavigatePageNumbers();
+		List<Map<String, Object>> navigatePage = new ArrayList<Map<String,Object>>();
+		for(int i : navigatePageNumbers){
+			Map<String, Object> navigatePageItem = new HashMap<String, Object>();
+			navigatePageItem.put("text", i);
+			navigatePageItem.put("url", url+i);
+			if(i == page){
+				navigatePageItem.put("active", "Y");
+			}else{
+				navigatePageItem.put("active", "N");
+			}
+			navigatePage.add(navigatePageItem);
+		}
+		dataMap.put("navigatePage", navigatePage);
+
+		
+		dataMap.put("myArticleQuery", myArticleQuery);
+		dataMap.put("articleClassify", articleClassify);
+		dataMap.put("sort", sort);
+		
+		/*添加本月热门文章*/
+		dataMap.put("MonthHotArticleList", bbsArticleRepository.getLastMonthLookNumHighArticle());
+		/*添加本月文章达人*/
+		dataMap.put("monthWriteMuchArticleList", bbsArticleRepository.getMonthWriteMuchArticleList());
+		return dataMap;
+	}
+	private void setQueryUrlAndText(String text, String value,
+			String url, List<Map<String, Object>> myArticleQuery) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("text", text);
+		map.put("value", value);
+		map.put("url", url);
+		myArticleQuery.add(map);
+	}
+	
+	/**
+	 * 根据发布状态添加或删除索引
+	 * @param entity
+	 */
+	private void createLuceneIndex(BbsArticle entity) {
+		if ("Y".equals(entity.getIspublish())) {
+			Document doc = new Document();
+			doc.add(new StringField("id", entity.getId(), Store.YES));
+			doc.add(new TextField("articleTitle", entity.getArticleTitle(), Store.YES));
+			doc.add(new TextField("articleContent", TextUtil.delHTMLTag(entity.getArticleContent()), Store.YES));
+			doc.add(new StringField("createTime", DateUtil.dateToString(entity.getCreateTime(), "yyyy-MM-dd HH:mm:ss"), Store.YES));
+			LuceneUtil.saveOrUpdateIndex(LuceneIndex.ARTICLE_INDEX.getValue(), doc);
+		}else{
+			this.deleteLuceneIndex(entity.getId());
+		}
+	}
+	
+	/**
+	 * 删除索引
+	 * @param ids
+	 */
+	private void deleteLuceneIndex(String... ids){
+		LuceneUtil.deleteIndex(LuceneIndex.ARTICLE_INDEX.getValue(), ids);
+	};
+	
+
+	@Override
+	public void updateIspublish(String ispublish, String articleId) {
+		bbsArticleRepository.updateIspublish(ispublish, articleId);
+		//删除或添加索引
+		BbsArticle obj = super.get(articleId);
+		this.createLuceneIndex(obj);
+	}
+
+	@Override
+	public Map<String, Object> getOneArticleAndLookNumUp(Condition condition) {
+		CurrentUser user = condition.getCurrentUser();
+		String id = condition.get("id")+"";
+		Map<String, Object> article = bbsArticleRepository.getOneArticleAndLookNumUp(id,user.getId());
+		List<Map<String, Object>> commentList = bbsArticleCommentRepository.loadAllByArticleId(id);
+		List<Map<String, Object>> authorOtherArticle = bbsArticleRepository.loadSomeArticleByAuthor(article.get("createPersonId")+"",id);
+		article.put("commentList", commentList);
+		article.put("authorOtherArticle", authorOtherArticle);
+		return article;
+	}
+
+	@Override
+	public List<Map<String, Object>> loadArticleTitleMobile(Condition condition) {
+		return bbsArticleRepository.loadArticleTitleMobile(condition);
+	}
+
+	@Override
+	public Map<String, Object> loadAllListMobile(String type, String idx) {
+		return bbsArticleRepository.loadAllListMobile(type,idx);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllListInfoMobile(String id,String userId) {
+		return bbsArticleRepository.loadAllListInfoMobile(id,userId);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllCommentInfoMobile(
+			String id) {
+		return bbsArticleRepository.loadAllCommentInfoMobile(id);
+	}
+
+	@Override
+	public void addCommentMobile(String userId, String id, String comment) {
+		bbsArticleRepository.addCommentMobile(userId,id,comment);
+	}
+
+	@Override
+	public void addCommentHFMobile(String userId, String id, String comment) {
+		bbsArticleRepository.addCommentHFMobile(userId,id,comment);
+	}
+
+	@Override
+	public void changeHeartMobile(String userId, String type, String id) {
+		bbsArticleRepository.changeHeartMobile(userId,type,id);
+	}
+
+	@Override
+	public Map<String, Object> loadArticleAsIMobile(String id, String type, String idx) {
+		
+		return bbsArticleRepository.loadArticleAsIMobile(id, type, idx);
+	}
+
+}

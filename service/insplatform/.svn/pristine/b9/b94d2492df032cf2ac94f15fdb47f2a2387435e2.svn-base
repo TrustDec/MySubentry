@@ -1,0 +1,55 @@
+package com.insplatform.module.osta.question.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_OSTA_QUESTION_CLASSIFY")
+public class OstaQuestionClassify implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String name;
+	private String describe;
+	private String isDelete;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setDescribe(String value) {
+		this.describe = value;
+	}
+	
+	public String getDescribe() {
+		return this.describe;
+	}
+	
+	public void setIsDelete(String value) {
+		this.isDelete = value;
+	}
+	
+	public String getIsDelete() {
+		return this.isDelete;
+	}
+	
+}

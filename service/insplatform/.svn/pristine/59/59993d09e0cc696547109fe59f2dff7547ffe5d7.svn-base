@@ -1,0 +1,111 @@
+package com.insplatform.module.identifymanager.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.identifymanager.model.IdentifyManager;
+import com.insplatform.module.identifymanager.repository.IdentifyManagerRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class IdentifyManagerRepositoryImpl extends BaseRepositoryImpl<IdentifyManager> implements IdentifyManagerRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id,t.name,t.company_name,t.contact,t.remark,t.user_id,t.create_user_id,t.create_user_name," +
+				"t.create_time,t.update_time,(select name from sys_dict where id=t.duty) as duty from PX_IDENTIFY_MANAGER t where 1=1 ";
+		
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		
+		if(condition.containsKey("companyName")){
+			sql += " and t.company_name like ? ";
+			condition.put("companyName", "%" + condition.get("companyName") + "%" );
+		}
+		
+		if(condition.containsKey("duty")){
+			sql += " and t.duty like ? ";
+			condition.put("duty", "%" + condition.get("duty") + "%" );
+		}
+		
+		sql += " order by t.update_time desc ";
+		
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_IDENTIFY_MANAGER t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_IDENTIFY_MANAGER t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public IdentifyManager get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(IdentifyManager entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(IdentifyManager entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public boolean hasAddUser(String userId) {
+		String sql = "SELECT COUNT(1) FROM PX_IDENTIFY_MANAGER WHERE USER_ID=? ";
+		int count = jdbcAssistant.queryAsInt(sql,new String[]{userId});
+		if(count > 0) return true;
+		return false;
+	}
+
+	@Override
+	public boolean hasEditUser(String id, String userId) {
+		String sql = "SELECT COUNT(1) FROM PX_IDENTIFY_MANAGER WHERE USER_ID=? AND ID != ?";
+		int count = jdbcAssistant.queryAsInt(sql,new String[]{userId,id});
+		if(count > 0) return true;
+		return false;
+	}
+	
+}

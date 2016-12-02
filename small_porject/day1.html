@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style type="text/css">
+		div {float:left; margin:10px;}
+		#box{width:50px; height:50px; background:red;}
+		#box1{width:250px; height:180px; background:#CCC; display:none;}
+	</style>
+</head>
+<body>
+<div id="box">
+
+</div>
+<div id="box1"></div>
+<script type="text/javascript">
+ window.onload=function(){
+ 	var box=document.getElementById('box');
+ 	var box1=document.getElementById('box1');
+ 	var p=null;
+ 	box1.onmouseover=box.onmouseover=function(){clearTimeout(p);
+ 	box1.style.display="block"; }
+ 	box1.onmouseout=box.onmouseout=function(){p=setTimeout(function(){
+ 	box1.style.display="none";
+ 	},500);}
+  }
+</script>
+</body>
+</html>

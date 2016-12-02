@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>平台使用手册</title>
+<link href="../common/include.css" rel="stylesheet" />
+</head>
+<body id="bodyId">
+<h1>Tree</h1> 
+<h3>介绍</h3>
+<p>
+树
+</p>
+<img src="../../img/Tree.jpg" />
+<h3>示例代码</h3>
+<pre class="brush:js;">
+Ext.define('App.demo.tree.Tree',{
+	
+	init: function(){
+		var view = Ext.create('Ins.tree.Tree',{
+			url: CTX_PATH + '/demo/loadAll',
+			//数据字段，会默认添加"id", "pid", "text"三个字段，如果需要添加自定义的字段可在本初申明字段名称,取值方式record.data.字段名称；
+			fields : [],
+			//主键
+			pkField: 'id',
+			//左键双击事件
+			onDblClick : function(record, e){
+				console.log("tree：双击事件onDblClick");
+				//record : Ext.data.Model The record that belongs to the item
+				console.log(record);
+				//e : Ext.event.Event The raw event object
+				console.log(e);
+			},
+			//右键点击事件
+			onContextMenuClick : function(record){
+				console.log("tree：右键点击事件onContextMenuClick");
+				//record : Ext.data.Model The record that belongs to the item
+				console.log(record);
+			},
+			//左键单击事件
+			onClick : function(record){
+				console.log("tree：左键单击事件onClick");
+				//record : Ext.data.Model The record that belongs to the item
+				console.log(record);
+			},		
+			//是否自动加载
+			loadOnShow : true,
+			//隐藏标题
+			hideTitle : false,
+			
+			//是否可查询
+			searchFiled: true,
+			//查询框内的提示输入文本
+			searchFieldText: '查询',
+			
+			buttons: [{ 
+				text: '获取当前节点对象',
+			    handler: function() {
+					var currentNode = view.getCurrentNode();
+					console.log("获取当前节点对象");
+					console.log(currentNode);
+			    }
+			},{ 
+				text: '获取选择视图模型',
+			    handler: function() {
+					var selectView = view.getSelectedView();
+//					返回值
+//					count : selection.length,
+//					idSer : ids,
+//					idArr : Ext.JSON.decode(ids),
+//					records : selection
+					console.log("获取选择视图模型");
+					console.log(selectView);
+			    }
+			},{ 
+				text: '获取选中模型',
+			    handler: function() {
+					var checkedView = view.getCheckedView();
+//					返回值
+//					count : selection.length,
+//					idSer : ids,
+//					idArr : Ext.JSON.decode(ids),
+//					records : selection
+					console.log("获取选中模型");
+					console.log(checkedView);
+			    }
+			},{ 
+				text: '重新加载',
+			    handler: function() {
+					view.load({"params":"loadparams"});
+			    }
+			},{ 
+				text: '刷新并展开',
+			    handler: function() {
+					view.reloadExpand();
+			    }
+			},{ 
+				text: '清空选中',
+			    handler: function() {
+					view.clearChecked();
+			    }
+			},{ 
+				text: '设置选中状态node, flag',
+			    handler: function() {
+					view.setChecked(node, flag);
+			    }
+			},{ 
+				text: '设置父节点',
+			    handler: function() {
+					view.setParentNodeChecked(node);
+			    }
+			},{ 
+				text: '恢复树的展开状态',
+			    handler: function() {
+					view.recvExpand();
+			    }
+			}]
+		});
+		return view;
+	}	
+});
+</pre>
+<h3>类名</h3>
+<code>Ins.tree.Tree</code>
+<h4>别名</h4>
+<code>ins_tree</code>
+<h3>继承自</h3>
+<code>Ext.tree.Panel</code>
+<h3>构造对象</h3>
+<pre class="brush:js;">
+		var view = Ext.create('Ins.tree.Tree',{
+			url: CTX_PATH + '/demo/loadAll',
+			//数据字段，会默认添加"id", "pid", "text"三个字段，如果需要添加自定义的字段可在本初申明字段名称,取值方式record.data.字段名称；
+			fields : [],
+			//主键
+			pkField: 'id',
+			//左键双击事件
+			onDblClick : function(record, e){
+				console.log("tree：双击事件onDblClick");
+				//record : Ext.data.Model The record that belongs to the item
+				console.log(record);
+				//e : Ext.event.Event The raw event object
+				console.log(e);
+			},
+			//右键点击事件
+			onContextMenuClick : function(record){
+				console.log("tree：右键点击事件onContextMenuClick");
+				//record : Ext.data.Model The record that belongs to the item
+				console.log(record);
+			},
+			//左键单击事件
+			onClick : function(record){
+				console.log("tree：左键单击事件onClick");
+				//record : Ext.data.Model The record that belongs to the item
+				console.log(record);
+			},		
+			//是否自动加载
+			loadOnShow : true,
+			//隐藏标题
+			hideTitle : false,
+			
+			//是否可查询
+			searchFiled: true,
+			//查询框内的提示输入文本
+			searchFieldText: '查询'
+		});
+</pre>
+<h3>属性</h3>
+<table class="table table-bordered table-striped table-hover table-hover">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>属性名</th><th>属性值类型</th><th>描述</th><th>默认值</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>checkedAsParent</td>
+<td>Boolean</td>
+<td>复选框级联父节点</td>
+<td>true</td>
+</tr>
+<tr>
+<td>url</td>
+<td>String</td>
+<td>数据请求地址</td>
+<td>null</td>
+</tr>
+<tr>
+<td>fields</td>
+<td>String[]</td>
+<td>自定义树节点属性系统自带属性"id", "pid", "text</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>pkField</td>
+<td>String</td>
+<td>主键</td>
+<td>'id'</td>
+</tr>
+<tr>
+<td>loadOnShow</td>
+<td>boolean</td>
+<td>是否自动加载</td>
+<td>true</td>
+</tr>
+<tr>
+<td>hideTitle</td>
+<td>boolean</td>
+<td>是否隐藏标题</td>
+<td>false</td>
+</tr>
+<tr>
+<td>searchFiled</td>
+<td>boolean</td>
+<td>是否可查询</td>
+<td>false</td>
+</tr>
+<tr>
+<td>searchFieldText</td>
+<td>String</td>
+<td>查询框内的提示输入文本</td>
+<td>'查询'</td>
+</tr>
+</tbody>
+</table>
+
+<h3>方法</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>方法名称</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>currNode</td>
+<td>getCurrentNode()</td>
+<td>获取当前节点对象</td>
+</tr>
+<tr>
+<td>
+<pre>
+{
+	count : selection.length,
+	idSer : ids,
+	idArr : Ext.JSON.decode(ids),
+	records : selection
+}
+</pre>
+</td>
+<td>getSelectedView()</td>
+<td>获取选择视图模型</td>
+</tr>
+<tr>
+<td>
+<pre>
+{
+	count : selection.length,
+	idSer : ids,
+	idArr : Ext.JSON.decode(ids),
+	records : selection
+}
+</pre>
+</td>
+<td>getCheckedView()</td>
+<td>获取选中模型</td>
+</tr>
+<tr>
+<td>void</td>
+<td>view.load({"params":"loadparams"});</td>
+<td>重新加载</td>
+</tr>
+<tr>
+<td>void</td>
+<td>reloadExpand()</td>
+<td>刷新并展开</td>
+</tr>
+<tr>
+<td>void</td>
+<td>clearChecked()</td>
+<td>清空选中</td>
+</tr>
+<tr>
+<td>void</td>
+<td>setChecked(node, flag)</td>
+<td>设置选中状态node, flag</td>
+</tr>
+<tr>
+<td>void</td>
+<td>setParentNodeChecked(node)</td>
+<td>设置父节点</td>
+</tr>
+<tr>
+<td>void</td>
+<td>recvExpand()</td>
+<td>恢复树的展开状态</td>
+</tr>
+</tbody>
+</table>
+
+<h3>事件</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>事件名称</th><th>绑定方法</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>onClick</td>
+<td>function(record){ }</td>
+<td>左键单击事件</td>
+</tr>
+<tr>
+<td>void</td>
+<td>onDblClick</td>
+<td>function(record, e){ }</td>
+<td>左键双击事件 record : Ext.data.Model The record that belongs to the item</td>
+</tr>
+<tr>
+<td>void</td>
+<td>onContextMenuClick</td>
+<td>function(record){ }</td>
+<td>右键点击事件 record : Ext.data.Model The record that belongs to the item</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<script type="text/javascript" src="../common/include.js"></script>
+</body>
+</html>

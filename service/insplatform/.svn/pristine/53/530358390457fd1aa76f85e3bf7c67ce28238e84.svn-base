@@ -1,0 +1,250 @@
+package com.insplatform.module.trainingimplement.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingGuide;
+import com.insplatform.module.trainingimplement.repository.TrainingGuideRepository;
+
+
+@Repository
+public class TrainingGuideRepositoryImpl extends BaseRepositoryImpl<TrainingGuide> implements TrainingGuideRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_GUIDE t where 1=1 ";
+		if(condition.containsKey("id"))
+		{
+			sql += " and t.training_scheme_id = ?";
+			condition.put("id", condition.get("id"));
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_GUIDE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TRAINING_GUIDE t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingGuide get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingGuide entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingGuide entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadPositon(Condition condition) {
+		String sql = "select t.* from PX_TRAINBASE t";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public Serializable save(TrainingGuide trainingguide,
+			HttpServletRequest request) {
+		return super.save(trainingguide);
+	}
+
+	@Override
+	public void addEat(String trainGuideId, String trainSchemeId, String name,
+			String address, String dateStart, String dateEnd) {
+		String sql = "insert into PX_TRAINING_GUIDE_EAT values((select sys_guid() from dual),'" + trainSchemeId + "'," +
+				"'" + trainGuideId + "','" + name + "','" + address + "','" + dateStart + "','" + dateEnd + "')";
+		jdbcAssistant.update(sql);
+	}
+
+	@Override
+	public Map<String, Object> loadAllGridEat(Condition condition) {
+		String sql = "select t.* from px_training_guide_eat t where 1=1 ";
+		if(condition.containsKey("id"))
+		{
+			sql += " and t.training_guide_id = ?";
+			condition.put("id", condition.get("id"));
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public Map<String, Object> loadEat(String id) {
+		String sql = "select t.* from px_training_guide_eat t where t.id = '" + id + "'";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql);
+		if("1".equals(map.get("name")))
+		{
+			map.put("name", "早餐");
+		}
+		if("2".equals(map.get("name")))
+		{
+			map.put("name", "午餐");
+		}
+		if("3".equals(map.get("name")))
+		{
+			map.put("name", "晚餐");
+		}
+		return map;
+	}
+
+	@Override
+	public void updateEat(String id, String trainGuideId, String trainSchemeId,
+			String name, String address, String dateStart, String dateEnd) {
+		String sql = "update px_training_guide_eat set name = '" + name + "' , address = '" + address + "'," +
+				"start_time = '" + dateStart + "', end_time = '" + dateEnd + "' where id = '" + id + "'";
+		jdbcAssistant.update(sql);
+	}
+
+	@Override
+	public void deleteEat(String[] ids) {
+		String sql[] = new String[ids.length];
+		for(int i = 0 ; i < sql.length; i++)
+		{
+			sql[i] = "delete px_training_guide_eat where id = '" + ids[i] + "'";
+		}
+		jdbcAssistant.batchUpdate(sql);
+	}
+
+	@Override
+	public Map<String, Object> loadWeater(String id) {
+		String sql = "select t.* from px_training_guide_weater t where t.id = '" + id + "'";
+		Map<String, Object> map = jdbcAssistant.queryOne(sql);
+		if("1".equals(map.get("type")))
+		{
+			map.put("type", "晴天");
+		}
+		if("2".equals(map.get("type")))
+		{
+			map.put("type", "多云");
+		}
+		if("3".equals(map.get("type")))
+		{
+			map.put("type", "阴天");
+		}if("4".equals(map.get("type")))
+		{
+			map.put("type", "阵雨");
+		}if("5".equals(map.get("type")))
+		{
+			map.put("type", "小雨");
+		}if("6".equals(map.get("type")))
+		{
+			map.put("type", "中雨");
+		}if("7".equals(map.get("type")))
+		{
+			map.put("type", "大雨");
+		}if("8".equals(map.get("type")))
+		{
+			map.put("type", "小雪");
+		}if("9".equals(map.get("type")))
+		{
+			map.put("type", "中雪");
+		}if("10".equals(map.get("type")))
+		{
+			map.put("type", "大雪");
+		}if("11".equals(map.get("type")))
+		{
+			map.put("type", "扬尘");
+		}if("12".equals(map.get("type")))
+		{
+			map.put("type", "沙尘暴");
+		}if("13".equals(map.get("type")))
+		{
+			map.put("type", "轻雾");
+		}if("14".equals(map.get("type")))
+		{
+			map.put("type", "浓雾");
+		}if("15".equals(map.get("type")))
+		{
+			map.put("type", "轻度霾");
+		}if("16".equals(map.get("type")))
+		{
+			map.put("type", "中度霾");
+		}if("17".equals(map.get("type")))
+		{
+			map.put("type", "重度霾");
+		}
+		return map;
+	}
+
+	@Override
+	public void deleteWeater(String[] ids) {
+		String sql[] = new String[ids.length];
+		for(int i = 0 ; i < sql.length; i++)
+		{
+			sql[i] = "delete px_training_guide_weater where id = '" + ids[i] + "'";
+		}
+		jdbcAssistant.batchUpdate(sql);
+	}
+
+	@Override
+	public void addWeater(String trainGuideId, String trainSchemeId,
+			String date, String type, String lowTemperature,
+			String highTemperature) {
+		String sql = "insert into PX_TRAINING_GUIDE_WEATER values((select sys_guid() from dual),'" + trainSchemeId + "'," +
+				"'" + trainGuideId + "','" + type + "','" + lowTemperature + "','" + highTemperature + "','" + date + "')";
+		jdbcAssistant.update(sql);
+	}
+
+	@Override
+	public void updateWeater(String id, String trainGuideId,
+			String trainSchemeId, String date, String type,
+			String lowTemperature, String highTemperature) {
+		String sql = "update px_training_guide_weater set DATE_TIME = '" + date + "' , type = '" + type + "'," +
+				"LOW_TEMPERATURE = '" + lowTemperature + "', HIGH_TEMPERATURE = '" + highTemperature + "' where id = '" + id + "'";
+		jdbcAssistant.update(sql);
+	}
+
+	@Override
+	public Map<String, Object> loadAllGridWeater(Condition condition) {
+		String sql = "select t.* from px_training_guide_weater t where 1=1 ";
+		if(condition.containsKey("id"))
+		{
+			sql += " and t.training_guide_id = ?";
+			condition.put("id", condition.get("id"));
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+}

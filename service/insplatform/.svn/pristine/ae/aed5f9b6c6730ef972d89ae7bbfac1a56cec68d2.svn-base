@@ -1,0 +1,270 @@
+package com.insplatform.module.classreport.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.curruser.CurrentUser;
+import com.insplatform.module.classreport.model.ClassReportUser;
+import com.insplatform.module.classreport.repository.ClassReportUserRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class ClassReportUserRepositoryImpl extends BaseRepositoryImpl<ClassReportUser> implements ClassReportUserRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select  t.id,d.name as user_group_name,t.apply_type,(case b.sex  when '1' then   '男' when '2' then '女'end) as sex," +
+				"t.state,b.name,b.org_name,b.account,t.create_time,b.id_card,b.company_name,b.duty from  V_SYS_USER_INFO b ,PX_CLASS_REPORT_USER " +
+				"t left join sys_dict d on t.user_group=d.id where t.userid=b.id and t.PX_CLASS_REPOR=? and t.state not like '%二级%'";
+		condition.put("pxClassReport", condition.get("pxClassReport") );
+		if(condition.containsKey("name"))
+		{
+			sql+=" and b.name like ?";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		sql+=" order by d.order_index asc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_CLASS_REPORT_USER t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_CLASS_REPORT_USER t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public ClassReportUser get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(ClassReportUser entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(ClassReportUser entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadClassReportAllGrid(Condition condition) {
+		String sql = "select t.apply_stat_time,t.apply_stop_time, t.apply_sign,(select count(*) from PX_CLASS_REPORT_user tt where tt.px_class_repor=t.id ) as user_number,(select tt.state from PX_CLASS_REPORT_user tt where tt.px_class_repor=t.id and tt.userid='"+condition.getCurrentUser().getId()+"') as user_state ,t.id," +
+				"t.name,t.population,t.remark,to_char(t.start_time,'yyyy-mm-dd') as start_time, to_char(t.stop_time,'yyyy-mm-dd') as stop_time,t.px_year,t.px_month,t.create_user_id,t.create_user_name," +
+				"t.create_time,t.update_time,t.px_address,t.class_teacher as classTeacher_id,(select u.name from SYS_USER u where u.id=t.class_teacher) as class_Teacher ,t.px_content,t.state," +
+				"(select tt.name from PX_PROJECT tt where  tt.id=t.px_project) as px_project,t.px_organization from PX_CLASS_REPORT t,PX_PROJECT pt where t.PX_PROJECT=pt.id ";
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("pxYear"))
+		{
+			sql += " and t.px_year = ? ";
+			condition.put("pxYear", condition.get("pxYear"));
+		}
+		if(condition.containsKey("pxMonth"))
+		{
+			sql += " and t.px_month = ? ";
+			condition.put("pxMonth", condition.get("pxMonth"));
+		}
+		if(condition.containsKey("startTime"))
+		{
+			sql += " and to_char(t.start_time,'yyyy-mm-dd') >= ? ";
+			condition.put("startTime", condition.get("startTime"));
+		}
+		if(condition.containsKey("stopTime"))
+		{
+			sql += " and to_char(t.stop_time,'yyyy-mm-dd') >= ? ";
+			condition.put("stopTime", condition.get("stopTime"));
+		}
+		if(condition.containsKey("SelectPxProject"))
+		{
+			sql += " and pt.name like ? ";
+			condition.put("SelectPxProject", "%" + condition.get("SelectPxProject") + "%" );
+		}
+		sql += " and t.state='审批通过' order by t.start_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(), new ValueMapper() {
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				String sql=" select * from PX_CLASS_REPORT t where t.state = '审批通过' and (t.apply_sign='开始' or  t.apply_stat_time < sysdate and t.apply_stop_time >= sysdate) and t.apply_sign!='结束' and t.id='"+record.get("id")+"'";
+				List<Map<String, Object>> list=jdbcAssistant.query(sql);
+				if(list.size()==0)
+				{
+					record.put("applySign", "结束");
+				}
+				else
+				{
+					record.put("applySign", "开始");
+				}
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+
+	@Override
+	public void updateApply(String type, String[] ids,Condition condition) {
+		if(type.equals("报名"))
+		{
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				String sql = "select * from PX_CLASS_REPORT_USER t where t.px_class_repor='"+ids[i]+"' and t.userid='"+condition.getCurrentUser().getId()+"'";
+				List<Map<String, Object>> list=jdbcAssistant.query(sql);
+				if(list.size()==0)
+				{
+					String insertSql="insert into px_class_report_user (id, px_class_repor, userid, state, create_user_id, create_user_name, create_time,apply_type) values " +
+							"('"+TextUtil.getUUID()+"','"+ids[i]+"', '"+condition.getCurrentUser().getId()+"', '二级_审批中', '"+condition.getCurrentUser().getId()+"', '"+condition.getCurrentUser().getName()+"', sysdate,'自主报名')";
+					jdbcAssistant.execute(insertSql);
+				}
+			}
+		}
+		else
+		{
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				String sql = "select * from PX_CLASS_REPORT_USER t where t.px_class_repor='"+ids[i]+"' and t.userid='"+condition.getCurrentUser().getId()+"' and t.state='审批通过'";
+				List<Map<String, Object>> list=jdbcAssistant.query(sql);
+				if(list.size()==0)
+				{
+					jdbcAssistant.execute("delete px_class_report_user t where t.px_class_repor='"+ids[i]+"' and t.userid='"+condition.getCurrentUser().getId()+"'");
+				}
+			}
+		}
+		
+	}
+
+	@Override
+	public void add(String id, String[] ids, Condition condition) {
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+			String sql = "select * from PX_CLASS_REPORT_USER t where t.px_class_repor='"+id+"' and t.userid='"+ids[i]+"'";
+			List<Map<String, Object>> list=jdbcAssistant.query(sql);
+			if(list.size()==0)
+			{
+				String insertSql="insert into px_class_report_user (id, px_class_repor, userid, state, create_user_id, create_user_name, create_time,apply_type) values " +
+						"('"+TextUtil.getUUID()+"','"+id+"', '"+ids[i]+"', '审批通过', '"+condition.getCurrentUser().getId()+"', '"+condition.getCurrentUser().getName()+"', sysdate,'管理员报名')";
+				jdbcAssistant.execute(insertSql);
+			}
+		}
+		
+	}
+
+	@Override
+	public void updateCpuState(String type, String[] ids) {
+		String[] sqlInsert = new String[ids.length];
+		if(type.equals("通过"))
+		{
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "update PX_CLASS_REPORT_USER set state='审批通过' where id = '"+ids[i]+"'";
+			}
+		}
+		else
+		{
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "update PX_CLASS_REPORT_USER set state='审批退回' where id = '"+ids[i]+"'";
+			}
+		}
+		jdbcAssistant.batchUpdate(sqlInsert);
+		
+	}
+
+	@Override
+	public void delete(String[] ids) {
+		
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+		  jdbcAssistant.execute("delete px_class_report_user t where t.apply_type='管理员报名' and t.id='"+ids[i]+"'");
+		}
+		
+	}
+
+	@Override
+	public Map<String, Object> loadSecondApproveUserAllGrid(Condition condition) {
+		CurrentUser user=condition.getCurrentUser();
+		String sql = "select  t.id,t.apply_type,(case b.sex  when '1' then   '男' when '2' then '女'end) as sex,t.state,b.name,b.org_name,b.account,t.create_time,b.id_card,b.company_name,b.duty from  V_SYS_USER_INFO b ,PX_CLASS_REPORT_USER t where t.userid=b.id and b.company_id='"+user.getCompanyId()+"' and t.PX_CLASS_REPOR=?";
+		condition.put("pxClassReport", condition.get("pxClassReport") );
+		if(condition.containsKey("name"))
+		{
+			sql+=" and b.name like ?";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public void updateSecondApproveUse(String type, String[] ids) {
+		String[] sqlInsert = new String[ids.length];
+		if(type.equals("通过"))
+		{
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "update PX_CLASS_REPORT_USER set state='审批中' where id = '"+ids[i]+"'";
+			}
+		}
+		else
+		{
+			for(int i = 0 ; i < ids.length ; i++)
+			{
+				sqlInsert[i] = "update PX_CLASS_REPORT_USER set state='二级_退回' where id = '"+ids[i]+"'";
+			}
+		}
+		jdbcAssistant.batchUpdate(sqlInsert);
+		
+	}
+
+	@Override
+	public void updateUserGroup(String[] ids, Condition condition) {
+		
+		for (int i = 0; i < ids.length; i++) {
+			
+			String sql="select * from PX_CLASS_REPORT_USER t where t.id = '"+ids[i]+"' and t.state='审批通过'";
+			List<Map<String, Object>> list=jdbcAssistant.query(sql);
+			if(list.size()!=0)
+			{
+				String updaSql= "update PX_CLASS_REPORT_USER set user_group='"+condition.get("userGroup")+"' where id = '"+ids[i]+"'";
+				jdbcAssistant.execute(updaSql);
+			}
+		}
+		
+	}
+	
+}

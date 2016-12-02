@@ -1,0 +1,311 @@
+package com.insplatform.system.organization.service.impl;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.context.App;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.curruser.UserSession;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.system.organization.model.Organization;
+import com.insplatform.system.organization.repository.OrganizationRepository;
+import com.insplatform.system.organization.service.OrganizationService;
+import com.insplatform.system.role.RoleConstant;
+import com.insplatform.system.role.repository.RoleRepository;
+import com.insplatform.system.user.UserBizLevelConstant;
+import com.insplatform.system.user.model.User;
+import com.insplatform.system.user.repository.UserRepository;
+import com.insplatform.system.user.service.UserBizDataAuthzService;
+
+@Service
+public class OrganizationServiceImpl extends BaseServiceImpl<Organization> implements OrganizationService{
+	
+	@Autowired
+	private OrganizationRepository organizationRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	private UserBizDataAuthzService userBizDataAuthzService;
+
+	@Override
+	public BaseRepository<Organization> getRepository() {		
+		return organizationRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAll(HttpServletRequest request,
+			Condition condition) {	
+		CurrentUser user = UserSession.getCurrentUser(request);
+		condition.put("currentUser", user);
+		
+		//设置用户业务数据权限，组织机构管理页面不存在此项
+		String bizDataAuthz = request.getParameter("bizDataAuthz");
+		String forUserId = null;
+		List<String> forUserAuthzOrgIds = null;
+		if(TextUtil.isNotEmpty(bizDataAuthz)){
+			forUserId = request.getParameter("forUserId");
+			forUserAuthzOrgIds = userBizDataAuthzService.loadUserBizOrgs(forUserId, false);
+		}
+		
+		List<Map<String, Object>> data = 
+				organizationRepository.loadAll(condition);	
+		
+		List<Map<String, Object>> treeData = buildTreeData(data);			
+		//加颜色
+		for(Map<String, Object> node: treeData){
+			if(node.get("isCompany").toString().equals("Y")){				
+//				node.put("text", "<span style='color:#003399;'>" + node.get("text") + "</span>");
+				node.put("icon", App.STATIC_PATH + "/image/icon/company.png");
+			}else{
+				node.put("icon", App.STATIC_PATH + "/image/icon/dept.png");
+			}
+			
+			//设置用户业务数据权限时，加复选框
+			if(forUserId != null && forUserAuthzOrgIds != null){				
+				//先检查当前用户是否有此节点的授权权限
+				boolean currUserHasNodeAuthz = userBizDataAuthzService.checkUserHasOrgAuthz(node.get("id").toString(), user);
+				//检查需要授权的用户有没有次节点的权限
+				boolean forUserHasNodeAuthz = forUserAuthzOrgIds.contains(node.get("id").toString());
+				//如果不是根节点，再进行设置
+				if(node.get("pid") != null){
+					if(currUserHasNodeAuthz){
+						if(forUserHasNodeAuthz){						
+							node.put("checked", true);
+							node.put("text", "<span style='color:#003399;'>" + node.get("text") + "</span>");
+						}else{
+							node.put("checked", false);
+						}
+					}else{
+						if(forUserHasNodeAuthz){
+							node.put("text", "<span style='color:#003399;'>" + node.get("text") + "</span>");
+						}
+					}	
+				}		
+			}
+			
+		}
+		//组建树结构
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("children",  treeService.parse(treeData, null, true, false));		
+		return map;	  
+	}
+	
+	/**
+	 * 组合树
+	 * @param data
+	 * @param chekced	是否可以复选
+	 * @return
+	 */
+	private List<Map<String, Object>> buildTreeData(List<Map<String, Object>> data){
+		//使用set去重
+		Set<Map<String, Object>> set = new HashSet<Map<String, Object>>();
+		//先将集合加入set中，保证数据完整性
+		set.addAll(data);
+		//确保每个节点的父节点都递归出来
+		for(Map<String, Object> node : data){			
+			addSuperNode(node, set);
+		}
+		List<Map<String, Object>> finalList = new ArrayList<Map<String, Object>>();		
+		finalList.addAll(set);		
+		//排序
+		Collections.sort(finalList, new Comparator<Map<String, Object>>() {
+			@Override
+			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+				try{
+					if(((BigDecimal)o1.get("orderIndex")).doubleValue() 
+							> ((BigDecimal)o2.get("orderIndex")).doubleValue()){						
+						return 1;
+					}else if(((BigDecimal)o1.get("orderIndex")).doubleValue() 
+							< ((BigDecimal)o2.get("orderIndex")).doubleValue()){						
+						return -1;
+					}else{
+						return 0;
+					}
+				}catch(Exception ex){					
+					return  0;
+				}	
+			}
+		});	
+		return finalList;	
+	}
+	
+	/**
+	 * 向set中加入节点，并且递归加入其父节点
+	 * @param node
+	 * @param set
+	 */
+	private void addSuperNode(Map<String, Object> node, Set<Map<String, Object>> set){
+		//如果是跟节点，直接加入，并返回
+		if(node.get("pid") == null){
+			set.add(node);
+			return;
+		}
+		
+		//加入自己
+		set.add(node);
+		
+		//先看此set中是否有当前节点的父节点
+		boolean hasSuper = false;
+		for(Map<String, Object> s : set){			
+			if(node.get("pid").toString().equals(s.get("id").toString())){
+				hasSuper = true;
+				break;
+			}
+		}
+		if(!hasSuper){
+			//查询此节点关联的所有父节点
+			List<Map<String, Object>> supers = organizationRepository.loadSupersByIdAsOracle(node.get("id").toString());
+			set.addAll(supers);		
+		}
+	}
+	
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Organization get(Serializable id) {		
+		return organizationRepository.get(id);
+	}
+	
+	
+	
+	@Override
+	public void save(Organization entity, String companyAdmin) {
+		String id = (String) organizationRepository.save(entity);
+		if(entity.getIsCompany()!=null && "Y".equals(entity.getIsCompany())){
+			saveOrgCompanyAdmin(id, companyAdmin);
+		}	
+		
+	}
+
+	@Override
+	public void update(Organization entity, String companyAdmin) {
+		organizationRepository.update(entity);			
+		if("Y".equals(entity.getIsCompany())){
+			User user = loadOrgCompanyAdmin(entity.getId());
+			if(user == null){
+				saveOrgCompanyAdmin(entity.getId(), companyAdmin);
+			}else{
+				if(user.getAccount().equals(companyAdmin)){						
+					deleteOrgCompanyAdmin(entity.getId());				
+				}	
+				saveOrgCompanyAdmin(entity.getId(), companyAdmin);
+			}
+					
+		}else{			
+			deleteOrgCompanyAdmin(entity.getId());
+		}		
+	}
+	
+	
+	/**
+	 * 添加或更新机构管理员
+	 * @param id
+	 * @param companyAdmin
+	 * @return
+	 */
+	private void saveOrgCompanyAdmin(String id, String companyAdmin){
+		if(TextUtil.isNotEmpty(companyAdmin)){
+			User user = new User();
+			user.setAccount(companyAdmin);
+			user.setEnabled("Y");
+			user.setWorking("Y");
+			user.setName("机构管理员");
+			//添加机构管理员
+			String userId = (String) userRepository.save(user);	
+			//设置用户数据权限级别
+			userBizDataAuthzService.saveUserBizLevel(userId, UserBizLevelConstant.COMPANY.getValue());
+			//添加机构用户对应关系
+			organizationRepository.addOrgUser(id, new String[]{userId});			
+			//给用户添加角色
+			Map<String, Object> role = roleRepository.loadRoleByCode(RoleConstant.ORG_ADMIN_ID.getValue());
+			roleRepository.addRoleUser(role.get("id").toString(), new String[]{userId});
+		}		
+	}
+	
+	/**
+	 * 删除机构管理员
+	 * @param orgId
+	 */
+	@Override
+	public void deleteOrgCompanyAdmin(String orgId){		
+		List<String> userIds = userRepository.loadUserByOrganizationIds(Arrays.asList(new String[]{orgId}));
+		for(String userId : userIds){
+			if(roleRepository.checkUserIsOrgAdmin(userId)){
+				userRepository.deleteById(userId);
+			}
+		}			
+	}
+	
+	/**
+	 * 获取机构管理员
+	 * @param orgId
+	 */
+	@Override
+	public User loadOrgCompanyAdmin(String orgId){
+		//如果是子公司,删除机构管理员		
+		List<String> userIds = userRepository.loadUserByOrganizationIds(Arrays.asList(new String[]{orgId}));
+		for(String userId : userIds){
+			if(roleRepository.checkUserIsOrgAdmin(userId)){
+				return userRepository.get((String)userId);
+			}
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {
+		//获取所有子机构id(包括自己)
+		List<String> ids = organizationRepository.loadChildrenIds((String)id);			
+		//查询出所有相关机构(明细)
+		List<Map<String, Object>> orgs = organizationRepository.loadByIds(ids);		
+		//删除所有相关的机构管理员
+		for(Map<String, Object> org : orgs){			
+			if("Y".equals(org.get("isCompany").toString())){
+				deleteOrgCompanyAdmin(org.get("id").toString());
+			}	
+			organizationRepository.deleteById(org.get("id").toString());
+		}		
+	}
+
+	@Override
+	public void deleteOrgUser(String id, String... userIds) {
+		organizationRepository.deleteOrgUser(id, userIds);
+	}
+
+	@Override
+	public void addOrgUser(String id, String... userIds) {
+		organizationRepository.addOrgUser(id, userIds);
+	}
+	
+
+}

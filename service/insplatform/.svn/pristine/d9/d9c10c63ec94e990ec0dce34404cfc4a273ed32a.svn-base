@@ -1,0 +1,119 @@
+package com.insplatform.module.osta.eval.sign.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.eval.sign.model.OstaEvalSignPerson;
+import com.insplatform.module.osta.eval.sign.service.OstaEvalSignPersonService;
+
+@Controller
+@RequestMapping("/px/ostaevalsignperson")
+public class OstaEvalSignPersonController extends BaseController{
+	
+	@Autowired
+	private OstaEvalSignPersonService ostaEvalSignPersonService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return ostaEvalSignPersonService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(ostaEvalSignPersonService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(ostaEvalSignPersonService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(OstaEvalSignPerson ostaevalsignperson, HttpServletRequest request){
+		ostaEvalSignPersonService.save(ostaevalsignperson);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		OstaEvalSignPerson ostaevalsignperson = ostaEvalSignPersonService.get(id);
+		this.bindObject(request, ostaevalsignperson);
+		ostaEvalSignPersonService.update(ostaevalsignperson);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		ostaEvalSignPersonService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 批量签到
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/batchadd")	
+	public @ResponseBody Map<String, Object> batchadd(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		String pid = request.getParameter("pid");
+		CurrentUser user = this.getCurrentUser(request);
+		Map<String, Object> map = ostaEvalSignPersonService.addBatch(ids,pid,user);
+		return this.getMessager().success().putAllMap(map);
+	}
+
+	
+}

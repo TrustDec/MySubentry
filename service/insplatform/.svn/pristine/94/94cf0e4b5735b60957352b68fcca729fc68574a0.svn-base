@@ -1,0 +1,75 @@
+package com.insplatform.module.teacherclock.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+
+import com.insframework.system.map.Condition;
+import com.insplatform.module.teacherclock.model.TeacherClock;
+
+public interface TeacherClockRepository extends BaseRepository<TeacherClock> {
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+
+	/**
+	 * 加载数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+
+	/**
+	 * 加载单条数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id, Condition condition);
+
+	Map<String, Object> loadAllQueryGrid(Condition condition);
+
+	/**
+	 * 加载打卡数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllQueryClockGrid(String id, String pxId,
+			Condition condition);
+
+	/**
+	 * 获取学员打卡记录
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<String> loadQueryClockRecord(String cid, String pxId);
+
+	String getOneQueryClockRecordId(String cid, String pxId, String uid);
+
+	/**
+	 * 加载教师授课调整数据
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+
+	Map<String, Object> loadAdjustmentAllGrid(Condition condition);
+
+	Map<String, Object> loadOneAdjustment(String id, Condition condition);
+	
+	Map<String, Object> loadOneEditAdjustment(String id, Condition condition);
+}

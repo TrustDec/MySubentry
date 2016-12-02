@@ -1,0 +1,26 @@
+package com.insplatform.module.worktype.service;
+
+import java.util.Map;
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.worktype.model.WorktypeLevel;
+
+public interface WorktypeLevelService extends BaseService<WorktypeLevel>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAll(Condition condition);
+	
+	/**
+	 * 加载选择器
+	 * @param request
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAllChooser(Condition condition);
+}

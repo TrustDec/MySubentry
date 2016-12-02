@@ -1,0 +1,137 @@
+package com.insplatform.module.trainingevaluate.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluate;
+import com.insplatform.module.trainingevaluate.service.TrainingEvaluateService;
+
+@Controller
+@RequestMapping("/px/trainingevaluate")
+public class TrainingEvaluateController extends BaseController{
+	
+	@Autowired
+	private TrainingEvaluateService trainingEvaluateService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"schemeId","name");
+		return trainingEvaluateService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(trainingEvaluateService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(trainingEvaluateService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(TrainingEvaluate trainingevaluate, HttpServletRequest request){
+		trainingEvaluateService.save(trainingevaluate);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		TrainingEvaluate trainingevaluate = trainingEvaluateService.get(id);
+		this.bindObject(request, trainingevaluate);
+		trainingEvaluateService.update(trainingevaluate);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		trainingEvaluateService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	
+	/**
+	 * 获取方案下的课程信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/getCurriculum")
+	public @ResponseBody Map<String, Object> getCurriculum(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"schemeId");
+		Map<String, Object> dataMap=trainingEvaluateService.getCurriculum(condition);
+		return this.getMessager().success().put("data", dataMap);
+	}
+	
+	/**
+	 * 是否提交
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/isSubmit")
+	public @ResponseBody Map<String, Object> isSubmit(HttpServletRequest request){
+		String evaluateId = request.getParameter("evaluateId");
+		boolean has = trainingEvaluateService.beforeInsertCheck(evaluateId);
+		return this.getMessager().success().put("has", has);
+	}
+	
+	
+	@RequestMapping("/hasSubEvaluate")
+	public @ResponseBody Map<String, Object> hasSubEvaluate(HttpServletRequest request){
+		String shcemeId = request.getParameter("shcemeId");
+		boolean has = trainingEvaluateService.hasSubEvaluate(shcemeId);
+		return this.getMessager().success().put("has", has);
+	}
+}

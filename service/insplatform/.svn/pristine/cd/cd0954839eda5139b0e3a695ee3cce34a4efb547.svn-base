@@ -1,0 +1,129 @@
+package com.insplatform.module.osta.register.notice.repository.impl;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.register.notice.model.OstaRegWorktypeLevel;
+import com.insplatform.module.osta.register.notice.repository.OstaRegWorktypeLevelRepository;
+
+
+@Repository
+public class OstaRegWorktypeLevelRepositoryImpl extends BaseRepositoryImpl<OstaRegWorktypeLevel> implements OstaRegWorktypeLevelRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(String ostaRegNoticeId, Condition condition) {	
+		String sql = "select t.* from PX_OSTA_REG_WORKTYPE_LEVEL t " +
+				" where t.notice_id = '"+ostaRegNoticeId+"'";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_REG_WORKTYPE_LEVEL t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_OSTA_REG_WORKTYPE_LEVEL t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaRegWorktypeLevel get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaRegWorktypeLevel entity) {	
+		return super.save(entity);
+	}
+	
+	@Override
+	public Map<String, Object> getOneByTreeId(String noticeId,
+			String worktypeId, String worktypeLevelId) {
+		String sql = "select t.id from px_osta_reg_worktype_level t" +
+				" where t.notice_id = ? and t.worktype_id = ? and t.worktype_level_id = ?";
+		return jdbcAssistant.queryOne(sql, 
+				new Object[]{noticeId, worktypeId, worktypeLevelId});
+	}
+
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaRegWorktypeLevel entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadWorktypeLevel(Condition condition) {
+		String sql = "select t.id, t.name, wtl.id worktypeLevelId" +
+				" from sys_dict t" +
+				" inner join sys_dict_classify dc on dc.code = 'PX_OSTA_WORKTYPE_LEVEL' " +
+				" and dc.id = t.classify_id" +
+				" left join px_osta_reg_worktype_level wtl on wtl.worktype_id = ? " +
+				" wtl.notice_id = ?";
+		List<Map<String, Object>> list = jdbcAssistant.query(sql, new Object[]{condition.get("worktypId"),condition.get("ostaRegNoticeId")});
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("data", list);
+		return map;
+	}
+
+	@Override
+	public Map<String, Object> loadWorktypeByNoticeId(String noticeId,Condition condition) {
+		String sql = "select * from (" +
+				" select ow.id, ow.name as text , ow.classify_id as pid from px_osta_worktype ow" +
+				" where ow.id in (select rwl.worktype_id from px_osta_reg_worktype_level rwl " +
+				" where rwl.notice_id = '"+noticeId+"')" +
+				" union all" +
+				" select owc.id, owc.name as text, 'root' as pid  from px_osta_worktype_classify owc" +
+				" where owc.id in (select ow.classify_id from px_osta_worktype ow where ow.id in" +
+				" (select rwl.worktype_id from px_osta_reg_worktype_level rwl " +
+				" where rwl.notice_id = '"+noticeId+"')" +
+				" )" +
+				" union all" +
+				" select 'root' id, '鉴定工种' as text ,null pid from px_osta_worktype_classify where rownum = 1" +
+				" )" +
+				" order by text";
+		return treeService.loadData(sql);		
+	}
+
+	@Override
+	public List<Map<String, Object>> loadWorktypeLevelByNoticeId(String noticeId,
+			String worktypeId) {
+		String sql = "select t.worktype_level_id value, t.worktype_level_name text " +
+				" from px_osta_reg_worktype_level t" +
+				" where t.notice_id = ? and t.worktype_id = ?";
+		return jdbcAssistant.query(sql,new Object[]{noticeId,worktypeId});
+	}
+	
+}

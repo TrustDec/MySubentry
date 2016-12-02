@@ -1,0 +1,105 @@
+package com.insplatform.module.userqualification.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.userqualification.model.UserQualification;
+import com.insplatform.module.userqualification.repository.UserQualificationRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class UserQualificationRepositoryImpl extends BaseRepositoryImpl<UserQualification> implements UserQualificationRepository{
+
+	/**
+	 * 根据用户id加载当前用户的资质列表(user_Id)
+	 * 
+	 * @param user_id 
+	 * @return
+	 */
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = " select id,user_id,user_name,to_char(create_time,'yyyy-MM-dd')  create_time, "+
+	                 " to_char(update_time,'yyyy-MM-dd')  update_time,num,name, " +
+                     " to_char(bg_time,'yyyy-MM-dd')  bg_time,to_char(ed_time,'yyyy-MM-dd')  ed_time,organization, "+
+                     " to_char(first_time,'yyyy-MM-dd')  first_time,to_char(second_time,'yyyy-MM-dd')  second_time,remark," +
+                     " to_char(gain_time,'yyyy-MM-dd') as gain_time, (select t.name from px_worktype t where t.id=px_worktype) as workname,px_worktype" +
+				" from px_user_qualification t  where 1=1  ";
+		if (condition.containsKey("id")) {
+			sql += " and t.user_id = ? ";
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_USER_QUALIFICATION t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+
+	@Override
+	public Map<String, Object> load(String id) {
+		String sql = " select  id,user_id,user_name,to_char(create_time,'yyyy-MM-dd')  create_time, "+
+	                 " to_char(update_time,'yyyy-MM-dd')  update_time,num,name, " +
+                     " to_char(bg_time,'yyyy-MM-dd')  bg_time,to_char(ed_time,'yyyy-MM-dd')  ed_time,organization, "+
+                     " to_char(first_time,'yyyy-MM-dd')  first_time,to_char(second_time,'yyyy-MM-dd')  second_time,remark,to_char(gain_time,'yyyy-MM-dd') as gain_time," +
+                     " (select t.name from px_worktype t where t.id=px_worktype) as workname,px_worktype from PX_USER_QUALIFICATION  where id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 根据加载资质证书列表
+	 * 
+	 * 
+	 * @return
+	 */
+	@Override
+	public List<Map<String, Object>> loadNameList(Condition condition) {	
+		String sql = " select distinct t.name as text ,t.name as value from px_user_qualification t order by t.name ";
+		return jdbcAssistant.query(sql);
+	}
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public UserQualification get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(UserQualification entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(UserQualification entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

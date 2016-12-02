@@ -1,0 +1,282 @@
+package com.insplatform.module.resource.service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.spring.jdbc.JdbcAssistant;
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.component.service.ext.grid.GridService;
+import com.insframework.system.context.App;
+import com.insframework.system.curruser.UserSession;
+import com.insframework.system.map.Condition;
+
+@Service
+public class ResourceService {
+	
+	@Autowired
+	private JdbcAssistant jdbcAssistant;
+	
+	@Autowired
+	protected GridService gridService;
+	
+	/**
+	 * 删除资源关联信息
+	 * @param ids
+	 */
+	public void removeOthersByIds(String type, String [] resourceIds){
+		//删除资源评论
+		for(int i=0; i<resourceIds.length; i++){
+			String sql = "delete from PX_RESOURCE_COMMENT where resource_id = '"+resourceIds[i]+"'";
+			jdbcAssistant.update(sql);
+		}
+		
+		//删除资源笔记		
+		for(int i=0; i<resourceIds.length; i++){
+			String sql = "delete from PX_RESOURCE_NOTE where resource_id = '"+resourceIds[i]+"'";
+			jdbcAssistant.update(sql);
+		}
+		
+		//删除已学表
+		for(int i=0;  i<resourceIds.length; i++){
+			String sql = "delete from PX_RESOURCE_USER_STUDYED where resource_id = '"+resourceIds[i]+"' and resource_type = '"+type.toUpperCase()+"'";
+			jdbcAssistant.update(sql);
+		}
+		
+		//删除事故案例附件表
+		for(int i=0;  i<resourceIds.length; i++){
+			String sql = "delete from PX_ACCIDENT_CASE_ATTACHMENT where attachment_id = '"+resourceIds[i]+"' and type = '"+type.toUpperCase()+"'";
+			jdbcAssistant.update(sql);
+		}
+	}
+	
+	/**
+	 * 检查资源是否被课程引用了
+	 * @param ids
+	 * @param type
+	 * @return
+	 */
+	public boolean checkCuorseHasByIds(String[] ids, String type) {
+		boolean has = false;
+		for(String id : ids){
+			String sql = "select count(1) as count from PX_COURSE_KPOINT_RESOURCE t where t.resource_id='"+id+"'";
+			int count = jdbcAssistant.queryAsInt(sql);
+			if(count > 0){
+				has = true;
+				break;
+			}
+		}
+		return has;
+	}
+	
+	public Map<String, Object> loadAllChooser(Condition condition) {
+		String sql = "select t.* , p.name as Kpoint_name from v_px_resource t, px_kpoint p where t.kpoint_id = p.id ";
+		if (condition.containsKey("name")) {
+			sql += "and t.name like '%" + condition.get("name") + "%'";
+		}
+		if (condition.containsKey("type")) {
+			sql += "and type like '%" + condition.get("type") + "%'";
+		}
+		if (condition.containsKey("kpointName")) {
+			sql += "and t.kpoint_id in (select id from px_kpoint where name like '%"
+					+ condition.get("kpointName") + "%')";
+		}
+		sql += " order by t.type";
+		return gridService.loadData(condition.getGridTransModel(), sql);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	public Map<String, Object> load(String id, String type) {
+		Map<String, Object> resource = null;
+		String tableName = "";
+		String sql = "";
+		if("doc".equalsIgnoreCase(type)){
+			tableName = "PX_DOC";
+		}else if("video".equalsIgnoreCase(type)){
+			tableName = "PX_VIDEO";
+		}else if("question".equalsIgnoreCase(type)){
+			tableName = "PX_QUESTION";
+		}
+		sql = "select * from " + tableName + " where id = '"+id+"'";
+		resource = jdbcAssistant.queryOne(sql);
+		return resource;
+	}
+
+	
+	
+	/**
+	 * 根据课程id获取课程资源相关的目录列表
+	 * @param courseId
+	 * @return
+	 */
+	public List<Map<String, Object>> loadCourseResource(String courseId) {
+		//查询所有目录
+		String sql = "select * from ( "+
+					 "select t.id as course_kpoint_id ,t.kpoint_id,t.kpoint_catalogue, "+
+					 "(select count(1) from PX_COURSE_KPOINT_RESOURCE where course_kpoint_id = t.id) as resource_count "+
+					 "from PX_COURSE_KPOINT_REL t "+
+					 "where course_id = '"+courseId+"' order by t.sort_number "+
+					 ") "+
+					 "where resource_count > 0 ";
+		
+		List<Map<String, Object>> kopintList = jdbcAssistant.query(sql);
+		
+		for(Map<String, Object> kpoint : kopintList){			
+			
+			String courseKpointId = kpoint.get("courseKpointId").toString();
+			
+			sql = "select t.resource_id,r.name,r.difficulty,r.update_time,r.create_time,r.create_user_name,r.type "+
+				  "from px_course_kpoint_resource t "+
+			      "left join V_PX_RESOURCE r on t.resource_id = r.id "+
+				  "where t.course_kpoint_id = '"+courseKpointId+"' "+
+				  "order by t.sort_number ";
+			
+			List<Map<String, Object>> resourceList = jdbcAssistant.query(sql);
+			
+			kpoint.put("resourceList", resourceList);
+			
+		}
+		
+		return kopintList;
+		
+	}
+	
+	
+	/**
+	 * 添加已学资源
+	 * @param userId
+	 * @param courseId
+	 */
+	public void updateStudyedResource(String userId, String resourceId, String resourceType) {
+		if(!this.hasStudyedResource(userId, resourceId)){
+			String sql = "insert into PX_RESOURCE_USER_STUDYED values ('"+userId+"', '"+resourceId+"', '"+resourceType+"')";
+			jdbcAssistant.update(sql);
+		}
+	}
+	
+	/**
+	 * 检查已学资源
+	 * @param userId
+	 * @param courseId
+	 * @return
+	 */
+	public boolean hasStudyedResource(String userId, String resourceId) {
+		String sql = "select count(1) from PX_RESOURCE_USER_STUDYED where user_id = '"+userId+"' and resource_id = '"+resourceId+"'";
+		int count = jdbcAssistant.queryAsInt(sql);
+		if(count > 0){
+			return true;
+		}
+		return false;
+	}
+	
+	public List<Map<String, Object>> loadCommentByResourceId(String id){		
+		String sql = "select t.id,t.content,t.resource_id,t.create_user_id as user_id,t.create_user_name as user_name," +
+				" to_char(t.create_time,'yyyy-MM-dd HH24:mi') as create_time  from PX_RESOURCE_COMMENT t " +
+				" where t.resource_id='"+id+"' order by t.create_time desc";			
+		return jdbcAssistant.query(sql, null, getCommentOrNoteValueMapper()); 
+	}
+	
+	/**
+	 * 移动端--根据课程资源查询评论
+	 * @param id
+	 * @return
+	 */
+	public List<Map<String, Object>> loadCommentByResourceIdFromMobile(String id){		
+		String sql = "select t.id,t.content,t.resource_id,t.create_user_id as user_id,t.create_user_name as user_name," +
+				" to_char(t.create_time,'yyyy-MM-dd HH24:mi') as create_time  from PX_RESOURCE_COMMENT t " +
+				" where t.resource_id='"+id+"' order by t.create_time desc";			
+		return jdbcAssistant.query(sql); 
+	}
+	
+	public List<Map<String, Object>> loadNoteByResourceId(String id, String currentUserId){		
+		String sql = "select t.id,t.content,t.resource_id,t.create_user_id as user_id,t.is_open,t.create_user_name as user_name," +
+				" to_char(t.create_time,'yyyy-MM-dd HH24:mi') as create_time from PX_RESOURCE_NOTE t " +				
+				" where resource_id = '"+id+"' and (is_open = 'Y' or t.create_user_id='"+currentUserId+"')  order by t.create_time desc";		
+		return jdbcAssistant.query(sql, null, getCommentOrNoteValueMapper());
+	}
+	
+	/**
+	 * 移动端--根据课程资源查询我得笔记
+	 * @param id
+	 * @return
+	 */
+	public List<Map<String, Object>> loadNoteByResourceIdFromMobile(String id, String currentUserId){		
+		String sql = "select t.id,t.content,t.resource_id,t.create_user_id as user_id,t.is_open,t.create_user_name as user_name," +
+				" to_char(t.create_time,'yyyy-MM-dd HH24:mi') as create_time from PX_RESOURCE_NOTE t " +				
+				" where resource_id = '"+id+"' and (is_open = 'Y' or t.create_user_id='"+currentUserId+"')  order by t.create_time desc";				
+		return jdbcAssistant.query(sql); 
+	}
+	
+	public ValueMapper getCommentOrNoteValueMapper(){
+		return new ValueMapper() {			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {		
+				String userId = record.get("userId")+"";	
+				record.put("photo", App.CTX_PATH + "/system/user/writePhotox?id=" + userId);		
+				return RETURN_CODE.NEXT;
+			}
+		};
+	}
+	
+	
+	public void saveComment(HttpServletRequest request){
+		String content = request.getParameter("content");
+		String resourceId = request.getParameter("resourceId");
+		String userId = UserSession.getCurrentUser(request).getId();
+		String userName = UserSession.getCurrentUser(request).getName();		
+		String sql = "insert into px_resource_comment "+
+				     "(id, content, resource_id, create_user_id, create_user_name, create_time) "+
+				     "values "+
+				     "(?, ?, ?, ?, ?, ?)";
+		jdbcAssistant.update(sql, new Object[]{TextUtil.getUUID(), content, resourceId, userId, userName, new Date()});
+	}
+	
+	/**
+	 * 移动端保存评论资源
+	 * @param request
+	 */
+	public void saveCommentFromMobile(String content,String resourceId,String userId,String userName){
+		String sql = "insert into px_resource_comment "+
+				     "(id, content, resource_id, create_user_id, create_user_name, create_time) "+
+				     "values "+
+				     "(?, ?, ?, ?, ?, ?)";
+		jdbcAssistant.update(sql, new Object[]{TextUtil.getUUID(), content, resourceId, userId, userName, new Date()});
+	}
+	
+	public void saveNote(HttpServletRequest request){
+		String content = request.getParameter("content");
+		String isOpen = request.getParameter("isOpen");
+		String resourceId = request.getParameter("resourceId");
+		String userId = UserSession.getCurrentUser(request).getId();
+		String userName = UserSession.getCurrentUser(request).getName();		
+		String sql = "insert into px_resource_note "+
+				     "(id, content, resource_id, create_user_id, create_user_name, create_time, is_open) "+
+				     "values "+
+				     "(?, ?, ?, ?, ?, ?, ?)";
+		jdbcAssistant.update(sql, new Object[]{TextUtil.getUUID(), content, resourceId, userId, userName, new Date(), isOpen});
+	}
+
+	/**
+	 * 移动端保存笔记资源
+	 * @param request
+	 */
+	public void saveNoteFromMobile(String content,String isOpen,String resourceId,String userId,String userName){
+		String sql = "insert into px_resource_note "+
+				     "(id, content, resource_id, create_user_id, create_user_name, create_time, is_open) "+
+				     "values "+
+				     "(?, ?, ?, ?, ?, ?, ?)";
+		jdbcAssistant.update(sql, new Object[]{TextUtil.getUUID(), content, resourceId, userId, userName, new Date(), isOpen});
+	}
+	
+}

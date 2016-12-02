@@ -1,0 +1,133 @@
+package com.insplatform.module.trainingevaluate.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluate;
+import com.insplatform.module.trainingevaluate.repository.TrainingEvaluateRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TrainingEvaluateRepositoryImpl extends BaseRepositoryImpl<TrainingEvaluate> implements TrainingEvaluateRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE t where 1=1";
+		if(condition.containsKey("schemeId"))
+		{
+			sql += " and t.scheme_id = ? ";
+			condition.put("schemeId", condition.get("schemeId"));
+		}
+		
+		if(condition.containsKey("name"))
+		{
+			sql += " and t.name like ? ";
+			condition.put("name","%"+ condition.get("name")+"%");
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingEvaluate get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingEvaluate entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingEvaluate entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+		
+		deleteEvaluateResult(new String[]{id.toString()});
+	}
+	
+	private String getInSql(String[] ids){
+		String sql="(";
+		for (int i=0;i<ids.length;i++) {
+			sql += "?,";
+		}
+		sql = sql.substring(0, sql.length()-1);
+		return sql +")";
+	}
+	
+	private void deleteEvaluateResult(String []ids){
+		String sql = "delete from px_training_evaluate_result t where t.evaluate_id IN " + getInSql(ids);
+		jdbcAssistant.update(sql,(Object[]) ids);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+		deleteEvaluateResult(ids);
+	}
+	
+	@Override
+	public Map<String, Object> getCurriculum(Condition condition) {
+		String sql = "select t.id,t.course,t.address,to_char(t.stat_time,'yyyy-mm-dd hh24:mi') as stat_time, " +
+				" to_char(t.stop_time,'yyyy-mm-dd hh24:mi') as stop_time, (case when t.course is null then   " +
+				" t.coursename  else (select tt.title  from PX_COURSE tt where tt.id=t.course) end) as coursename  " +
+				" from PX_TRAINING_CURRICULUM t where t.px_training_scheme=? " +
+				" order by stat_time ";
+		List<Map<String, Object>> results = jdbcAssistant.query(sql, condition.valueArray());
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		returnMap.put("curList", results);
+		return returnMap;
+	}
+
+	@Override
+	public boolean beforeInsertCheck(String evaluateId) {
+		String sql = "select count(1) from px_training_evaluate t where id=? and is_submit='Y'";
+		int count = jdbcAssistant.queryAsInt(sql,new String[]{evaluateId});
+		if(count > 0) return true;
+		return false;
+	}
+
+	@Override
+	public boolean hasSubEvaluate(String shcemeId) {
+		String sql = "select count(1) from px_training_evaluate t where scheme_id=? and is_submit='Y'";
+		int count = jdbcAssistant.queryAsInt(sql,new String[]{shcemeId});
+		if(count > 0) return true;
+		return false;
+	}
+	
+}

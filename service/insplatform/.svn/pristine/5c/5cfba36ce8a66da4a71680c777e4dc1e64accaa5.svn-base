@@ -1,0 +1,64 @@
+package com.insplatform.system.dict.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("SYS_DICT_CLASSIFY")
+public class DictClassify implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String name;
+	private String remark;
+	private String code;
+	private String isDelete = "N";
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	
+	public void setCode(String value) {
+		this.code = value;
+	}
+	
+	public String getCode() {
+		return this.code;
+	}
+	
+	public void setIsDelete(String value) {
+		this.isDelete = value;
+	}
+	
+	public String getIsDelete() {
+		return this.isDelete;
+	}
+	
+}

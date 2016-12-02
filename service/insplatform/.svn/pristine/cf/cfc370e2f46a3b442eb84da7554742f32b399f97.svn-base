@@ -1,0 +1,119 @@
+package com.insplatform.module.weekly.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.weekly.model.Weekly;
+import com.insplatform.module.weekly.repository.WeeklyRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class WeeklyRepositoryImpl extends BaseRepositoryImpl<Weekly> implements WeeklyRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id,t.name,to_char(t.upload_time,'yyyy-mm-dd') as upload_time,t.weekly,t.original_name,t.class_report_id,t.create_user_id,t.create_user_name,t.create_time,t.update_time from PX_WEEKLY t WHERE 1=1 ";
+		if(condition.containsKey("pxClassReport"))
+		{
+			sql += " and t.class_report_id = ? ";
+			condition.put("pxClassReport", condition.get("pxClassReport"));
+		}
+		if(condition.containsKey("name"))
+		{
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%");
+		}
+		if(condition.containsKey("uploadTime"))
+		{
+			sql += " and to_char(t.upload_time,'yyyy-mm-dd') = ?";
+			condition.put("uploadTime", condition.get("uploadTime"));
+		}
+		sql += " order by t.update_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.id,t.name,to_char(t.upload_time,'yyyy-mm-dd') as upload_time,t.weekly,t.original_name,t.class_report_id,t.create_user_id,t.create_user_name,t.create_time,t.update_time from PX_WEEKLY t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.id,t.name,to_char(t.upload_time,'yyyy-mm-dd') as upload_time,t.weekly,t.original_name,t.class_report_id,t.create_user_id,t.create_user_name,t.create_time,t.update_time from PX_WEEKLY t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Weekly get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Weekly entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Weekly entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadAllClassesInfo(Condition condition) {
+		String sql = "select t.id,t.name,t.population,t.remark,to_char(t.start_time,'yyyy-mm-dd') as start_time, to_char(t.stop_time,'yyyy-mm-dd') as stop_time,t.px_year,t.px_month,t.create_user_id,t.create_user_name,t.create_time,t.update_time,t.px_address,t.class_teacher as classTeacher_id,(select u.name from SYS_USER u where u.id=t.class_teacher) as class_Teacher ,t.px_content,t.state,(select tt.name from PX_PROJECT tt where  tt.id=t.px_project) as px_project,t.px_organization from PX_CLASS_REPORT t,PX_PROJECT pt where t.PX_PROJECT=pt.id ";
+		
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("pxYear"))
+		{
+			sql += " and t.px_year = ? ";
+			condition.put("pxYear", condition.get("pxYear"));
+		}
+		if(condition.containsKey("pxMonth"))
+		{
+			sql += " and t.px_month = ? ";
+			condition.put("pxMonth", condition.get("pxMonth"));
+		}
+		if(condition.containsKey("SelectPxProject"))
+		{
+			sql += " and pt.name like ? ";
+			condition.put("SelectPxProject", "%" + condition.get("SelectPxProject") + "%" );
+		}
+		sql += " order by t.start_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+}

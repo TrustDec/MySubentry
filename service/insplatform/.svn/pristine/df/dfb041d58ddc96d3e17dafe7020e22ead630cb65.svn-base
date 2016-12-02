@@ -1,0 +1,82 @@
+package com.insplatform.module.bbs.question.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_BBS_QUESTION")
+public class BbsQuestion implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String title;
+	private String classify;
+	private String createPersonId;
+	private String createPersonName;
+	private java.util.Date createTime;
+	private String content;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setTitle(String value) {
+		this.title = value;
+	}
+	
+	public String getTitle() {
+		return this.title;
+	}
+	
+	public void setClassify(String value) {
+		this.classify = value;
+	}
+	
+	public String getClassify() {
+		return this.classify;
+	}
+	
+	public void setCreatePersonId(String value) {
+		this.createPersonId = value;
+	}
+	
+	public String getCreatePersonId() {
+		return this.createPersonId;
+	}
+	
+	public void setCreatePersonName(String value) {
+		this.createPersonName = value;
+	}
+	
+	public String getCreatePersonName() {
+		return this.createPersonName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setContent(String value) {
+		this.content = value;
+	}
+	
+	public String getContent() {
+		return this.content;
+	}
+	
+}

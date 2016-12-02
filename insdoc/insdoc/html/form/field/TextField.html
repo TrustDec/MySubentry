@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>平台使用手册</title>
+<base href="../" />
+<link href="../common/include.css" rel="stylesheet" />
+</head>
+<body id="bodyId">
+<h1>TextField</h1> 
+<h3>介绍</h3>
+<p>
+文本输入框
+</p>
+<img src="../../img/TextField.jpg" />
+<h3>示例代码</h3>
+<pre class="brush:js;">
+Ext.define('App.demo.form.field.TextField',{
+	
+	init: function(){
+		var me = this;
+		var view = Ext.create('Ins.form.Form',{
+			fields : [{
+					//label
+					text:"文本输入框",
+					name:"name",
+					xtype:"ins_textfield",
+					value:'地瓜地瓜',
+					allowBlank:false,
+					maxLength:2,
+					labelStyle:"color:red",
+					//获取焦点事件 me:Ext.Component;event:Ext.event.Event此处为focus事件。
+					onFieldFocus : function(me, event){
+						console.log(me);
+						console.log(event);
+						alert("获取焦点事件    值:"+me.value+" 类型:"+me.xtype);
+					},
+					//失去焦点事件 me:Ext.Component;event:Ext.event.Event此处为focus事件。
+					onFieldBlur : function(me, event){
+						console.log(me);
+						console.log(event);
+						alert("失去焦点事件    值:"+me.value+" 类型:"+me.xtype);
+					},
+					//改变内容事件  me:Ext.Component;改变后的值newValue，改变之前的值oldValue
+					onFieldChange : function(me, newValue, oldValue){
+						console.log(me);
+						alert("内容改变事件    新值:"+newValue+" 旧值:"+oldValue);
+					},
+					//验证提示消息默认采用side效果：显示在右边 其他效果有 qtip,title,under,none,[element id]
+					msgTarget: 'side'
+			}]
+		});
+		return view;
+	}
+});
+</pre>
+<h3>类名</h3>
+<code>Ins.form.field.TextField</code>
+<h4>别名</h4>
+<code>ins_textfield</code>
+<h3>继承自</h3>
+<code>Ext.form.field.Text</code>
+<h3>构造对象</h3>
+<pre class="brush:js;">
+{
+	//label
+	text:"文本输入框",
+	name:"name",
+	xtype:"ins_textfield"
+}
+</pre>
+<h3>属性</h3>
+<table class="table table-bordered table-striped table-hover table-hover">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>属性名</th><th>属性值类型</th><th>描述</th><th>默认值</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>text</td>
+<td>string</td>
+<td>输入框标签名称</td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>与后台实体类属性对应</td>
+<td></td>
+</tr>
+<tr>
+<td>xtype</td>
+<td>String</td>
+<td>对象类型</td>
+<td>ins_textfield</td>
+</tr>
+<tr>
+<td>value</td>
+<td>String</td>
+<td>默认值</td>
+<td></td>
+</tr>
+<tr>
+<td>msgTarget</td>
+<td>String</td>
+<td>验证不通过消息提示位置（qtip,title,under,side,none,[element id]）</td>
+<td>side</td>
+</tr>
+</tbody>
+</table>
+
+<h3>方法</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>方法名称</th><th>描述</th></tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+<h3>事件</h3>
+<table class="table table-bordered table-striped table-hover table-condensed">
+<thead style="background-color: #555;color: #FFFFFF;">
+<tr><th>返回值</th><th>事件名称</th><th>绑定方法</th><th>描述</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>onFieldFocus</td>
+<td>function(me, event){ }</td>
+<td>获取焦点事件 me:Ext.Component组件本身;event:Ext.event.Event此处为focus事件</td>
+</tr>
+<tr>
+<td>void</td>
+<td>onFieldBlur</td>
+<td>function(me, event){ }</td>
+<td>失去焦点事件 me:Ext.Component;event:Ext.event.Event此处为focus事件</td>
+</tr>
+<tr>
+<td>void</td>
+<td>onFieldChange</td>
+<td>function(me, newValue, oldValue){ }</td>
+<td>改变内容事件  me:Ext.Component;改变后的值newValue，改变之前的值oldValue</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<script type="text/javascript" src="../common/include.js"></script>
+</body>
+</html>

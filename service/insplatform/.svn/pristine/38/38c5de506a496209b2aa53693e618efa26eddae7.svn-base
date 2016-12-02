@@ -1,0 +1,98 @@
+package com.insplatform.module.subcompanymontharrange.service.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.subcompanymontharrange.model.SubcompanyMonthArrange;
+import com.insplatform.module.subcompanymontharrange.repository.SubcompanyMonthArrangeRepository;
+import com.insplatform.module.subcompanymontharrange.service.SubcompanyMonthArrangeService;
+
+@Service
+public class SubcompanyMonthArrangeServiceImpl extends BaseServiceImpl<SubcompanyMonthArrange> implements SubcompanyMonthArrangeService{
+	
+	@Autowired
+	private SubcompanyMonthArrangeRepository subcompanyMonthArrangeRepository;
+
+	@Override
+	public BaseRepository<SubcompanyMonthArrange> getRepository() {		
+		return subcompanyMonthArrangeRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return subcompanyMonthArrangeRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public Map<String, Object> loadAllAppGrid(Condition condition) {			
+		return subcompanyMonthArrangeRepository.loadAllAppGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return subcompanyMonthArrangeRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return subcompanyMonthArrangeRepository.load(id);
+	}
+	
+	@Override
+	public void deleteByAIds(String[] userIds) {
+		for (String appId : userIds) {
+			Map<String, Object> list= subcompanyMonthArrangeRepository.loadApprovalCheckIds(appId);
+			if(list!=null){
+				subcompanyMonthArrangeRepository.deleteById(appId);
+			};
+		}
+	}
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public SubcompanyMonthArrange get(Serializable id) {		
+		return subcompanyMonthArrangeRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(SubcompanyMonthArrange entity) {	
+		return subcompanyMonthArrangeRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(SubcompanyMonthArrange entity) {		
+		subcompanyMonthArrangeRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		subcompanyMonthArrangeRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		subcompanyMonthArrangeRepository.deleteByIds(ids);
+	}
+
+}

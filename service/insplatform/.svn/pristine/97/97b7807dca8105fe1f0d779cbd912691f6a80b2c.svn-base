@@ -1,0 +1,70 @@
+package com.insplatform.system.user.repository;
+
+import java.util.List;
+import java.util.Map;
+
+
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.map.Condition;
+import com.insplatform.system.user.model.User;
+
+public interface UserRepository extends BaseRepository<User>{
+	
+	/**
+	 * 获取查询sql
+	 * @return
+	 */
+	String getLoadAllSql();
+	
+	/**
+	 * 加载数据
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAll(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	/**
+	 * 重置密码
+	 * @param ids
+	 */
+	void resetPassword(String [] ids);
+
+	
+	/**
+	 * 根据组织机构id加载用户id集合
+	 * @param orgIds
+	 * @return
+	 */
+	List<String> loadUserByOrganizationIds(List<String> orgIds);
+	
+	/**
+	 * 检查账号是否存在
+	 * @param code
+	 * @param id
+	 * @return
+	 */
+	boolean checkHasAccount(String account, String id);
+	
+	/**
+	 * 获取照片
+	 * @param id
+	 * @return
+	 */
+	byte[] getPhotoById(String id);
+	
+	/**
+	 * 保存照片
+	 * @param id
+	 * @param photoReal
+	 */
+	void savePhoto(String id, String photoReal) throws Exception;
+	
+}

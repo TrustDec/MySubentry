@@ -1,0 +1,25 @@
+package com.insplatform.module.osta.question.repository;
+
+
+
+import java.util.List;
+import java.util.Map;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.osta.question.model.OstaQuestionAnswer;
+
+public interface OstaQuestionAnswerRepository extends BaseRepository<OstaQuestionAnswer>{
+	
+	/**
+	 * 根据试题id删除
+	 * @param strings
+	 */
+	void deleteByQueIds(String[] ids);
+	
+	/**
+	 * 根据试题id获取答案
+	 * @param id
+	 */
+	List<Map<String, Object>> loadAnswerByQueId(String id);
+	
+}

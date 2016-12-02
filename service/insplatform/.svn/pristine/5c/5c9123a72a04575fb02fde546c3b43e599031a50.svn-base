@@ -1,0 +1,245 @@
+package com.insplatform.module.trainingevaluate.repository.impl;
+
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.JsonUtil;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluate;
+import com.insplatform.module.trainingevaluate.model.TrainingEvaluateResult;
+import com.insplatform.module.trainingevaluate.repository.TrainingEvaluateRepository;
+import com.insplatform.module.trainingevaluate.repository.TrainingEvaluateResultRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TrainingEvaluateResultRepositoryImpl extends BaseRepositoryImpl<TrainingEvaluateResult> implements TrainingEvaluateResultRepository{
+
+	@Autowired
+	private TrainingEvaluateRepository trainingEvaluateRespository;
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE_RESULT t ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE_RESULT t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TRAINING_EVALUATE_RESULT t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TrainingEvaluateResult get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TrainingEvaluateResult entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TrainingEvaluateResult entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void saveEvaluateResult(TrainingEvaluate trainingEvaluate,Condition condition){
+		String personList = condition.get("personList") + "";
+		String evaList = condition.get("evaList") + "";
+		String subEvaList = condition.get("subEvaList") + "";
+		
+		
+		List<Map<String, Object>> personResultList = JsonUtil.toObject(personList, ArrayList.class);
+		trainingEvaluate.setName(personResultList.get(0).get("name").toString());
+		trainingEvaluate.setPhone(personResultList.get(0).get("phone").toString());
+		trainingEvaluate.setSchemeId(personResultList.get(0).get("sheme_id").toString());
+		trainingEvaluate.setIsSubmit(personResultList.get(0).get("is_submit").toString());
+		
+		final String evaluateId = trainingEvaluateRespository.save(trainingEvaluate).toString();
+		
+		String instEvaRltSql = "INSERT INTO PX_TRAINING_EVALUATE_RESULT VALUES(?,?,?,?,?,?,?)";
+		
+		if (TextUtil.isNotEmpty(evaList)) {
+			List<Map<String, Object>> evaResultList = JsonUtil.toObject(evaList, ArrayList.class);
+			for (int i = 0; i < evaResultList.size(); i++) {
+				
+				final int ordinal = Integer.parseInt(evaResultList.get(i).get("ordinal").toString());
+				final String type =(String) evaResultList.get(i).get("type").toString();
+				final String curId = (String)evaResultList.get(i).get("courseId").toString();
+				final String result =(String) evaResultList.get(i).get("result");
+				final int seqNum = Integer.parseInt(evaResultList.get(i).get("seqNum").toString());
+				jdbcAssistant.update(instEvaRltSql, new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps)throws SQLException {
+						ps.setString(1, TextUtil.getUUID());
+						ps.setInt(2, ordinal);
+						ps.setString(3, type);
+						ps.setString(4, curId);
+						ps.setString(5, result);
+						ps.setString(6, evaluateId);
+						ps.setInt(7, seqNum);
+					}
+				});
+			}
+		}
+		
+		if (TextUtil.isNotEmpty(subEvaList)) {
+			List<Map<String, Object>> subEvaRelList = JsonUtil.toObject(subEvaList, ArrayList.class);
+			for (int i = 0; i < subEvaRelList.size(); i++) {
+				
+				final int ordinal = Integer.parseInt(subEvaRelList.get(i).get("ordinal").toString());
+				final String type = subEvaRelList.get(i).get("type").toString();
+				final String curId = subEvaRelList.get(i).get("courseId").toString();
+				final String result = subEvaRelList.get(i).get("result").toString();
+				final int seqNum = Integer.parseInt(subEvaRelList.get(i).get("seqNum").toString());
+				jdbcAssistant.update(instEvaRltSql, new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps)throws SQLException {
+						ps.setString(1, TextUtil.getUUID());
+						ps.setInt(2, ordinal);
+						ps.setString(3, type);
+						ps.setString(4, curId);
+						ps.setString(5, result);
+						ps.setString(6, evaluateId);
+						ps.setInt(7, seqNum);
+					}
+				});
+			}
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void updateEvaluateResult(Condition condition) {
+		
+		String personList = condition.get("personList") + "";
+		String evaList = condition.get("evaList") + "";
+		String subEvaList = condition.get("subEvaList") + "";
+		
+		
+		final List<Map<String, Object>> personResultList = JsonUtil.toObject(personList, ArrayList.class);
+		final String eva_id = personResultList.get(0).get("id").toString();
+		String updateSQL = "update px_training_evaluate set name=?,phone=?,is_submit=?,update_time=sysdate where id=? ";
+		jdbcAssistant.update(updateSQL, new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps)throws SQLException {
+				ps.setString(1, personResultList.get(0).get("name").toString());
+				ps.setString(2, personResultList.get(0).get("phone").toString());
+				ps.setString(3, personResultList.get(0).get("is_submit").toString());
+				ps.setString(4, eva_id);
+			}
+		});
+		
+		String updEvaRltSql = "update px_training_evaluate_result set result=? where evaluate_id=? and ordinal=? and type=? and seq_num=? ";
+		
+		if (TextUtil.isNotEmpty(evaList)) {
+			List<Map<String, Object>> evaResultList = JsonUtil.toObject(evaList, ArrayList.class);
+			for (int i = 0; i < evaResultList.size(); i++) {
+				
+				final int ordinal = Integer.parseInt(evaResultList.get(i).get("ordinal").toString());
+				final String type =(String) evaResultList.get(i).get("type").toString();
+				final String result =(String) evaResultList.get(i).get("result");
+				final int seqNum = Integer.parseInt(evaResultList.get(i).get("seqNum").toString());
+				jdbcAssistant.update(updEvaRltSql, new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps)throws SQLException {
+						ps.setString(1, result);
+						ps.setString(2, eva_id);
+						ps.setInt(3, ordinal);
+						ps.setString(4, type);
+						ps.setInt(5, seqNum);
+					}
+				});
+			}
+		}
+		
+		if (TextUtil.isNotEmpty(subEvaList)) {
+			List<Map<String, Object>> subEvaRelList = JsonUtil.toObject(subEvaList, ArrayList.class);
+		
+			for (int i = 0; i < subEvaRelList.size(); i++) {
+				
+				final int ordinal = Integer.parseInt(subEvaRelList.get(i).get("ordinal").toString());
+				final String type = subEvaRelList.get(i).get("type").toString();
+				final String result = subEvaRelList.get(i).get("result").toString();
+				final int seqNum = Integer.parseInt(subEvaRelList.get(i).get("seqNum").toString());
+				
+				jdbcAssistant.update(updEvaRltSql, new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps)throws SQLException {
+						ps.setString(1, result);
+						ps.setString(2, eva_id);
+						ps.setInt(3, ordinal);
+						ps.setString(4, type);
+						ps.setInt(5, seqNum);
+					}
+				});
+			}
+		}
+	}
+	
+	@Override
+	public Map<String, Object> getEvaluateResults(Condition condition) {
+		String sql = "select t.id,t.course,t.address,to_char(t.stat_time,'yyyy-mm-dd hh24:mi') as stat_time, " +
+				" to_char(t.stop_time,'yyyy-mm-dd hh24:mi') as stop_time, (case when t.course is null then   " +
+				" t.coursename  else (select tt.title  from PX_COURSE tt where tt.id=t.course) end) as coursename  " +
+				" from PX_TRAINING_CURRICULUM t where t.px_training_scheme=? " +
+				" order by stat_time ";
+		List<Map<String, Object>> courses = jdbcAssistant.query(sql,new Object[]{ condition.get("schemeId")});
+		
+		sql = "select t.id,t.name,t.phone,r.ordinal,r.type,r.curriculum_id,r.result,r.seq_num " +
+				"from px_training_evaluate t left join px_training_evaluate_result r on t.id=r.evaluate_id " +
+				"where t.id=? " +
+				" order by ordinal,type,seq_num ";
+		List<Map<String, Object>> results = jdbcAssistant.query(sql,new Object[]{ condition.get("evaluateId")});
+		
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		returnMap.put("courseList", courses);
+		returnMap.put("resultList", results);
+		
+		return returnMap;
+	}
+
+}

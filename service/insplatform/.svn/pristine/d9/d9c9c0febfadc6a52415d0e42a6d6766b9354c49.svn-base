@@ -1,0 +1,118 @@
+package com.insplatform.module.yearplan.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yearplan.model.YearPlanMonthProject;
+import com.insplatform.module.yearplan.service.YearPlanMonthProjectService;
+
+@Controller
+@RequestMapping("/px/yearplanmonthproject")
+public class YearPlanMonthProjectController extends BaseController{
+	
+	@Autowired
+	private YearPlanMonthProjectService yearPlanMonthProjectService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllOptionalProject")
+	public @ResponseBody Map<String, Object> loadAllOptionalProject(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request, "projectClassifyId",
+				"name", "cultivateType", "yearPlanMonthId");
+		return yearPlanMonthProjectService.loadAllOptionalProject(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"yearPlanMonthId","projectName");
+		return yearPlanMonthProjectService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(yearPlanMonthProjectService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(yearPlanMonthProjectService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(YearPlanMonthProject yearplanmonthproject, HttpServletRequest request){
+		String msg = yearPlanMonthProjectService.save(yearplanmonthproject).toString();
+		return this.getMessager().success().put("msg", msg);
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		YearPlanMonthProject yearplanmonthproject = yearPlanMonthProjectService.get(id);
+		this.bindObject(request, yearplanmonthproject);
+		String msg = yearPlanMonthProjectService.updatex(yearplanmonthproject);
+		return this.getMessager().success().put("msg", msg);
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		yearPlanMonthProjectService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	
+}

@@ -1,0 +1,171 @@
+package com.insplatform.module.examination.repository;
+
+import java.util.*;
+
+
+import com.insframework.common.utils.pager.Pager;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.examination.model.Examination;
+
+import com.insframework.system.map.Condition;
+
+
+public interface ExaminationRepository extends BaseRepository<Examination>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	
+	/**
+	 * 培训开班报告
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadClassReportList(Condition condition);
+	
+	
+	/**
+	 * 试卷选择
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadTestPaperList(Condition condition);
+	
+	/**
+	 * 我的考试列表
+	 * @param condition
+	 * @return
+	 */
+	Pager<Map<String, Object>> loadMyExamList(Condition condition,Pager<Map<String, Object>> pager);
+	
+	
+	/**
+	 * 移动端--试题练习列表
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadExamListFromMobil(String page,String userId);
+	
+	
+	/**
+	 * 我的成绩列表
+	 * @param condition
+	 * @return
+	 */
+	Pager<Map<String, Object>> loadMyExamScoreList(Condition condition,Pager<Map<String, Object>> pager);
+	
+	/**
+	 * 获取考试剩余次数
+	 * @param condition
+	 * @return
+	 */
+	int getExamTime(Condition condition);
+	
+	
+	/**
+	 * 获取考试试卷信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> getExamDetail(Condition condition);
+	
+	/**
+	 * 移动端--获取考试试卷信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> getExamDetailFromMobile(String examId);
+	
+	
+	/**
+	 * 临时保存考试数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> saveTemp(Condition condition);
+	
+	/**
+	 * 答题结果保存
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> saveEaxm(Condition condition);
+	
+	
+	/**
+	 * 考试结果信息展示
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> getExamResultInfo(Condition condition);
+	
+
+	/**
+	 * 更新考试信息，考试次数减1
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> updateExamInfoEffective(Condition condition);
+	
+	
+	/**
+	 * 阅卷列表
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadMarkeAllGrid(Condition condition);
+	
+	
+	/**
+	 * 获取阅卷信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> getMarkeInfo(Condition condition);
+	
+	
+	/**
+	 * 保存阅卷
+	 * @param condition
+	 */
+	void saveMarkeInfo(Condition condition);
+	
+	
+	/**
+	 * 获取试题解析
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> getExamAnalysisInfo(Condition condition);
+	
+}

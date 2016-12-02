@@ -1,0 +1,68 @@
+package com.insplatform.module.teacherclock.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TEACHER_CLOCK")
+public class TeacherClock implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String statu;
+	private String pxClassReport;
+	private String userid;
+	private String classCurricuId;
+	
+	
+
+	public String getPxClassReport() {
+		return pxClassReport;
+	}
+
+	public void setPxClassReport(String pxClassReport) {
+		this.pxClassReport = pxClassReport;
+	}
+
+	public String getUserid() {
+		return userid;
+	}
+
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
+
+	public String getClassCurricuId() {
+		return classCurricuId;
+	}
+
+	public void setClassCurricuId(String classCurricuId) {
+		this.classCurricuId = classCurricuId;
+	}
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setStatu(String value) {
+		this.statu = value;
+	}
+	
+	public String getStatu() {
+		return this.statu;
+	}
+	
+	
+	
+}

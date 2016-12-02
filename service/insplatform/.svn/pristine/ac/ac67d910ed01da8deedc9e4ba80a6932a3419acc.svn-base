@@ -1,0 +1,181 @@
+package com.insplatform.module.examiner.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_EXAMINER")
+public class Examiner implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String idCard;
+	private String sex;
+	private String edu;
+	private String technicsTitle;
+	private String workType;
+	private String certificateNum;
+	private String levels;
+	private String workUnit;
+	private String phone;
+	private String remark;
+	private String userId;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String name;
+	private String workTypeName;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setIdCard(String value) {
+		this.idCard = value;
+	}
+	
+	public String getIdCard() {
+		return this.idCard;
+	}
+	
+	public void setSex(String value) {
+		this.sex = value;
+	}
+	
+	public String getSex() {
+		return this.sex;
+	}
+	
+	public void setEdu(String value) {
+		this.edu = value;
+	}
+	
+	public String getEdu() {
+		return this.edu;
+	}
+	
+	public void setTechnicsTitle(String value) {
+		this.technicsTitle = value;
+	}
+	
+	public String getTechnicsTitle() {
+		return this.technicsTitle;
+	}
+	
+	public void setWorkType(String value) {
+		this.workType = value;
+	}
+	
+	public String getWorkType() {
+		return this.workType;
+	}
+	
+	public void setCertificateNum(String value) {
+		this.certificateNum = value;
+	}
+	
+	public String getCertificateNum() {
+		return this.certificateNum;
+	}
+	
+	public void setLevels(String value) {
+		this.levels = value;
+	}
+	
+	public String getLevels() {
+		return this.levels;
+	}
+	
+	public void setWorkUnit(String value) {
+		this.workUnit = value;
+	}
+	
+	public String getWorkUnit() {
+		return this.workUnit;
+	}
+	
+	public void setPhone(String value) {
+		this.phone = value;
+	}
+	
+	public String getPhone() {
+		return this.phone;
+	}
+	
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	
+	public void setUserId(String value) {
+		this.userId = value;
+	}
+	
+	public String getUserId() {
+		return this.userId;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setWorkTypeName(String value) {
+		this.workTypeName = value;
+	}
+	
+	public String getWorkTypeName() {
+		return this.workTypeName;
+	}
+	
+}

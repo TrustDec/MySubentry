@@ -1,0 +1,55 @@
+package com.insplatform.module.osta.eval.sign.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.curruser.CurrentUser;
+import com.insplatform.module.osta.eval.sign.model.OstaEvalSignPerson;
+
+import com.insframework.system.map.Condition;
+
+
+public interface OstaEvalSignPersonRepository extends BaseRepository<OstaEvalSignPerson>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 添加人时校验
+	 * @param userId
+	 * @param pid
+	 * @return
+	 */
+	boolean beforeCheckAddBatch(String userId, String pid);
+
+	/**
+	 * 添加人
+	 * @param userId
+	 * @param pid
+	 * @param user 
+	 * @return
+	 */
+	String addBatch(String userId, String pid, CurrentUser user);
+	
+}

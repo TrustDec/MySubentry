@@ -1,0 +1,160 @@
+package com.insplatform.module.yeardemand.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yeardemand.model.YearDemand;
+import com.insplatform.module.yeardemand.repository.YearDemandRepository;
+
+
+@Repository
+public class YearDemandRepositoryImpl extends BaseRepositoryImpl<YearDemand> implements YearDemandRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select case" +
+				" when sysdate < t.write_start_time then 'NWRITE'" +
+				" when sysdate -1 < t.write_end_time then 'WRITE'" +
+				" when sysdate -1 < statistical_end_time then 'GSHZ'" +
+				" else 'JTHZ' end state," +
+				" t.id, t.year, t.title, to_char(t.write_start_time,'yyyy-MM-dd') as write_start_time," +
+				" to_char(t.write_end_time,'yyyy-MM-dd') as write_end_time," +
+				" to_char(t.statistical_end_time,'yyyy-MM-dd') as statistical_end_time," +
+				" t.release, t.create_user_id, t.create_user_name, t.create_time, t.update_time, t.details" +
+				" from px_year_demand t where 1=1";
+		//"year","title","release","createUserName"
+
+		if (condition.containsKey("year")) {
+			sql += " and t.year like ?";
+			condition.put("year","%"+condition.get("year")+"%");
+		}
+		if (condition.containsKey("title")) {
+			sql += " and t.title like ?";
+			condition.put("title","%"+condition.get("title")+"%");
+		}
+		if (condition.containsKey("release")) {
+			sql += " and t.release = ?";
+		}
+		if (condition.containsKey("createUserName")) {
+			sql += " and t.create_user_name like ?";
+			condition.put("release","%"+condition.get("createUserName")+"%");
+		}
+		
+		
+		sql += " order by t.update_time";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(), new ValueMapper() {
+			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				if ("Y".equals(record.get("release"))) {
+					record.put("release", "已发布");
+				}else if ("N".equals(record.get("release"))) {
+					record.put("release", "未发布");
+				}
+				return null;
+			}
+		});
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.*,t.id value, t.title text from PX_YEAR_DEMAND t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.id, t.year, t.title, to_char(t.write_start_time,'yyyy-MM-dd') as write_start_time," +
+				" to_char(t.write_end_time,'yyyy-MM-dd') as write_end_time, " +
+				" to_char(t.statistical_end_time,'yyyy-MM-dd') as statistical_end_time," +
+				" t.release, t.create_user_id, t.create_user_name, t.create_time, t.update_time, t.details" +
+				" from px_year_demand t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public YearDemand get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(YearDemand entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(YearDemand entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public boolean beforeReleaseCheck() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public int release(String id) {
+		String sql = "update px_year_demand set release = 'Y' where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{id});
+	}
+
+	@Override
+	public boolean beforeCancelReleaseCheck() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public int cancelRelease(String id) {
+		String sql = "update px_year_demand set release = 'N' where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{id});
+	}
+
+	@Override
+	public boolean beforeDeleteCheack(String id) {
+		YearDemand obj = super.get(id);
+		if ("Y".equals(obj.getRelease())) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int deleteByIdx(String id) {
+		String sql = "delete px_year_demand where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{id});
+	}
+	
+}

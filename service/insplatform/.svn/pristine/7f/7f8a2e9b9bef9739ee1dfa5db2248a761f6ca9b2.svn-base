@@ -1,0 +1,106 @@
+package com.insplatform.module.training.cost.repository.impl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.training.cost.model.Trainingcost;
+import com.insplatform.module.training.cost.repository.TrainingcostRepository;
+
+
+@Repository
+public class TrainingcostRepositoryImpl extends BaseRepositoryImpl<Trainingcost> implements TrainingcostRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql =  "select t.*," +
+						"       b.name budget_name," + 
+						"       bc.id budget_classify_id," + 
+						"       bc.name budget_classify_name," + 
+						"       sd1.name standard_units_name," + 
+						"       sd2.name master_units_name," + 
+						"       sd3.name assist_units_name" + 
+						"  from PX_TRAINING_COST t" + 
+						"  left join px_budget b on (t.budget_id = b.id)" + 
+						"  left join px_budget_classify bc on (b.budget_classify_id = bc.id)" + 
+						"  left join sys_dict sd1 on(t.standard_units_id = sd1.id)" + 
+						"  left join sys_dict sd2 on(t.master_units_id = sd2.id)" + 
+						"  left join sys_dict sd3 on(t.assist_units_id = sd3.id) where 1=1 ";
+		List<Object> queryParams = new ArrayList<Object>();
+		String pxTrainingScheme = (String) condition.get("pxTrainingScheme");
+		if(TextUtil.isNotEmpty(pxTrainingScheme)){
+			sql += " and t.px_training_scheme = ? ";
+			queryParams.add(pxTrainingScheme);
+		}
+		String budgetClassify = (String) condition.get("budgetClassify");
+		if(TextUtil.isNotEmpty(budgetClassify)){
+			sql += " and bc.name like ? ";
+			queryParams.add("%"+budgetClassify+"%");
+		}
+		String budget = (String) condition.get("budget");
+		if(TextUtil.isNotEmpty(budget)){
+			sql += " and b.name like ? ";
+			queryParams.add("%"+budget+"%");
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, queryParams.toArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TRAINING_COST t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.*,b.name budget_name from PX_TRAINING_COST t join px_budget b on(t.budget_id = b.id) where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Trainingcost get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Trainingcost entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Trainingcost entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

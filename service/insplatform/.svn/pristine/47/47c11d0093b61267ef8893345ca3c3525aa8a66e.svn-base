@@ -1,0 +1,51 @@
+package com.insplatform.module.osta.eval.sign.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.osta.eval.sign.model.OstaEvalSign;
+
+import com.insframework.system.map.Condition;
+
+
+public interface OstaEvalSignRepository extends BaseRepository<OstaEvalSign>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 删除前校验
+	 * @param id
+	 * @return
+	 */
+	boolean beforeCheckDeleteByIdsx(String id);
+
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	int deleteByIdx(String id);
+
+}

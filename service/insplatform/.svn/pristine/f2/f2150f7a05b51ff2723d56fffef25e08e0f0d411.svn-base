@@ -1,0 +1,314 @@
+package com.insplatform.module.trainingimplement.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainingimplement.model.TrainingGuide;
+import com.insplatform.module.trainingimplement.service.TrainingGuideService;
+
+@Controller
+@RequestMapping("/px/trainingguide")
+public class TrainingGuideController extends BaseController{
+	
+	@Autowired
+	private TrainingGuideService trainingGuideService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		return trainingGuideService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGridEat")
+	public @ResponseBody Map<String, Object> loadAllGridEat(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		return trainingGuideService.loadAllGridEat(condition);
+	}
+	
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGridWeater")
+	public @ResponseBody Map<String, Object> loadAllGridWeater(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		return trainingGuideService.loadAllGridWeater(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"id");
+		return this.getMessager().success().data(trainingGuideService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(trainingGuideService.load(id));		
+	}
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/loadEat")
+	public @ResponseBody Map<String, Object> loadEat(@RequestParam("id") String id){
+		return this.getMessager().success().data(trainingGuideService.loadEat(id));		
+	}
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/loadWeater")
+	public @ResponseBody Map<String, Object> loadWeater(@RequestParam("id") String id){
+		return this.getMessager().success().data(trainingGuideService.loadWeater(id));		
+	}
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/loadPosition")
+	public @ResponseBody Map<String, Object> loadPositon(HttpServletRequest request){		
+		Condition condition = this.getCondition(request);
+		return this.getMessager().data(trainingGuideService.loadPositon(condition));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(TrainingGuide trainingguide, HttpServletRequest request){
+		trainingGuideService.save(trainingguide,request);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/addEat")	
+	public @ResponseBody Map<String, Object> addEat(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String TrainGuideId = request.getParameter("TrainGuideId");
+		String TrainSchemeId = request.getParameter("TrainSchemeId");
+		String name = request.getParameter("name");
+		String address = request.getParameter("address");
+		String startTime= request.getParameter("startTime");  
+		String dateEnd= request.getParameter("endTime");
+		if("早餐".equals(name))
+		{
+			name = "1";
+		}
+		if("午餐".equals(name))
+		{
+			name = "2";
+		}
+		if("晚餐".equals(name))
+		{
+			name = "3";
+		}
+		
+		if(TextUtil.isEmpty(id))
+		{
+			trainingGuideService.addEat(TrainGuideId,TrainSchemeId,name,address,startTime,dateEnd);
+		}
+		else
+		{
+			trainingGuideService.updateEat(id,TrainGuideId,TrainSchemeId,name,address,startTime,dateEnd);
+		}
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/addWeater")	
+	public @ResponseBody Map<String, Object> addWeater(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String TrainGuideId = request.getParameter("TrainGuideId");
+		String TrainSchemeId = request.getParameter("TrainSchemeId");
+		String date = request.getParameter("dateTime");
+		String type = request.getParameter("type");
+		String lowTemperature= request.getParameter("lowTemperature");  
+		String highTemperature= request.getParameter("highTemperature");
+		if("晴天".equals(type))
+		{
+			type = "1";
+		}
+		if("多云".equals(type))
+		{
+			type = "2";
+		}
+		if("阴天".equals(type))
+		{
+			type = "3";
+		}
+		if("阵雨".equals(type))
+		{
+			type = "4";
+		}
+		if("小雨".equals(type))
+		{
+			type = "5";
+		}
+		if("中雨".equals(type))
+		{
+			type = "6";
+		}
+		if("大雨".equals(type))
+		{
+			type = "7";
+		}
+		if("小雪".equals(type))
+		{
+			type = "8";
+		}
+		if("中雪".equals(type))
+		{
+			type = "9";
+		}
+		if("大雪".equals(type))
+		{
+			type = "10";
+		}
+		if("扬沙".equals(type))
+		{
+			type = "11";
+		}
+		if("沙尘暴".equals(type))
+		{
+			type = "12";
+		}
+		if("轻雾".equals(type))
+		{
+			type = "13";
+		}
+		if("浓雾".equals(type))
+		{
+			type = "14";
+		}if("轻度霾".equals(type))
+		{
+			type = "15";
+		}if("中度霾".equals(type))
+		{
+			type = "16";
+		}if("重度霾".equals(type))
+		{
+			type = "17";
+		}
+		
+		if(TextUtil.isEmpty(id))
+		{
+			trainingGuideService.addWeater(TrainGuideId,TrainSchemeId,date,type,lowTemperature,highTemperature);
+		}
+		else
+		{
+			trainingGuideService.updateWeater(id,TrainGuideId,TrainSchemeId,date,type,lowTemperature,highTemperature);
+		}
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		TrainingGuide trainingguide = trainingGuideService.get(id);
+		this.bindObject(request, trainingguide);
+		trainingGuideService.update(trainingguide);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		trainingGuideService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/deleteEat")	
+	public @ResponseBody Map<String, Object> deleteEat(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		trainingGuideService.deleteEat(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/deleteWeater")	
+	public @ResponseBody Map<String, Object> deleteWeater(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		trainingGuideService.deleteWeater(ids);
+		return this.getMessager().success();
+	}
+
+	
+}

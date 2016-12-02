@@ -1,0 +1,104 @@
+package com.insplatform.module.osta.eval.demand.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.osta.eval.demand.model.OstaEvalDemandWrite;
+import com.insplatform.module.osta.eval.demand.repository.OstaEvalDemandWriteRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class OstaEvalDemandWriteRepositoryImpl extends BaseRepositoryImpl<OstaEvalDemandWrite> implements OstaEvalDemandWriteRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_EVAL_DEMAND_WRITE t ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_EVAL_DEMAND_WRITE t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_OSTA_EVAL_DEMAND_WRITE t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaEvalDemandWrite get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaEvalDemandWrite entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaEvalDemandWrite entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadByPidAndUserId(String pid, String userId) {
+		String sql = "select t.id, t.user_id, t.user_name, t.id_card, t.phone, t.company_id, t.company_name," +
+				" t.sex, t.age, t.edu, t.technical_title, t.pid, t.create_user_id," +
+				" t.create_user_name, t.create_time" +
+				" from px_osta_eval_demand_write t" +
+				" where t.pid = ? and t.user_id = ?";
+		return jdbcAssistant.queryOne(sql, new Object[]{pid, userId});
+	}
+
+	@Override
+	public String addANewRecord(String pid, String userId) {
+		String id = TextUtil.getUUID();
+		
+		String sql = "insert into px_osta_eval_demand_write" +
+				" (id, user_id, user_name, id_card, phone, company_id," +
+				" company_name, sex, age, edu, technical_title, pid," +
+				" create_user_id, create_user_name, create_time)" +
+				" select '"+id+"',u.id,u.name,u.id_card,u.phone,u.company_id," +
+				" u.company_name,u.sex,to_char(sysdate,'yyyy')-substr(id_card,7,4),u.edu,'',?," +
+				" u.id,u.name,sysdate" +
+				" from v_sys_user_info u" +
+				" where u.id = ?";
+		int result = jdbcAssistant.update(sql,new Object[]{pid,userId});
+		return result==1?id:null;
+	}
+	
+}

@@ -1,0 +1,92 @@
+package com.insplatform.module.bbs.articlecomment.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.bbs.articlecomment.model.BbsArticleComment;
+import com.insplatform.module.bbs.articlecomment.repository.BbsArticleCommentRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class BbsArticleCommentRepositoryImpl extends BaseRepositoryImpl<BbsArticleComment> implements BbsArticleCommentRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.* from PX_BBS_ARTICLE_COMMENT t ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_BBS_ARTICLE_COMMENT t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_BBS_ARTICLE_COMMENT t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public BbsArticleComment get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(BbsArticleComment entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(BbsArticleComment entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadAllByArticleId(String id) {
+		String sql = "select t.* from PX_BBS_ARTICLE_COMMENT t where t.pid = ? order by t.create_time";
+		List<Map<String, Object>> list = jdbcAssistant.query(sql,new Object[]{id});
+		for (Map<String, Object> map : list) {
+			sql = "select chf.id, chf.article_comment_id, chf.content, chf.create_person_id," +
+					" chf.create_time, chf.receiver_person_id, chf.create_person_name, " +
+					" chf.receiver_person_name " +
+					" from px_bbs_article_comment_hf chf" +
+					" where chf.article_comment_id = '"+map.get("id")+"'" +
+					" order by chf.create_time";
+			map.put("commentChild", jdbcAssistant.query(sql));
+		}
+		return list;
+	}
+	
+}

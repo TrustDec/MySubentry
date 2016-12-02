@@ -1,0 +1,101 @@
+package com.insplatform.system.dict.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.system.base.controller.BaseController;
+import com.insplatform.system.dict.model.DictClassify;
+import com.insplatform.system.dict.service.DictClassifyService;
+
+@Controller
+@RequestMapping("/system/dict/classify")
+public class DictClassifyController extends BaseController{
+	
+	@Autowired
+	private DictClassifyService dictClassifyService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAll")
+	public @ResponseBody Map<String, Object> loadAll(
+			HttpServletRequest request, HttpServletResponse response){		
+		return this.getMessager().success().data(dictClassifyService.loadAll(request, this.getCondition(request)));
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(dictClassifyService.get(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(DictClassify dictclassify){
+		dictClassifyService.save(dictclassify);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		DictClassify dictclassify = dictClassifyService.get(id);
+		this.bindObject(request, dictclassify);
+		dictClassifyService.update(dictclassify);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(@RequestParam("id") String id){
+		dictClassifyService.deleteById(id);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 检查名称或编码是否重复
+	 * @param name
+	 * @param code
+	 * @return
+	 */
+	@RequestMapping("/checkNameAndCode")
+	public @ResponseBody Map<String, Object> checkNameAndCode(
+			@RequestParam("name") String name,
+			@RequestParam("code") String code,
+			@RequestParam(value="id", required=false) String id){
+		boolean has = dictClassifyService.checkNameAndCode(name, code, id);		
+		return this.getMessager().success().put("has", has);		
+		
+	}
+
+	
+}

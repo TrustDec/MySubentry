@@ -1,0 +1,46 @@
+package com.insplatform.module.bbs.articlemycollect.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_BBS_ARTICLE_MYCOLLECT")
+public class BbsArticleMycollect implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String articleId;
+	private String userId;
+
+	public void setArticleId(String value) {
+		this.articleId = value;
+	}
+	
+	public String getArticleId() {
+		return this.articleId;
+	}
+	
+	public void setUserId(String value) {
+		this.userId = value;
+	}
+	
+	public String getUserId() {
+		return this.userId;
+	}
+	
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+}

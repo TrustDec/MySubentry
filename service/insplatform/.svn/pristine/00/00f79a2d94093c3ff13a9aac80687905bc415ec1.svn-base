@@ -1,0 +1,55 @@
+package com.insplatform.module.classroom.service;
+
+import java.io.Serializable;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+
+import com.insplatform.module.classroom.model.Classroom;
+
+public interface ClassroomService extends BaseService<Classroom>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid( Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	/**
+	 * 覆盖父接口方法
+	 * @param classroom
+	 * @param request
+	 * @return
+	 */
+	Serializable save(Classroom classroom, HttpServletRequest request);
+	
+	/**
+	 * 覆盖父接口方法
+	 * @param video
+	 * @param request
+	 * @return
+	 */
+	void update(Classroom classroom, HttpServletRequest request);
+	
+}

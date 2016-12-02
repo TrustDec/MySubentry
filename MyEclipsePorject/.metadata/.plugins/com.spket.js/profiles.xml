@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<profiles>
-<profile id="ExtJS" name="ExtJS">use namespace ExtJS;
-include 'F:\\MyEclipsePorject\\ExtJsPorject\\extjs-4.1.1\\build\\sdk.jsb3';
-</profile>
-</profiles>

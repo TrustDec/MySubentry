@@ -1,0 +1,280 @@
+package com.insplatform.module.osta.register.write.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_OSTA_REG_NOTICE_WRITE")
+public class OstaRegNoticeWrite implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String noticeId;
+	private String stuId;
+	private String stuName;
+	private String stuSex;
+	private String stuIdcard;
+	private String stuEdu;
+	private String ostaWorktypeId;
+	private String ostaWorktypeName;
+	private String ostaWorktypeLevelId;
+	private String ostaWorktypeLevelName;
+	private String remarks;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+	private String companyId;
+	private String companyName;
+	private String devoteWorktypeId;
+	private String devoteWorktypeName;
+	private String nowHaveLevel;
+	private String needBook;
+	private String needPay;
+	private double workAge;
+	private String jobResume;
+	private String skillTraining;
+	private String technologicalAchievements;
+	private String award;
+	private String jobPerformance;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setNoticeId(String value) {
+		this.noticeId = value;
+	}
+	
+	public String getNoticeId() {
+		return this.noticeId;
+	}
+	
+	public void setStuId(String value) {
+		this.stuId = value;
+	}
+	
+	public String getStuId() {
+		return this.stuId;
+	}
+	
+	public void setStuName(String value) {
+		this.stuName = value;
+	}
+	
+	public String getStuName() {
+		return this.stuName;
+	}
+	
+	public void setStuSex(String value) {
+		this.stuSex = value;
+	}
+	
+	public String getStuSex() {
+		return this.stuSex;
+	}
+	
+	public void setStuIdcard(String value) {
+		this.stuIdcard = value;
+	}
+	
+	public String getStuIdcard() {
+		return this.stuIdcard;
+	}
+	
+	public void setStuEdu(String value) {
+		this.stuEdu = value;
+	}
+	
+	public String getStuEdu() {
+		return this.stuEdu;
+	}
+	
+	public void setOstaWorktypeId(String value) {
+		this.ostaWorktypeId = value;
+	}
+	
+	public String getOstaWorktypeId() {
+		return this.ostaWorktypeId;
+	}
+	
+	public void setOstaWorktypeName(String value) {
+		this.ostaWorktypeName = value;
+	}
+	
+	public String getOstaWorktypeName() {
+		return this.ostaWorktypeName;
+	}
+	
+	public void setOstaWorktypeLevelId(String value) {
+		this.ostaWorktypeLevelId = value;
+	}
+	
+	public String getOstaWorktypeLevelId() {
+		return this.ostaWorktypeLevelId;
+	}
+	
+	public void setOstaWorktypeLevelName(String value) {
+		this.ostaWorktypeLevelName = value;
+	}
+	
+	public String getOstaWorktypeLevelName() {
+		return this.ostaWorktypeLevelName;
+	}
+	
+	public void setRemarks(String value) {
+		this.remarks = value;
+	}
+	
+	public String getRemarks() {
+		return this.remarks;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	public void setCompanyId(String value) {
+		this.companyId = value;
+	}
+	
+	public String getCompanyId() {
+		return this.companyId;
+	}
+	
+	public void setCompanyName(String value) {
+		this.companyName = value;
+	}
+	
+	public String getCompanyName() {
+		return this.companyName;
+	}
+	
+	public void setDevoteWorktypeId(String value) {
+		this.devoteWorktypeId = value;
+	}
+	
+	public String getDevoteWorktypeId() {
+		return this.devoteWorktypeId;
+	}
+	
+	public void setDevoteWorktypeName(String value) {
+		this.devoteWorktypeName = value;
+	}
+	
+	public String getDevoteWorktypeName() {
+		return this.devoteWorktypeName;
+	}
+	
+	public void setNowHaveLevel(String value) {
+		this.nowHaveLevel = value;
+	}
+	
+	public String getNowHaveLevel() {
+		return this.nowHaveLevel;
+	}
+	
+	public void setNeedBook(String value) {
+		this.needBook = value;
+	}
+	
+	public String getNeedBook() {
+		return this.needBook;
+	}
+	
+	public void setNeedPay(String value) {
+		this.needPay = value;
+	}
+	
+	public String getNeedPay() {
+		return this.needPay;
+	}
+	
+	public void setJobResume(String value) {
+		this.jobResume = value;
+	}
+	
+	public String getJobResume() {
+		return this.jobResume;
+	}
+	
+	public void setSkillTraining(String value) {
+		this.skillTraining = value;
+	}
+	
+	public String getSkillTraining() {
+		return this.skillTraining;
+	}
+	
+	public void setTechnologicalAchievements(String value) {
+		this.technologicalAchievements = value;
+	}
+	
+	public String getTechnologicalAchievements() {
+		return this.technologicalAchievements;
+	}
+	
+	public void setAward(String value) {
+		this.award = value;
+	}
+	
+	public String getAward() {
+		return this.award;
+	}
+	
+	public void setJobPerformance(String value) {
+		this.jobPerformance = value;
+	}
+	
+	public String getJobPerformance() {
+		return this.jobPerformance;
+	}
+
+	public double getWorkAge() {
+		return workAge;
+	}
+
+	public void setWorkAge(double workAge) {
+		this.workAge = workAge;
+	}
+	
+}

@@ -1,0 +1,56 @@
+package com.insplatform.module.yeardemand.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.insframework.system.base.service.BaseService;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.yeardemand.model.YearDemandWrite;
+
+public interface YearDemandWriteService extends BaseService<YearDemandWrite>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 查出所有项目并关联分类表获取分类id及分类名称
+	 * @param condition
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllGridProject(Condition condition);
+
+	/**
+	 * 添加(添加前删除原有数据)
+	 * @param condition 
+	 * @param request 
+	 */
+	void saveUpdateDelete(Condition condition);
+
+	/**
+	 * 根据人员统计单个年度需求项目对应月份的学习人数
+	 * @param condition
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllGridProjectGroupStatistics(Condition condition);
+}

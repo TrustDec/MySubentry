@@ -1,0 +1,114 @@
+package com.insplatform.module.trainbasedormitory.controller;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.trainbasedormitory.model.TrainbaseDormitory;
+import com.insplatform.module.trainbasedormitory.service.TrainbaseDormitoryService;
+
+@Controller
+@RequestMapping("/px/trainbasedormitory")
+public class TrainbaseDormitoryController extends BaseController{
+	
+	@Autowired
+	private TrainbaseDormitoryService trainbaseDormitoryService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request,"name","type");
+		return trainbaseDormitoryService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(trainbaseDormitoryService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(trainbaseDormitoryService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/add")	
+	public @ResponseBody Map<String, Object> add(TrainbaseDormitory trainbasedormitory, HttpServletRequest request){
+		
+		trainbasedormitory.setCreateUserId(getCurrentUser(request).getId());
+		trainbasedormitory.setCreateUserName(getCurrentUser(request).getName());
+		Date date = new Date();
+		trainbasedormitory.setCreateTime(date);
+		trainbasedormitory.setUpdateTime(date);
+		
+		trainbaseDormitoryService.save(trainbasedormitory);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		TrainbaseDormitory trainbasedormitory = trainbaseDormitoryService.get(id);
+		this.bindObject(request, trainbasedormitory);
+		
+		trainbasedormitory.setUpdateTime(new Date());
+		
+		trainbaseDormitoryService.update(trainbasedormitory);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		trainbaseDormitoryService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+
+	
+}

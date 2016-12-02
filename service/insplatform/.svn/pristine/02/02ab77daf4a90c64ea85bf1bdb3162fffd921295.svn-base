@@ -1,0 +1,72 @@
+package com.insplatform.system.dict.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.system.dict.model.DictClassify;
+import com.insplatform.system.dict.repository.DictClassifyRepository;
+
+@Repository
+public class DictClassifyRepositoryImpl extends BaseRepositoryImpl<DictClassify> implements DictClassifyRepository{
+
+	@Override
+	public List<Map<String, Object>> loadAll(Condition condition) {	
+		String sql = "select t.* from SYS_DICT_CLASSIFY t where t.is_delete = 'N' order by t.name ";
+		return jdbcAssistant.query(sql);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(DictClassify entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(DictClassify entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		String sql = "update sys_dict_classify set is_delete = 'Y' where id = '"+id+"'";
+		jdbcAssistant.update(sql);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}	
+	
+	@Override
+	public boolean checkNameAndCode(String name, String code, String id) {
+		String sql = "select count(1) from SYS_DICT_CLASSIFY t where (t.name=? or code=?) ";
+		if(TextUtil.isNotEmpty(id)){
+			sql += " and id != '"+id+"' ";		
+		}
+		int count = jdbcAssistant.queryAsInt(sql, new Object[]{name, code});
+		if(count > 0) return true;
+		return false;
+	}
+	
+	
+	
+	
+	
+}

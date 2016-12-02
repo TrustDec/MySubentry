@@ -1,0 +1,284 @@
+package com.insplatform.module.osta.eval.demand.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.eval.demand.model.OstaEvalDemandWriteWork;
+import com.insplatform.module.osta.eval.demand.repository.OstaEvalDemandWriteWorkRepository;
+
+
+@Repository
+public class OstaEvalDemandWriteWorkRepositoryImpl extends BaseRepositoryImpl<OstaEvalDemandWriteWork> implements OstaEvalDemandWriteWorkRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(String pid,Condition cd) {	
+		String sql = "select t.id, t.pid, t.worktypeclass_id, t.worktypeclass_name," +
+				" t.worktype_id, t.worktype_name, t.training_level_id," +
+				" t.training_level_name,t.create_user_id, t.create_user_name," +
+				" t.create_time,t.approval_status, t.approval_node" +
+				" from px_osta_eval_demand_write_work t where t.pid = '"+pid+"'";
+		//"worktypeclassName","worktypeName","trainingLevelName"
+		if (cd.containsKey("worktypeclassName")) {
+			sql += " and t.worktypeclass_name like ?";
+			cd.put("worktypeclassName","%"+cd.get("worktypeclassName")+"%");
+		}
+		if (cd.containsKey("worktypeName")) {
+			sql += " and dw.worktype_name like ?";
+			cd.put("worktypeName","%"+cd.get("worktypeName")+"%");
+		}
+		if (cd.containsKey("trainingLevelName")) {
+			sql += " and dw.training_level_name like ?";
+			cd.put("trainingLevelName","%"+cd.get("trainingLevelName")+"%");
+		}
+
+		
+		sql += " order by t.create_time desc";
+		return gridService.loadData(cd.getGridTransModel(), sql, cd.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_EVAL_DEMAND_WRITE_WORK t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_OSTA_EVAL_DEMAND_WRITE_WORK t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaEvalDemandWriteWork get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaEvalDemandWriteWork entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaEvalDemandWriteWork entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public boolean beforeCheckUpdateApprovalStatus(String id) {
+		OstaEvalDemandWriteWork obj = super.get(id);
+		return obj.getApprovalNode()==0&&obj.getApprovalStatus()==0;
+	}
+
+	@Override
+	public boolean beforeCheckDeleteByIdsx(String id) {
+		OstaEvalDemandWriteWork obj = super.get(id);
+		return (obj.getApprovalNode()==0&&obj.getApprovalStatus()==0)
+				||(obj.getApprovalNode()==10&&obj.getApprovalStatus()==10);
+	}
+
+	@Override
+	public int deleteByIdx(String id) {
+		String sql = "delete px_osta_eval_demand_write_work where id =?";
+		return jdbcAssistant.update(sql,new Object[]{id});
+	}
+
+	@Override
+	public int updateApprovalNode(String id, int node) {
+		String sql = "update px_osta_eval_demand_write_work" +
+				" set approval_node = ?" +
+				" where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{node,id});
+	}
+
+	@Override
+	public int updateApprovalStatus(String id, int status) {
+		String sql = "update px_osta_eval_demand_write_work" +
+				" set approval_status = ?" +
+				" where id = ?";
+		return jdbcAssistant.update(sql, new Object[]{status,id});
+	}
+
+	@Override
+	public boolean beforeSaveCheck(OstaEvalDemandWriteWork entity) {
+		String sql = "select t.id from px_osta_eval_demand_write_work t" +
+				" where t.worktype_id = ? and t.training_level_id = ? and t.pid = ?";
+		return jdbcAssistant.queryOne(sql,new Object[]{entity.getWorktypeId(),
+				entity.getTrainingLevelId(),entity.getId()})==null;
+	}
+
+	@Override
+	public Map<String, Object> loadAllGridByApprover(Condition cd) {
+		CurrentUser user = cd.getCurrentUser();
+		String sql = "select t.id, t.worktypeclass_name, t.worktype_name, t.training_level_name, " +
+				" t.approval_status, t.approval_node,t.create_time," +
+				" dw.id writeId,dw.user_id,dw.user_name,dw.id_card,dw.phone,dw.company_name," +
+				" dw.sex,dw.age,dw.edu,dw.technical_title" +
+				" from px_osta_eval_demand_write_work t" +
+				" left join px_osta_eval_demand_write dw on dw.id = t.pid" +
+				" where dw.pid = '"+cd.get("demandId")+"'";
+		
+		
+		//个角色权限过滤
+		String operType = cd.get("operType").toString();
+		if (cd.containsKey("operType")) {
+			if ("BM".equals(operType)) {
+				sql+= " and t.approval_node >= 10";
+				sql+=" and dw.user_id in (select vu.id from v_sys_user_info vu" +
+						" where vu.org_id = '"+user.getOrganizationId()+"')";
+			}else if ("RL".equals(operType)) {
+				sql+= " and t.approval_node >= 20";
+				sql+=" and dw.user_id in (select vu.id from v_sys_user_info vu" +
+						" where vu.company_id = '"+user.getCompanyId()+"')";
+			}else if("LD".equals(operType)){
+				sql+= " and t.approval_node >= 30";
+				sql+=" and dw.user_id in (select vu.id from v_sys_user_info vu" +
+						" where vu.company_id = '"+user.getCompanyId()+"')";
+			}else if ("JDZ".equals(operType)) {
+				sql+= " and t.approval_node >= 40";
+			}else{
+				//没有考虑到的节点,查不出任何信息
+				sql += " and 1=2";
+			}
+		}
+		//如果必要单数缺失，则查不出任何数据
+		if (!cd.containsKey("demandId")||!cd.containsKey("operType")) {
+			sql += " and 1=2";
+		}
+		cd.remove("demandId");
+		cd.remove("operType");
+		
+		//查询条件过滤
+		//"demandId","operType","userName","idCard","companyName","loadType");
+
+		if (cd.containsKey("userName")) {
+			sql += " and dw.user_name like ?";
+			cd.put("userName","%"+cd.get("userName")+"%");
+		}
+
+		if (cd.containsKey("idCard")) {
+			sql += " and dw.id_card like ?";
+			cd.put("idCard","%"+cd.get("idCard")+"%");
+		}
+		if (cd.containsKey("companyName")) {
+			sql += " and dw.company_name like ?";
+			cd.put("companyName","%"+cd.get("companyName")+"%");
+		}
+		Object loadType = cd.get("loadType");
+		if (cd.containsKey("loadType")&&!"DSH".equals(loadType)) {
+			if ("PASS".equals(loadType)) {
+				if ("BM".equals(operType)) {
+					sql+= " and t.approval_node > 10 and t.approval_status = 1";
+				}else if ("RL".equals(operType)) {
+					sql+= " and t.approval_node > 20 and t.approval_status = 1";
+				}else if("LD".equals(operType)){
+					sql+= " and t.approval_node > 30 and t.approval_status = 1";
+				}else if ("JDZ".equals(operType)) {
+					sql+= " and t.approval_node > 40 and t.approval_status = 1";
+				}
+			}else if ("NOPASS".equals(loadType)){
+				if ("BM".equals(operType)) {
+					sql+= " and t.approval_node = 10 and t.approval_status = 2";
+				}else if ("RL".equals(operType)) {
+					sql+= " and t.approval_node = 20 and t.approval_status = 2";
+				}else if("LD".equals(operType)){
+					sql+= " and t.approval_node = 30 and t.approval_status = 2";
+				}else if ("JDZ".equals(operType)) {
+					sql+= " and t.approval_node = 40 and t.approval_status = 2";
+				}
+			}
+		}else{
+			if ("BM".equals(operType)) {
+				sql+= " and t.approval_node = 10 and t.approval_status = 1";
+			}else if ("RL".equals(operType)) {
+				sql+= " and t.approval_node = 20 and t.approval_status = 1";
+			}else if("LD".equals(operType)){
+				sql+= " and t.approval_node = 30 and t.approval_status = 1";
+			}else if ("JDZ".equals(operType)) {
+				sql+= " and t.approval_node = 40 and t.approval_status = 1";
+			}
+		}
+		cd.remove("loadType");
+		
+		sql += " order by t.create_time desc";
+		return gridService.loadData(cd.getGridTransModel(), sql, cd.valueArray(),new ValueMapper() {
+			
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				if(record.get("sex") != null){
+					if("1".equals(record.get("sex").toString())){
+						record.put("sex", "男");
+					}else if("2".equals(record.get("sex").toString())){
+						record.put("sex", "女");
+					}
+				}				
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+
+	@Override
+	public Map<String, Object> loadByApprover(String id) {
+		String sql = "select t.id, t.worktypeclass_name, t.worktype_name, t.training_level_name, " +
+				" t.approval_status, t.approval_node," +
+				" dw.id writeId,dw.user_id,dw.user_name,dw.id_card,dw.phone,dw.company_name," +
+				" dw.sex,dw.age,dw.edu,dw.technical_title" +
+				" from px_osta_eval_demand_write_work t" +
+				" left join px_osta_eval_demand_write dw on dw.id = t.pid" +
+				" where t.id = ?";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+
+	@Override
+	public int updateApprovalNodeAndStatus(String id, int node, int status) {
+		String sql = "update px_osta_eval_demand_write_work set approval_node = ?,approval_status = ? where id = ?";
+		return jdbcAssistant.update(sql,new Object[]{node,status,id});
+	}
+
+	@Override
+	public boolean beforeApprovalPassCheck(String id, int node) {
+		String sql = "select t.id from px_osta_eval_demand_write_work t" +
+				" where t.approval_node = "+node+" and t.id = ?"; 
+		return jdbcAssistant.queryOne(sql,new Object[]{id})!=null;
+	}
+
+	@Override
+	public boolean beforeApprovalNoPassCheck(String id, int node) {
+		int nextNode = node+10;
+		String sql = "select t.id from px_osta_eval_demand_write_work t" +
+				" where (t.approval_node = "+node+" or t.approval_node = "+nextNode+") and t.id = ?"; 
+		return jdbcAssistant.queryOne(sql,new Object[]{id})!=null;
+	}
+
+}

@@ -1,0 +1,55 @@
+package com.insplatform.module.osta.register.notice.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_OSTA_REG_WORKTYPE_COST")
+public class OstaRegWorktypeCost implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String costName;
+	private int costAmount;
+	private String ostaWorktypeLevelId;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setCostName(String value) {
+		this.costName = value;
+	}
+	
+	public String getCostName() {
+		return this.costName;
+	}
+	
+	public void setCostAmount(int value) {
+		this.costAmount = value;
+	}
+	
+	public int getCostAmount() {
+		return this.costAmount;
+	}
+	
+	public void setOstaWorktypeLevelId(String value) {
+		this.ostaWorktypeLevelId = value;
+	}
+	
+	public String getOstaWorktypeLevelId() {
+		return this.ostaWorktypeLevelId;
+	}
+	
+}

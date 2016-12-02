@@ -1,0 +1,73 @@
+package com.insplatform.module.testpaper.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.testpaper.model.TestPaperKpoint;
+
+import com.insframework.system.map.Condition;
+
+
+public interface TestPaperKpointRepository extends BaseRepository<TestPaperKpoint>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+	
+	
+	/**
+	 * 获取知识点选择器
+	 * @param condition
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllTreeGridBySelectKpoint(Condition condition);
+	
+	/**
+	 * 添加知识点
+	 * @param condition
+	 */
+	void addKpoint(Condition condition);
+	
+	/**
+	 * 知识点选择器（单选）
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllKpintSelect(Condition condition);
+	
+	/**
+	 * 查询知识点数量
+	 * @param condition
+	 * @return
+	 */
+	int loadAllKpoint(Condition condition);
+	
+	/**
+	 * 删除知识点
+	 * @param ids
+	 * @param testPaper
+	 */
+	void delete(String ids[]);
+	
+}

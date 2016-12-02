@@ -1,0 +1,103 @@
+package com.insplatform.system.menu.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.system.menu.model.Menu;
+import com.insplatform.system.menu.repository.MenuRepository;
+
+@Repository
+public class MenuRepositoryImpl extends BaseRepositoryImpl<Menu> implements MenuRepository{
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Menu entity) {		
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Menu entity) {		
+		super.update(entity);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadSysTreeData(Map<String, Object> condition) {		
+		//直接查询V_SYS_AUTHZ_MENUS视图
+		String sql = "select t.*, t.name as text, t.parent_id as pid from V_SYS_AUTHZ_MENUS t where 1=1 ";		
+		if(condition != null){
+			//如果有是否启动，则过滤为启用
+			if(condition.containsKey("enabled")){
+				sql += " and t.enabled = 'Y' ";
+			}	
+			//如果有权限过滤,则进行过滤
+			if(condition.containsKey("userAuthzIds")){				
+				sql += "and t.authz_id in " + condition.get("userAuthzIds");				
+			}
+		}		
+		return jdbcAssistant.query(sql);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadMgtTreeData(HttpServletRequest request, Condition condition) {
+		String sql = "select v.* from V_SYS_AUTHZ_MENUS_OPERATES v where 1=1 ";
+		if(condition != null){
+			//如果有权限过滤,则进行过滤
+			if(condition.containsKey("userAuthzIds")){				
+				sql += " and v.authz_id in " + condition.get("userAuthzIds");				
+			}
+			
+		}
+		return jdbcAssistant.query(sql);
+	}
+
+	@Override
+	public List<String> loadAllOperateCode() {
+		String sql = "select v.code from V_SYS_AUTHZ_OPERATES v ";
+		return jdbcAssistant.queryAsList(sql, String.class, null);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadSupersByIdAsOracle(String id, String type) {
+		String sql = "";
+		if("sysTree".equals(type)){
+			sql = "select t.*, t.name as text, t.parent_id as pid from V_SYS_AUTHZ_MENUS t where t.id != '"+id+"' start with id='"+id+"' connect by prior t.parent_id = id ";		
+		}else{
+			sql = "select * from V_SYS_AUTHZ_MENUS_OPERATES where id != '"+id+"'  start with id='"+id+"'connect by prior pid = id";
+		}		
+		return jdbcAssistant.query(sql);		
+	}
+
+	@Override
+	public List<Map<String, Object>> getChildren(Serializable id) {
+		String sql = "select * from SYS_MENU where parent_id = '"+id+"'";
+		return jdbcAssistant.query(sql);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadChildrenMenuOpers(String id) {
+		String sql = "select id,type from V_SYS_AUTHZ_MENUS_OPERATES start with id = '"+id+"' connect by prior id = pid";
+		return jdbcAssistant.query(sql);
+	}
+
+	@Override
+	public Map<String, Object> loadMenuByResourcePath(String resourcePath) {
+		String sql = "select t.* from SYS_MENU t where t.resource_path = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{resourcePath});
+	}
+
+	
+	
+
+}

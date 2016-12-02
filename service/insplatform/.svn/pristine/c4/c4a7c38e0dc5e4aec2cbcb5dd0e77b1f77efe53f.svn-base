@@ -1,0 +1,942 @@
+package com.insplatform.module.examination.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.common.utils.DateUtil;
+import com.insframework.common.utils.JsonUtil;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.common.utils.pager.Pager;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.curruser.CurrentUser;
+import com.insplatform.module.examination.model.Examination;
+import com.insplatform.module.examination.repository.ExaminationRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class ExaminationRepositoryImpl extends BaseRepositoryImpl<Examination> implements ExaminationRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id, t.name, t.stat_time, t.stop_time, t.px_test_paper as px_test_paper_id, " +
+				"t.px_class_report as px_class_report_id, p.time, t.effective_times, t.remark, t.create_user_id," +
+				"t.create_user_name, t.create_time, t.update_time, t.px_type ,(select p.title from PX_TEST_PAPER " +
+				"p where p.id=t.px_test_paper) as px_test_paper,(select c.name from PX_CLASS_REPORT c where c.id = " +
+				"t.px_class_report) as px_class_report from PX_EXAMINATION t  left join PX_TEST_PAPER p on t.px_test_paper = p.id where t.px_type='培训科' ";
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("pxTestPaper")){
+			sql += " and p.title like ? ";
+			condition.put("pxTestPaper", "%" + condition.get("pxTestPaper") + "%" );
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(),new ValueMapper() {
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				String sql="select * from PX_EXAMINATION_RESULT t where t.px_examination='"+record.get("id")+"'";
+				List<Map<String, Object>> list=jdbcAssistant.query(sql);
+				record.put("editOrDelete", true);
+				if(list.size()!=0)
+				{
+					record.put("editOrDelete", false);
+				}
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_EXAMINATION t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.id, t.name, t.stat_time, t.stop_time, t.px_test_paper as px_test_paper_id," +
+				" t.px_class_report as px_class_report_id,  effective_times, remark, create_user_id, " +
+				"create_user_name, create_time, update_time, px_type ,(select p.title from PX_TEST_PAPER p where " +
+				"p.id=t.px_test_paper) as px_test_paper,(select c.name from PX_CLASS_REPORT c where c.id = " +
+				"t.px_class_report) as px_class_report from PX_EXAMINATION  t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Examination get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Examination entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Examination entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public Map<String, Object> loadClassReportList(Condition condition) {
+		String sql = "select t.id,t.name,t.population,t.remark,to_char(t.start_time,'yyyy-mm-dd') as start_time, to_char(t.stop_time,'yyyy-mm-dd') as stop_time,t.px_year,t.px_month,t.create_user_id,t.create_user_name,t.create_time,t.update_time,t.px_address,t.class_teacher as classTeacher_id,(select u.name from SYS_USER u where u.id=t.class_teacher) as class_Teacher ,t.px_content,t.state,(select tt.name from PX_PROJECT tt where  tt.id=t.px_project) as px_project,t.px_organization from PX_CLASS_REPORT t,PX_PROJECT pt where t.PX_PROJECT=pt.id  and t.state='审批通过'";
+		if(condition.containsKey("name")){
+			sql += " and t.name like ? ";
+			condition.put("name", "%" + condition.get("name") + "%" );
+		}
+		if(condition.containsKey("pxYear"))
+		{
+			sql += " and t.px_year = ? ";
+			condition.put("pxYear", condition.get("pxYear"));
+		}
+		if(condition.containsKey("pxMonth"))
+		{
+			sql += " and t.px_month = ? ";
+			condition.put("pxMonth", condition.get("pxMonth"));
+		}
+		if(condition.containsKey("SelectPxProject"))
+		{
+			sql += " and pt.name like ? ";
+			condition.put("SelectPxProject", "%" + condition.get("SelectPxProject") + "%" );
+		}
+		sql += " order by t.start_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public Map<String, Object> loadTestPaperList(Condition condition) {
+		String sql = "select t.* from PX_TEST_PAPER t where t.PX_TYPE='培训科' and t.state='Y' and t.type='0'";
+		if(condition.containsKey("title")){
+			sql += " and t.title like ? ";
+			condition.put("title", "%" + condition.get("title") + "%" );
+		}
+		if(condition.containsKey("totalTopic")){
+			sql += " and t.total_topic= ? ";
+		}
+		if(condition.containsKey("totalScore")){
+			sql += " and t.total_score= ? ";
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+
+	@Override
+	public Pager<Map<String, Object>> loadMyExamList(Condition condition,
+			Pager<Map<String, Object>> pager) {
+		CurrentUser user = condition.getCurrentUser();
+		String sql="select t.*,p.total_topic,p.total_score,p.pass_score,p.time from PX_EXAMINATION t left join PX_EXAMINATION_USER u on " +
+				"u.px_examination=t.id left join PX_TEST_PAPER p on t.px_test_paper=p.id where u.userid='"+user.getId()+"' and t.stat_time<sysdate " +
+				"and t.stop_time>=sysdate and u.effective_times>0 order by t.stat_time desc";
+		return jdbcAssistant.queryAsPager(sql, pager);
+	}
+	
+	/**
+	 * 移动端试题练习列表
+	 * @param page
+	 * @param userId
+	 * @return
+	 */
+	@Override
+	public Map<String, Object> loadExamListFromMobil(String page,String userId) {
+
+		String sql = "select * from (select t.id,t.title,t.total_topic,t.total_score,t.pass_score,(select count(1) from PX_EXAMINATION_RESULT e where e.px_test_paper = t.id and e.create_user_id = '"+ userId +"') as isjoin,t.px_type from PX_TEST_PAPER t where t.state = 'Y' and t.type = '1') where isjoin = 0";
+		
+		int pages = Integer.parseInt(page);	
+		Pager<Map<String, Object>> pager = new Pager<Map<String, Object>>(0, pages, 10);	
+		
+		pager = jdbcAssistant.queryAsPager(sql, pager);			
+		
+		Map<String, Object> dataMap = pager.toMap();
+		
+		return dataMap;
+	}
+
+	@Override
+	public int getExamTime(Condition condition) {
+		//检查考试剩余次数
+		int intseffectiveTimes=0;
+		String sql="select t.effective_times from PX_EXAMINATION_USER t where t.px_examination='"+condition.get("id")+"' and t.userid='"+condition.getCurrentUser().getId()+"'";
+		Map<String, Object> map=jdbcAssistant.queryOne(sql);
+		if(map!=null)
+		{
+			intseffectiveTimes=Integer.parseInt(map.get("effectiveTimes").toString());
+		}
+		//检查是否在考试时间范围内
+		String sql2="select t.* from PX_EXAMINATION t left join PX_EXAMINATION_USER u on u.px_examination=t.id where u.userid='"+condition.getCurrentUser().getId()+"' " +
+				"and t.id='"+condition.get("id")+"' and t.stat_time<sysdate and t.stop_time>=sysdate order by t.stat_time desc";
+		List<Map<String, Object>> list=jdbcAssistant.query(sql2);
+		if(list.size()==0)
+		{
+			intseffectiveTimes=0;
+		}
+		return intseffectiveTimes;
+	}
+
+	@Override
+	public Pager<Map<String, Object>> loadMyExamScoreList(Condition condition,
+			Pager<Map<String, Object>> pager) {
+		CurrentUser user = condition.getCurrentUser();
+		String sql="select t.id,(select r.total_score from PX_TEST_PAPER r where r.id=p.px_test_paper) as total_score, t.score,p.name,p.stat_time,p.stop_time," +
+				"(select r.time from PX_TEST_PAPER r where r.id=p.px_test_paper) as time,p.examintion_type, ((t.create_stop_time- t.create_stat_time) * 24 * 60 * 60)as resulescore from PX_EXAMINATION_RESULT t left join " +
+				"PX_EXAMINATION p on t.px_examination=p.id where t.create_user_id='"+user.getId()+"' order by t.create_stop_time desc";
+		return jdbcAssistant.queryAsPager(sql, pager);
+	}
+
+	@Override
+	public Map<String, Object> getExamDetail(Condition condition) {
+		String examId=condition.get("id").toString();
+		Map<String, Object> examMap=getExam(examId);
+		String testPaperId=examMap.get("pxTestPaper").toString();
+		Map<String, Object> testPaperMap=getTestPaper(testPaperId);
+		Map<String, Object> dataMap=new HashMap<String, Object>();
+		dataMap.put("examMap", examMap);
+		dataMap.put("testPaperMap", testPaperMap);
+		dataMap.put("time", testPaperMap.get("time"));
+		dataMap.put("radioList", getRadio(testPaperId));
+		dataMap.put("moreList", getMore(testPaperId));
+		dataMap.put("judgeList", getJudge(testPaperId));
+		dataMap.put("answersList", getAnswers(testPaperId));
+		dataMap.put("uuid", TextUtil.getUUID());
+		String stattime=DateUtil.dateToString(new Date(), DateUtil.yyyyMMddHHmmss);
+		dataMap.put("stattime", stattime);
+		return dataMap;
+	}
+	
+	/**
+	 * 移动端--获取考试试卷信息
+	 */
+	@Override
+	public Map<String, Object> getExamDetailFromMobile(String examId) {
+		Map<String, Object> dataMap=new HashMap<String, Object>();
+		dataMap.put("radioList", getRadio(examId));
+		dataMap.put("moreList", getMore(examId));
+		dataMap.put("judgeList", getJudge(examId));
+		dataMap.put("answersList", getAnswers(examId));
+		String stattime=DateUtil.dateToString(new Date(), DateUtil.yyyyMMddHHmmss);
+		dataMap.put("stattime", stattime);
+		return dataMap;
+	}
+	
+	/**
+	 * 获取单选题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getRadio(String id)
+	{
+		List<Map<String, Object>> newlist=new ArrayList<Map<String,Object>>();
+		String sql="select * from PX_TEST_PAPER_QUESTION t where t.px_test_paper='"+id+"' and t.type='1' order by dbms_random.value";
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		for(int i=0;i<list.size();i++)
+		{
+			Map<String, Object> map=list.get(i);
+			String answerSql="select t.id ,t.answer,t.img,t.no,t.que_id from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+map.get("id")+"' order by dbms_random.value";
+			List<Map<String, Object>> answerList=jdbcAssistant.query(answerSql);
+			map.put("answerList", answerList);
+			newlist.add(map);
+		}
+		return newlist;
+	}
+	
+	/**
+	 * 获取多选题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getMore(String id)
+	{
+		List<Map<String, Object>> newlist=new ArrayList<Map<String,Object>>();
+		String sql="select * from PX_TEST_PAPER_QUESTION t where t.px_test_paper='"+id+"' and t.type='2' order by dbms_random.value";
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		for(int i=0;i<list.size();i++)
+		{
+			Map<String, Object> map=list.get(i);
+			String answerSql="select t.id ,t.answer,t.img,t.no,t.que_id from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+map.get("id")+"' order by dbms_random.value";
+			List<Map<String, Object>> answerList=jdbcAssistant.query(answerSql);
+			map.put("answerList", answerList);
+			newlist.add(map);
+		}
+		return newlist;
+	}
+
+	/**
+	 * 获取判断题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getJudge(String id)
+	{
+		String sql="select * from PX_TEST_PAPER_QUESTION t where t.px_test_paper='"+id+"' and t.type='3' order by dbms_random.value";
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		return list;
+	}
+	
+	/**
+	 * 获取问答题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getAnswers(String id)
+	{
+		String sql="select * from PX_TEST_PAPER_QUESTION t where t.px_test_paper='"+id+"' and t.type='4' order by dbms_random.value";
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		return list;
+	}
+	
+	
+	
+	Map<String, Object> getExam(String id)
+	{
+		String sql="select * from PX_EXAMINATION t where t.id='"+id+"'";
+		Map<String, Object> map=jdbcAssistant.queryOne(sql);
+		return map;
+	}
+
+	Map<String, Object> getTestPaper(String id)
+	{
+		String sql="select * from PX_TEST_PAPER t where t.id='"+id+"'";
+		Map<String, Object> map=jdbcAssistant.queryOne(sql);
+		return map;
+	}
+
+	@Override
+	public Map<String, Object> saveTemp(Condition condition) {
+		CurrentUser user=condition.getCurrentUser();
+		String radioListAnswer=condition.get("radioListAnswer")+"";
+		String moreListAnswer=condition.get("moreListAnswer")+"";
+		String judgeListAnswer=condition.get("judgeListAnswer")+"";
+		String answersListAnswer=condition.get("answersListAnswer")+"";
+		String uuid=condition.get("uuid")+"";
+		String examId=condition.get("examId")+"";
+		String deleteSql="delete from PX_EXAMINATION_RESULT_TEMP t where t.uuid='"+uuid+"' and t.userid='"+user.getId()+"' and t.px_examination='"+examId+"'";
+		jdbcAssistant.execute(deleteSql);
+		if(TextUtil.isNotEmpty(radioListAnswer))
+		{
+				@SuppressWarnings("unchecked")
+				List<Map<String, Object>> radioList=JsonUtil.toObject(radioListAnswer, List.class);
+			    for (int i = 0; i < radioList.size(); i++) {
+					String question_id=radioList.get(i).get("id").toString();
+					String answer=radioList.get(i).get("answer")+"";
+					String sqlInsert="insert into px_examination_result_temp (id, px_examination, userid, create_time, uuid, answer, question_id, type)" +
+							" values ('"+TextUtil.getUUID()+"', '"+examId+"', '"+user.getId()+"', sysdate, '"+uuid+"', '"+answer+"', '"+question_id+"', '1')";
+					jdbcAssistant.execute(sqlInsert);
+				}
+			    
+		}
+		if(TextUtil.isNotEmpty(moreListAnswer))
+		{
+			    @SuppressWarnings("unchecked")
+				List<Map<String, Object>> moreList=JsonUtil.toObject(moreListAnswer, ArrayList.class);
+			    for (int i = 0; i < moreList.size(); i++) {
+			    	String question_id=moreList.get(i).get("id").toString();
+					String answer=moreList.get(i).get("answer")+"";
+					String sqlInsert ="insert into px_examination_result_temp (id, px_examination, userid, create_time, uuid, answer, question_id, type)" +
+							" values ('"+TextUtil.getUUID()+"', '"+examId+"', '"+user.getId()+"', sysdate, '"+uuid+"', '"+answer+"', '"+question_id+"', '2')";
+					jdbcAssistant.execute(sqlInsert);
+				}
+			    
+		}
+	    if(TextUtil.isNotEmpty(judgeListAnswer))
+	    {
+	    	@SuppressWarnings("unchecked")
+			List<Map<String, Object>> judgeList=JsonUtil.toObject(judgeListAnswer, ArrayList.class);
+		    for (int i = 0; i < judgeList.size(); i++) {
+		    	String question_id=judgeList.get(i).get("id").toString();
+				String answer=judgeList.get(i).get("answer")+"";
+				String sqlInsert ="insert into px_examination_result_temp (id, px_examination, userid, create_time, uuid, answer, question_id, type)" +
+						" values ('"+TextUtil.getUUID()+"', '"+examId+"', '"+user.getId()+"', sysdate, '"+uuid+"', '"+answer+"', '"+question_id+"', '3')";
+				jdbcAssistant.execute(sqlInsert);
+		    }
+	    }
+	    if(TextUtil.isNotEmpty(answersListAnswer))
+	    {
+	    	@SuppressWarnings("unchecked")
+			List<Map<String, Object>> answersList=JsonUtil.toObject(answersListAnswer, ArrayList.class);
+		    for (int i = 0; i < answersList.size(); i++) {
+		    	String question_id=answersList.get(i).get("id").toString();
+		    	String answer="";
+				if(answersList.get(i).get("answer")!=null)
+				{
+					 answer=answersList.get(i).get("answer").toString();
+				}
+				String sqlInsert="insert into px_examination_result_temp (id, px_examination, userid, create_time, uuid, answer, question_id, type)" +
+						" values ('"+TextUtil.getUUID()+"', '"+examId+"', '"+user.getId()+"', sysdate, '"+uuid+"', '"+answer+"', '"+question_id+"', '4')";
+				jdbcAssistant.execute(sqlInsert);
+			}
+	    }
+	    
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> saveEaxm(Condition condition) {
+		Map<String, Object> dataMap=new HashMap<String, Object>();
+		CurrentUser user=condition.getCurrentUser();
+		String radioListAnswer=condition.get("radioListAnswer")+"";
+		String moreListAnswer=condition.get("moreListAnswer")+"";
+		String judgeListAnswer=condition.get("judgeListAnswer")+"";
+		String answersListAnswer=condition.get("answersListAnswer")+"";
+		String uuid=TextUtil.getUUID();
+		String tempUuid=condition.get("uuid").toString();
+		String examId=condition.get("examId")+"";
+		String stattime=condition.get("stattime").toString();
+		Map<String, Object> examMap=getExam(examId);
+		Map<String, Object> PaperMap=getTestPaper(examMap.get("pxTestPaper").toString());
+		double examScore=0;
+		int state=1;
+		String inserSql="insert into px_examination_result (id, px_examination, score, total_score, create_time, create_user_id, create_user_name, create_stat_time, create_stop_time, state, type,pass_score,px_test_paper,exam_source) " +
+	    		"values ('"+uuid+"', '"+examId+"', "+examScore+", "+PaperMap.get("totalScore")+", sysdate, '"+user.getId()+"', '"+user.getName()+"', to_date('"+stattime+"' , 'yyyy-mm-dd hh24:mi:ss'), sysdate, '"+state+"', '"+examMap.get("examintionType")+"',"+PaperMap.get("passScore")+",'"+PaperMap.get("id")+"','pc')";
+	    jdbcAssistant.execute(inserSql);
+		if(TextUtil.isNotEmpty(radioListAnswer))
+		{
+				@SuppressWarnings("unchecked")
+				List<Map<String, Object>> radioList=JsonUtil.toObject(radioListAnswer, List.class);
+			    for (int i = 0; i < radioList.size(); i++) {
+					String question_id=radioList.get(i).get("id").toString();
+					String answer=radioList.get(i).get("answer")+"";
+					double score=Double.parseDouble(radioList.get(i).get("questionScore").toString());
+					double tempScore=0;
+					if(TextUtil.isNotEmpty(answer))
+					{
+						String sql="select t.*, t.rowid from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+question_id+"' and t.is_right='Y' and t.id='"+answer+"'";
+						List<Map<String, Object>> tempList=jdbcAssistant.query(sql);
+						if(tempList.size()!=0)
+						{
+							examScore+=score;
+							tempScore=score;
+						}
+					}
+					int order=i+1;
+					String sqlInsert="insert into px_examination_result_answer (id, px_examination_result, create_time, answer, question_id, type, score,order_index) " +
+							"values  ('"+TextUtil.getUUID()+"', '"+uuid+"', sysdate, '"+answer+"', '"+question_id+"', '1', "+tempScore+","+order+")";
+					jdbcAssistant.execute(sqlInsert);
+					
+					
+				}
+			    
+		}
+		if(TextUtil.isNotEmpty(moreListAnswer))
+		{
+			    @SuppressWarnings("unchecked")
+				List<Map<String, Object>> moreList=JsonUtil.toObject(moreListAnswer, ArrayList.class);
+			    for (int i = 0; i < moreList.size(); i++) {
+			    	String question_id=moreList.get(i).get("id").toString();
+					String answer=moreList.get(i).get("answer")+"";
+					double score=Double.parseDouble(moreList.get(i).get("questionScore").toString());
+					double tempScore=0;
+					if(TextUtil.isNotEmpty(answer))
+					{
+						String result=getConvert(answer);
+						String[] answerss = answer.split(",");
+						String sql="select t.*, t.rowid from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+question_id+"' and t.is_right='Y' and t.id in ("+result+")";
+						List<Map<String, Object>> tempList=jdbcAssistant.query(sql);
+						String sqlsize="select t.*, t.rowid from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+question_id+"' and t.is_right='Y'";
+						List<Map<String, Object>> tempLists=jdbcAssistant.query(sqlsize);
+						if(tempList.size()==tempLists.size() && tempList.size()==answerss.length)
+						{
+							examScore+=score;
+							tempScore=score;
+						}
+					}
+					int order=i+1;
+					String sqlInsert="insert into px_examination_result_answer (id, px_examination_result, create_time, answer, question_id, type, score,order_index) " +
+							"values  ('"+TextUtil.getUUID()+"', '"+uuid+"', sysdate, '"+answer+"', '"+question_id+"', '2', "+tempScore+","+order+")";
+					jdbcAssistant.execute(sqlInsert);
+				}
+			    
+		}
+	    if(TextUtil.isNotEmpty(judgeListAnswer))
+	    {
+	    	@SuppressWarnings("unchecked")
+			List<Map<String, Object>> judgeList=JsonUtil.toObject(judgeListAnswer, ArrayList.class);
+		    for (int i = 0; i < judgeList.size(); i++) {
+		    	String question_id=judgeList.get(i).get("id").toString();
+				String answer=judgeList.get(i).get("answer")+"";
+				double tempScore=0;
+				double score=Double.parseDouble(judgeList.get(i).get("questionScore").toString());
+				if(TextUtil.isNotEmpty(answer))
+				{
+					String sql="select t.*, t.rowid from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+question_id+"' and t.answer='"+answer+"'";
+					List<Map<String, Object>> tempList=jdbcAssistant.query(sql);
+					if(tempList.size()!=0)
+					{
+						examScore+=score;
+						tempScore=score;
+					}
+				}
+				int order=i+1;
+				String sqlInsert="insert into px_examination_result_answer (id, px_examination_result, create_time, answer, question_id, type, score,order_index) " +
+						"values  ('"+TextUtil.getUUID()+"', '"+uuid+"', sysdate, '"+answer+"', '"+question_id+"', '3', "+tempScore+","+order+")";
+				jdbcAssistant.execute(sqlInsert);
+		    }
+	    }
+	    if(TextUtil.isNotEmpty(answersListAnswer))
+	    {
+	    	@SuppressWarnings("unchecked")
+			List<Map<String, Object>> answersList=JsonUtil.toObject(answersListAnswer, ArrayList.class);
+		    for (int i = 0; i < answersList.size(); i++) {
+		    	state=0;
+		    	int order=i+1;
+		    	String question_id=answersList.get(i).get("id").toString();
+				String answer=answersList.get(i).get("answer")+"";
+				String sqlInsert="insert into px_examination_result_answer (id, px_examination_result, create_time, answer, question_id, type, score,order_index) " +
+						"values  ('"+TextUtil.getUUID()+"', '"+uuid+"', sysdate, '"+answer+"', '"+question_id+"', '4', 0,"+order+")";
+				jdbcAssistant.execute(sqlInsert);
+			}
+	    }
+	    String updateSql="update PX_EXAMINATION_RESULT t set t.state='"+state+"' ,t.score='"+examScore+"' where t.id='"+uuid+"'";
+	    jdbcAssistant.execute(updateSql);
+	    dataMap.put("uuid", uuid);
+	    //删除临时表数据
+	    String deleteSql="delete from PX_EXAMINATION_RESULT_TEMP t where t.uuid='"+tempUuid+"' and t.userid='"+user.getId()+"' and t.px_examination='"+examId+"'";
+		jdbcAssistant.execute(deleteSql);
+	    
+	    return dataMap;
+	}
+	/**
+	 * 转换多选格式
+	 * @param answers
+	 * @return
+	 */
+	public String getConvert(String answers) {
+		
+		    String result="";
+			String[] answerss = answers.split(",");
+			for (int i = 0; i < answerss.length; i++) {
+				result+="'"+answerss[i]+"',";
+			}
+			if(TextUtil.isNotEmpty(result))
+			{
+				result=result.substring(0, result.lastIndexOf(","));
+			}
+		
+		return result;
+	}
+
+	@Override
+	public Map<String, Object> getExamResultInfo(Condition condition) {
+		Map<String, Object> dataMap=new HashMap<String, Object>();
+		String id=condition.get("id").toString();
+		CurrentUser user=condition.getCurrentUser();
+		String sql="select * from PX_EXAMINATION_RESULT t where t.id='"+id+"' and t.create_user_id='"+user.getId()+"'";
+		Map<String, Object> examResultMap=jdbcAssistant.queryOne(sql);
+		Map<String, Object> examMap=getExam(examResultMap.get("pxExamination").toString());
+		Map<String, Object> PaperMap=getTestPaper(examMap.get("pxTestPaper").toString());
+		dataMap.put("totalScore", PaperMap.get("totalScore").toString()); //总分数
+		dataMap.put("time", PaperMap.get("time").toString());  //时间
+		dataMap.put("examTitle",examMap.get("name").toString());  //作答用时
+		String statTime=examResultMap.get("createStatTime").toString();
+		String stopTime=examResultMap.get("createStopTime").toString();
+		long resultTime=DateUtil.timeSub(statTime, stopTime);
+		int intResultTime=(int) (resultTime/60);
+		dataMap.put("resultTime",intResultTime);  //作答用时
+		dataMap.put("totalTopic", PaperMap.get("totalTopic").toString());  //试题总数
+		List<Map<String, Object>> answersList=jdbcAssistant.query("select * from PX_EXAMINATION_RESULT_ANSWER t where t.px_examination_result='"+id+"'");
+		dataMap.put("resultScore", examResultMap.get("score").toString());  //试题总数
+		int totalSum=answersList.size();
+		int some_answered=0;
+		int not_answered=0;
+		int succeed_answer=0;
+		int erroranswer=0;
+		int radioList=0;
+		int radioListDui=0;
+		int moreList=0;
+		int moreListDui=0;
+		int judgeList=0;
+		int judgeListdui=0;
+		int answers=0;
+		int answersdui=0;
+		for (int i = 0; i < answersList.size(); i++) {
+			Map<String, Object> answersMap=answersList.get(i);
+			String type=answersMap.get("type").toString();
+			String answer=answersMap.get("answer")+"";
+			double score=Double.parseDouble(answersMap.get("score").toString());
+			if(type.equals("1"))
+			{
+				if(score!=0)
+				{
+					radioListDui++;
+				}
+				radioList++;
+			}
+			if(type.equals("2"))
+			{
+				if(score!=0)
+				{
+					moreListDui++;
+				}
+				moreList++;
+			}
+			if(type.equals("3"))
+			{
+				judgeList++;
+				if(score!=0)
+				{
+					judgeListdui++;
+				}
+				
+			}
+			if(type.equals("4"))
+			{
+				answers++;
+				if(score!=0)
+				{
+					answersdui++;
+				}
+			}
+			if(TextUtil.isNotEmpty(answer))
+			{
+				some_answered++;
+			}
+			else
+			{
+				not_answered++;
+			}
+			succeed_answer=radioListDui+moreListDui+judgeListdui+answersdui;
+			erroranswer=totalSum-succeed_answer;
+		}
+		dataMap.put("some_answered",some_answered);    //已做
+		dataMap.put("not_answered",not_answered);  //已做
+		dataMap.put("not_answered",not_answered);  //未做
+		dataMap.put("succeed_answer",succeed_answer);  //作对
+		dataMap.put("erroranswer",erroranswer);  //做错
+		//单选题
+		dataMap.put("radioList",radioList);  //单选题
+		dataMap.put("radioListDui",radioListDui);  //单选题对
+		int radiolv=0;
+		if(radioList!=0)
+		{
+		    radiolv=radioListDui*100/radioList;
+			dataMap.put("radiolv",radiolv);  //单选题正确率
+		}
+		dataMap.put("radiolv",radiolv);  //单选题正确率
+		//多选题
+		dataMap.put("moreList",moreList);  //单选题
+		dataMap.put("moreListDui",moreListDui);  //单选题对
+		int moreListlv=0;
+		if(moreList!=0)
+		{
+			moreListlv=moreListDui*100/moreList;
+		}
+		dataMap.put("moreListlv",moreListlv);  
+		//判断题
+		dataMap.put("judgeList",judgeList);  
+		dataMap.put("judgeListDui",judgeListdui);  
+		int judgeListlv=0;
+		if(judgeList!=0)
+		{
+			 judgeListlv=judgeListdui*100/judgeList;
+		}
+		dataMap.put("judgeListlv",judgeListlv);  
+		//问答题
+		dataMap.put("answers",answers);  
+		dataMap.put("answersdui",answersdui); 
+		int answerslv=0;
+		if(answers!=0)
+		{
+			answerslv=answersdui*100/answers;
+		}
+		int resultlv=succeed_answer*100/totalSum;
+		dataMap.put("resultlv",resultlv);  
+		dataMap.put("answerslv",answerslv);  
+		return dataMap;
+	}
+
+	@Override
+	public Map<String, Object> updateExamInfoEffective(Condition condition) {
+		CurrentUser user=condition.getCurrentUser();
+		Map<String, Object> resultMap=new HashMap<String, Object>();
+		String examId=condition.get("id").toString();
+		String sql="select * from PX_EXAMINATION_USER t where t.userid='"+user.getId()+"' and t.px_examination='"+examId+"'";
+		Map<String, Object> dataMap=jdbcAssistant.queryOne(sql);
+		String id=dataMap.get("id").toString();
+		int effectiveTimes=Integer.parseInt(dataMap.get("effectiveTimes").toString());
+		int thisEffectiveTimes=effectiveTimes-1;
+		if(thisEffectiveTimes>=0)
+		{
+			resultMap.put("state", "succeed");
+			jdbcAssistant.execute("update PX_EXAMINATION_USER t set t.effective_times="+thisEffectiveTimes+" where t.id='"+id+"'");
+		}
+		else
+		{
+			resultMap.put("state", "error");
+		}
+		return resultMap;
+	}
+
+	@Override
+	public Map<String, Object> loadMarkeAllGrid(Condition condition) {
+		String sql = "select t.id,t.create_stat_time,t.create_stop_time,t.score,t.pass_score,t.total_score,t.state,t.create_user_name,e.name, " +
+				"(case when t.score>=t.pass_score  then '是' else '否' end ) as pass_state  from PX_EXAMINATION_RESULT t left join PX_EXAMINATION e " +
+				"on t.px_examination=e.id where t.type='0'";
+	    if(condition.containsKey("username")){
+			sql += " and t.create_user_name like ? ";
+			condition.put("username", "%" + condition.get("username") + "%" );
+		}
+		if(condition.containsKey("exam"))
+		{
+			sql += " and e.name like ? ";
+			condition.put("exam", "%" + condition.get("exam") + "%" );
+		}
+		if(condition.containsKey("passState"))
+		{
+			if(condition.get("passState").equals("及格"))
+			{
+				sql += " and t.score>=t.pass_score";
+			}
+			else
+			{
+				sql += " and t.score<=t.pass_score";
+			}
+			condition.remove("passState");
+		}
+		sql += " order by t.create_stat_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql,condition.valueArray());
+	}
+
+	@Override
+	public Map<String, Object> getMarkeInfo(Condition condition) {
+		Map<String, Object> dataMap=new HashMap<String, Object>();
+		dataMap=getExamResultInfo(condition);
+		String sql="select t.id,t.score,t.answer as this_answer ,e.title,e.img,e.question_score,a.answer from " +
+				"PX_EXAMINATION_RESULT_ANSWER t left join  PX_TEST_PAPER_QUESTION e on e.id=t.question_id left join " +
+				"PX_TEST_PAPER_QUESTION_ANSWER a on e.id=a.que_id where t.px_examination_result='"+condition.get("id")+"' " +
+				"and t.type='4' order by e.title";
+		List<Map<String, Object>> answersList=jdbcAssistant.query(sql);
+		dataMap.put("resuleAnswerId", condition.get("id"));
+		dataMap.put("answersList", answersList);
+		return dataMap;
+	}
+
+	@Override
+	public void saveMarkeInfo(Condition condition) {
+		String resuleAnswerId=condition.get("resuleAnswerId").toString();
+		String answersListAnswer=condition.get("answersListAnswer")+"";
+		  if(TextUtil.isNotEmpty(answersListAnswer))
+		    {
+		    	@SuppressWarnings("unchecked")
+				List<Map<String, Object>> answersList=JsonUtil.toObject(answersListAnswer, ArrayList.class);
+			    for (int i = 0; i < answersList.size(); i++) {
+			    	String questionId=answersList.get(i).get("id").toString();
+			    	String thisScore=answersList.get(i).get("thisScore").toString();
+			    	double score=Double.parseDouble(thisScore);
+			    	String insertsql="update px_examination_result_answer set score ="+score+" where id = '"+questionId+"'";
+			    	jdbcAssistant.execute(insertsql);
+			    	
+				}
+		    }
+		String sql="select sum(t.score) as total_score from PX_EXAMINATION_RESULT_ANSWER t where t.px_examination_result='"+resuleAnswerId+"'";
+		Map<String, Object> dataMap=jdbcAssistant.queryOne(sql);
+		String totalScore=dataMap.get("totalScore")+"";
+		String updateSql="update PX_EXAMINATION_RESULT t set t.state='1' ,t.score='"+totalScore+"' where t.id='"+resuleAnswerId+"'";
+		jdbcAssistant.execute(updateSql);
+	}
+
+	@Override
+	public Map<String, Object> getExamAnalysisInfo(Condition condition) {
+		Map<String, Object> dataMap=new HashMap<String, Object>();
+		String sign=condition.get("sign")+"";
+		dataMap=getExamResultInfo(condition);
+		dataMap.put("radioList", getAnalysisRadio(condition.get("id").toString(),sign));
+		dataMap.put("moreList", getAnalysisMore(condition.get("id").toString(),sign));
+		dataMap.put("judgeList", getAnalysisJudge(condition.get("id").toString(),sign));
+		dataMap.put("answersList", getAnalysisAnswers(condition.get("id").toString(),sign));
+		return dataMap;
+	}
+
+
+	/**
+	 * 获取单选题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getAnalysisRadio(String id,String sing)
+	{
+		List<Map<String, Object>> newlist=new ArrayList<Map<String,Object>>();
+		String sql="select e.*,t.answer as this_answer, t.score as this_score from PX_EXAMINATION_RESULT_ANSWER t left join  PX_TEST_PAPER_QUESTION e on e.id=t.question_id where e.type='1' and t.px_examination_result='"+id+"' ";
+		if(TextUtil.isEmpty(sing))
+		{
+			sql=sql+" order by t.order_index ";
+		}
+		else
+		{
+			sql=sql+" order by e.title ";
+		}
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		for(int i=0;i<list.size();i++)
+		{
+			Map<String, Object> map=list.get(i);
+			String answerSql="select * from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+map.get("id")+"' order by no";
+			List<Map<String, Object>> answerList=jdbcAssistant.query(answerSql);
+			String thisAnswer=map.get("thisAnswer")+"";
+			String userAnswer="";
+			String trueAnswer="";
+				for (int j = 0; j <answerList.size(); j++) {
+					Map<String, Object> anwsermap=answerList.get(j);
+					String temiid=anwsermap.get("id").toString();
+					if(TextUtil.isNotEmpty(thisAnswer))
+					{
+						if(thisAnswer.equals(temiid))
+						{
+							userAnswer=getConvertABC(j);
+						}
+					}
+					
+					if(anwsermap.get("isRight").equals("Y"))
+					{
+						trueAnswer=getConvertABC(j);
+					}
+				}
+			map.put("trueAnswer", trueAnswer);
+			map.put("userAnswer", userAnswer);
+			map.put("answerList", answerList);
+			newlist.add(map);
+		}
+		return newlist;
+	}
+	
+	/**
+	 * 获取多选题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getAnalysisMore(String id,String sing)
+	{
+		List<Map<String, Object>> newlist=new ArrayList<Map<String,Object>>();
+		String sql="select e.*,t.answer as this_answer, t.score as this_score from PX_EXAMINATION_RESULT_ANSWER t left join  PX_TEST_PAPER_QUESTION e on e.id=t.question_id where e.type='2' and t.px_examination_result='"+id+"' ";
+		if(TextUtil.isEmpty(sing))
+		{
+			sql=sql+" order by t.order_index ";
+		}
+		else
+		{
+			sql=sql+" order by e.title ";
+		}
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		for(int i=0;i<list.size();i++)
+		{
+			Map<String, Object> map=list.get(i);
+			String answerSql="select * from PX_TEST_PAPER_QUESTION_ANSWER t where t.que_id='"+map.get("id")+"' order by no";
+			List<Map<String, Object>> answerList=jdbcAssistant.query(answerSql);
+			String thisAnswer=map.get("thisAnswer")+"";
+			String userAnswer="";
+			String trueAnswer="";
+				for (int j = 0; j <answerList.size(); j++) {
+					Map<String, Object> anwsermap=answerList.get(j);
+					String temiid=anwsermap.get("id").toString();
+					if(TextUtil.isNotEmpty(thisAnswer))
+					{
+						String[] answerss = thisAnswer.split(",");
+						for (int k = 0; k < answerss.length; k++) {
+							
+							if(answerss[k].equals(temiid))
+							{
+								userAnswer+=getConvertABC(j)+",";
+							}
+						}
+					}
+					if(anwsermap.get("isRight").equals("Y"))
+					{
+						trueAnswer+=getConvertABC(j)+",";
+					}
+				}
+			if(trueAnswer.contains(","))
+			{
+				trueAnswer=trueAnswer.substring(0,trueAnswer.lastIndexOf(","));
+			}
+			if(userAnswer.contains(","))
+			{
+				userAnswer=userAnswer.substring(0,userAnswer.lastIndexOf(","));
+			}
+			map.put("trueAnswer", trueAnswer);
+			map.put("userAnswer", userAnswer);
+			map.put("answerList", answerList);
+			newlist.add(map);
+		}
+		return newlist;
+	}
+
+	/**
+	 * 获取判断题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getAnalysisJudge(String id,String sing)
+	{
+		String sql="select e.*,t.answer as this_answer, t.score as this_score, (select tt.answer from PX_TEST_PAPER_QUESTION_ANSWER " +
+				"tt where tt.que_id=e.id) as true_answer from PX_EXAMINATION_RESULT_ANSWER t left join  PX_TEST_PAPER_QUESTION e on " +
+				"e.id=t.question_id where e.type='3' and t.px_examination_result='"+id+"' ";
+		if(TextUtil.isEmpty(sing))
+		{
+			sql=sql+" order by t.order_index ";
+		}
+		else
+		{
+			sql=sql+" order by e.title ";
+		}
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		return list;
+	}
+	
+	/**
+	 * 获取问答题
+	 * @param id
+	 * @return
+	 */
+	List<Map<String, Object>> getAnalysisAnswers(String id,String sing)
+	{
+		String sql="select e.*,t.answer as this_answer, t.score as this_score, (select tt.answer from PX_TEST_PAPER_QUESTION_ANSWER " +
+				"tt where tt.que_id=e.id) as true_answer from PX_EXAMINATION_RESULT_ANSWER t left join  PX_TEST_PAPER_QUESTION e on " +
+				"e.id=t.question_id where e.type='4' and t.px_examination_result='"+id+"'";
+		if(TextUtil.isEmpty(sing))
+		{
+			sql=sql+" order by t.order_index ";
+		}
+		else
+		{
+			sql=sql+" order by e.title ";
+		}
+		List<Map<String, Object>> list=jdbcAssistant.query(sql);
+		return list;
+	}
+	
+	public String getConvertABC(int order)
+	{
+		int js=65+order;
+		char answerNo = (char) js;
+		String trueAnswer=answerNo+"";
+		return trueAnswer;
+		
+	}
+	
+}

@@ -1,0 +1,194 @@
+package com.insplatform.module.testpaper.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.testpaper.model.TestPaperRegulation;
+import com.insplatform.module.testpaper.repository.TestPaperRegulationRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class TestPaperRegulationRepositoryImpl extends BaseRepositoryImpl<TestPaperRegulation> implements TestPaperRegulationRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.id, (select tt.name from PX_KPOINT tt where tt.id=t.px_kpoint) as px_kpoint, t.difficulty, t.type, t.total_topic, t.one_score, t.px_test_paper from PX_TEST_PAPER_REGULATION t where t.px_test_paper=?";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_TEST_PAPER_REGULATION t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.* from PX_TEST_PAPER_REGULATION t where t.id = ? ";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public TestPaperRegulation get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(TestPaperRegulation entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(TestPaperRegulation entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+
+	@Override
+	public List<Map<String, Object>> loadKpointAllList(Condition condition) {
+		
+		String sql = "select t.id as value , t.name as text from PX_KPOINT t inner join PX_TEST_PAPER_KPOINT p on p.kpoint = t.id where 1=1 ";
+		if(condition.containsKey("pxTestPaper"))
+		{
+			sql +=" and p.px_test_paper='"+condition.get("pxTestPaper")+"'";
+		}
+		else
+		{
+			sql +=" and p.px_test_paper='123456789'";
+		}
+		return jdbcAssistant.query(sql);
+	}
+
+	@Override
+	public String findCheckSava(Condition condition) {
+		String result="是";
+		//知识点
+		String pxKpoint=condition.get("pxKpoint").toString();
+		//试题类型
+		String type=condition.get("type").toString();
+		//难易程度
+		String difficulty=condition.get("difficulty").toString();
+		//试卷id
+		String pxTestPaper=condition.get("pxTestPaper").toString();
+		//题数
+		int totalTopic=Integer.parseInt(condition.get("totalTopic").toString());
+		//每道题分数
+		double oneScore=Double.parseDouble(condition.get("oneScore").toString());
+		String paperSql="select * from PX_TEST_PAPER t";
+		Map<String, Object> paperMap=jdbcAssistant.queryOne(paperSql);
+		//试卷试题总数
+		int paperTotal=Integer.parseInt(paperMap.get("totalTopic").toString());
+		//试卷总分数
+		int paperTotalScore=Integer.parseInt(paperMap.get("totalScore").toString());
+		if(result.equals("是"))
+		{
+			//判断所选条件是否超出总题数
+			String randomTiSql="select sum(t.total_topic) as zongtishu from PX_TEST_PAPER_REGULATION t where t.px_test_paper='"+pxTestPaper+"'";
+			Map<String, Object> randomTiMap=jdbcAssistant.queryOne(randomTiSql);
+			int thispaperTotal=0;
+			if(randomTiMap.get("zongtishu")!=null)
+			{
+				thispaperTotal=Integer.parseInt(randomTiMap.get("zongtishu").toString())+totalTopic;
+			}
+			else
+			{
+				thispaperTotal=0+totalTopic;
+			}
+			if(paperTotal<thispaperTotal)
+			{
+				 result="已经超出试卷设置的总题数";
+			}
+		}
+		
+		if(result.equals("是"))
+		{
+			//判断所选条件是否超出总分数
+			String randomSql="select (t.total_topic*t.one_score) as zongfenshu from PX_TEST_PAPER_REGULATION t where t.px_test_paper='"+pxTestPaper+"'";
+			Map<String, Object> randomMap=jdbcAssistant.queryOne(randomSql);
+			double thispaperTotalScore=0;
+			if(randomMap!=null)
+			{
+				thispaperTotalScore=Double.parseDouble(randomMap.get("zongfenshu").toString());
+			}
+			double tempTotalScore=thispaperTotalScore+oneScore*totalTopic;
+			if(paperTotalScore<tempTotalScore)
+			{
+				 result="已经超出试卷设置的总分数";
+			}
+			
+		}
+		if(result.equals("是"))
+		{
+			String sql="select * from PX_TEST_PAPER_REGULATION t where t.px_kpoint='"+pxKpoint+"' and t.difficulty='"+difficulty+"' and t.type='"+type+"' and t.px_test_paper='"+pxTestPaper+"'";
+			List<Map<String, Object>> list=jdbcAssistant.query(sql);
+			if(list.size()!=0)
+			{
+				 result="所选知识点、类型、难度已经存在，请重新进行选择";
+			}
+		}
+		if(result.equals("是"))
+		{
+			String queSql="select count(1) as shuliang from PX_QUESTION t where t.difficulty='"+difficulty+"' and t.type='"+type+"' and t.kpoint_id='"+pxKpoint+"'";
+			Map<String, Object> map=jdbcAssistant.queryOne(queSql);
+			int queshuliang=Integer.parseInt(map.get("shuliang").toString());
+			if(queshuliang<totalTopic)
+			{
+				 result="试题库满足此条件的题目数量为："+queshuliang+"道题";
+			}
+		}
+		
+		
+		return result;
+	}
+
+	@Override
+	public void delete(String ids[]) {
+		for(int i = 0 ; i < ids.length ; i++)
+		{
+			String kpointSql="select * from px_test_paper_regulation t where t.id='"+ids[i]+"'";
+			Map<String, Object> map=jdbcAssistant.queryOne(kpointSql);
+			String testPaper=map.get("pxTestPaper")+"";
+			String kpointId=map.get("pxKpoint")+"";
+			String deleteKpointsql="delete px_test_paper_regulation t where t.id='"+ids[i]+"'";
+			String deleteQuestionSql="delete PX_TEST_PAPER_QUESTION t where t.kpoint_id ='"+kpointId+"' and t.px_test_paper='"+testPaper+"'";
+			jdbcAssistant.execute(deleteKpointsql);
+			jdbcAssistant.execute(deleteQuestionSql);
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+}

@@ -1,0 +1,127 @@
+package com.insplatform.module.trainingimplement.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TRAINING_PHOTO")
+public class TrainingPhoto implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String trainingSchemeId;
+	private String trainingPhotoId;
+	private String originalName;
+	private String photoName;
+	private String photoPath;
+	private String photoUrl;
+	private String remark;
+	private String createUserId;
+	private String createUserName;
+	private java.util.Date createTime;
+	private java.util.Date updateTime;
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setTrainingSchemeId(String value) {
+		this.trainingSchemeId = value;
+	}
+	
+	public String getTrainingSchemeId() {
+		return this.trainingSchemeId;
+	}
+	
+	public void setTrainingPhotoId(String value) {
+		this.trainingPhotoId = value;
+	}
+	
+	public String getTrainingPhotoId() {
+		return this.trainingPhotoId;
+	}
+	
+	public void setOriginalName(String value) {
+		this.originalName = value;
+	}
+	
+	public String getOriginalName() {
+		return this.originalName;
+	}
+	
+	public void setPhotoName(String value) {
+		this.photoName = value;
+	}
+	
+	public String getPhotoName() {
+		return this.photoName;
+	}
+	
+	public void setPhotoPath(String value) {
+		this.photoPath = value;
+	}
+	
+	public String getPhotoPath() {
+		return this.photoPath;
+	}
+	
+	public void setPhotoUrl(String value) {
+		this.photoUrl = value;
+	}
+	
+	public String getPhotoUrl() {
+		return this.photoUrl;
+	}
+	
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	
+	public void setCreateUserId(String value) {
+		this.createUserId = value;
+	}
+	
+	public String getCreateUserId() {
+		return this.createUserId;
+	}
+	
+	public void setCreateUserName(String value) {
+		this.createUserName = value;
+	}
+	
+	public String getCreateUserName() {
+		return this.createUserName;
+	}
+	
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+}

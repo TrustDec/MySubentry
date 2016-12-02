@@ -1,0 +1,24 @@
+#database 
+database.type=ORACLE
+
+# mysql
+#jdbc.driverClass=com.mysql.jdbc.Driver
+#jdbc.jdbcUrl=jdbc:mysql://localhost:3306/test?useOldAliasMetadataBehavior=true&useUnicode=true&characterEncoding=UTF-8
+#jdbc.username=root
+#jdbc.password=123
+
+#oracle
+jdbc.driverClass=oracle.jdbc.driver.OracleDriver
+jdbc.jdbcUrl=jdbc\:oracle\:thin\:@192.168.100.247\:1521\:orcla
+jdbc.username=px_sys_z
+jdbc.password=123
+
+# bonecp
+bonecp.idleConnectionTestPeriod=60
+bonecp.idleMaxAge=120
+bonecp.maxConnectionsPerPartition=35
+bonecp.minConnectionsPerPartition=10
+bonecp.partitionCount=3
+bonecp.acquireIncrement=5
+bonecp.statementsCacheSize=100
+bonecp.releaseHelperThreads=3

@@ -1,0 +1,141 @@
+package com.insplatform.module.doc.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.component.service.file.UploadService;
+import com.insframework.component.service.file.bean.FileBean;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.doc.model.Doc;
+import com.insplatform.module.doc.repository.DocRepository;
+import com.insplatform.module.doc.service.DocService;
+import com.insplatform.module.resource.service.ResourceService;
+
+@Service
+public class DocServiceImpl extends BaseServiceImpl<Doc> implements DocService{
+	
+	@Autowired
+	private DocRepository docRepository;
+	
+	@Autowired
+	private ResourceService resourceService;
+	
+	@Autowired
+	private UploadService uploadService;
+
+	@Override
+	public BaseRepository<Doc> getRepository() {		
+		return docRepository;
+	}
+	
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {			
+		return docRepository.loadAllGrid(condition);
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {			
+		return docRepository.loadAllList(condition);
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {			
+		return docRepository.load(id);
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public Doc get(Serializable id) {		
+		return docRepository.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Doc entity) {	
+		return docRepository.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Doc entity) {		
+		docRepository.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		docRepository.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		docRepository.deleteByIds(ids);
+		//删除关联信息
+		resourceService.removeOthersByIds("DOC", ids);
+	}
+
+	@Override
+	public Serializable save(Doc doc, HttpServletRequest request) {
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		doc.setOriginalName(file.getOriginalFilename());
+		FileBean fileBean = null;
+		try {
+			fileBean = uploadService.uploadByDoc(file);			
+		} catch (Exception e) {		
+			e.printStackTrace();
+		}
+		doc.setDocOriginal(fileBean.getUrl());
+		String id = (String) super.save(doc);
+		String sql = "insert into PX_DOC_TRANSFER_JOB values('"+TextUtil.getUUID()+"', '"+fileBean.getPath()+"', '"+fileBean.getUrl()+"', sysdate, '"+id+"') ";
+		jdbcAssistant.update(sql);
+		return id;
+	}
+
+	@Override
+	public void update(Doc doc, HttpServletRequest request) {
+		MultipartFile file = uploadService.getMultipartFile(request, "file");
+		if(file != null && file.getSize() > 0){
+			doc.setOriginalName(file.getOriginalFilename());
+			doc.setDocPdf("");
+			doc.setDocSwf("");
+			FileBean fileBean = null;
+			try {
+				fileBean = uploadService.uploadByDoc(file);			
+			} catch (Exception e) {		
+				e.printStackTrace();
+			}
+			doc.setDocOriginal(fileBean.getUrl());
+			String sql = "select count(1) as count from PX_DOC_TRANSFER_JOB t where t.doc_id = '"+doc.getId()+"' ";
+			int count = jdbcAssistant.queryAsInt(sql);
+			if(count > 0){
+				sql = "delete from PX_DOC_TRANSFER_JOB where doc_id = '"+doc.getId()+"' ";
+				jdbcAssistant.update(sql);
+			}			
+			sql = "insert into PX_DOC_TRANSFER_JOB values('"+TextUtil.getUUID()+"', '"+fileBean.getPath()+"', '"+fileBean.getUrl()+"', sysdate, '"+doc.getId()+"') ";
+			jdbcAssistant.update(sql);
+		}
+		docRepository.update(doc);
+	}
+
+}

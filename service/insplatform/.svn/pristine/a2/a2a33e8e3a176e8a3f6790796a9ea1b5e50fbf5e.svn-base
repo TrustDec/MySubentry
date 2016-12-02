@@ -1,0 +1,51 @@
+package com.insplatform.module.userrel.service;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.spring.jdbc.JdbcAssistant;
+import com.insframework.component.service.ext.grid.GridService;
+import com.insframework.system.map.Condition;
+
+@Service
+public class UserWorktypeService {
+	@Autowired
+	private GridService gridService;
+	@Autowired
+	private JdbcAssistant jdbcAssistant;	
+	
+	public Map<String, Object> loadInfo(Condition condition) {
+		String sql = " select t.* from v_px_worktype t  where 1=1  ";
+		if (condition.containsKey("id")) {
+			sql += " and t.ID in ( select worktype_id from px_user_worktype where user_id =  ? ) ";
+		}
+		return gridService.loadData(condition.getGridTransModel(), sql,
+				condition.valueArray());
+	}
+
+	public void saveWorkType(String wid, String userId) {
+		String sql = "insert into px_user_worktype values ('" + userId + "', '"
+				+ wid + "') ";
+		jdbcAssistant.batchUpdate(sql);
+	}
+
+	public void deleteWorkType(String[] ids) {
+		String[] sqls = new String[ids.length];
+		for (int i = 0; i < ids.length; i++) {
+			sqls[i] = " delete from px_user_worktype t where t.worktype_id = '"
+					+ ids[i] + "'";
+		}
+		jdbcAssistant.batchUpdate(sqls);
+	}
+	
+	public boolean getWorkType (String wid ,String userId) {
+		String sql=" select count(1) from px_user_worktype where 1=1 and user_ID='"+userId+"' and worktype_id='"+wid+"'";
+		int count = jdbcAssistant.queryAsInt(sql);
+		if(count > 0){
+			return true;
+		}
+		return false;
+	} 
+}

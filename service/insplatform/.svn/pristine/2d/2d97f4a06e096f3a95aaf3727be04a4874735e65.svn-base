@@ -1,0 +1,87 @@
+package com.insplatform.system.user.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.insframework.common.spring.jdbc.JdbcAssistant;
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.curruser.CurrentUser;
+import com.insplatform.system.user.repository.UserRepository;
+import com.insplatform.system.user.service.UserBizDataAuthzService;
+
+@Controller
+@RequestMapping("/system/user/biz/authz")
+public class UserBizDataAuthzController extends BaseController{
+	
+	@Autowired
+	private UserBizDataAuthzService userBizDataAuthzService;
+	
+	@Autowired
+	private JdbcAssistant jdbcAssistant;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	/**
+	 * 设置用户业务数据权限
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/add")
+	public @ResponseBody Map<String, Object> add(HttpServletRequest request){
+		String userId = request.getParameter("userId");
+		String bizDataAuthzLevel = request.getParameter("bizDataAuthzLevel");		
+		String [] authzUserIds = this.getSelectedItems(request, "authzUserIds");
+		String [] authzOrgIds = this.getSelectedItems(request, "authzOrgIds");
+		userBizDataAuthzService.add(userId , bizDataAuthzLevel, authzUserIds, authzOrgIds);
+		return this.getMessager().success();
+	}
+
+	/**
+	 * 检查当前用户是否有此机构的权限，针对组织机构管理
+	 * @param orgId
+	 * @return
+	 */
+	@RequestMapping("/checkUserHasOrgAuthz")
+	public @ResponseBody Map<String, Object> checkUserHasOrgAuthz(
+			@RequestParam("orgId") String orgId, HttpServletRequest request){
+		CurrentUser user = this.getCurrentUser(request);
+		return this.getMessager().success().put("has", userBizDataAuthzService.checkUserHasOrgAuthz(orgId, user));
+	}
+	
+	/**
+	 * 根据用户id加载用户业务数据权限级别
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping("/loadUserLevel")
+	public @ResponseBody Map<String, Object> loadUserLevel(@RequestParam("userId") String userId){
+		int level = userBizDataAuthzService.loadUserBizLevel(userId);
+		return this.getMessager().success().data(level);
+	}
+	
+	/**
+	 * 加载用户所用户权限的用户（此方法比较特殊，只在这一个地方用了，直接写sql语句）
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping("/loadUserHasUsers")
+	public @ResponseBody Map<String, Object> loadUserHasUsers(@RequestParam("userId") String userId){
+		List<String> userIds = userBizDataAuthzService.loadUserBizUsers(userId);
+		String sql = userRepository.getLoadAllSql();
+		sql += " and id in " + TextUtil.tansferListtoSqlString(userIds);
+		List<Map<String, Object>> users = jdbcAssistant.query(sql);
+		return this.getMessager().success().put("users", users);
+	}
+	
+}

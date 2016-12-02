@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="insplatform"
+  id="myeclipse.1447426152580"
+  context-root="/insplatform"
+  j2ee-spec="6.0"
+  archive="insplatform.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

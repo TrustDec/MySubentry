@@ -1,0 +1,154 @@
+package com.insplatform.module.trainingimplement.model;
+
+import java.io.Serializable;
+
+
+import com.insframework.common.persistence.annotation.Id;
+import com.insframework.common.persistence.annotation.Table;
+import com.insframework.common.persistence.constant.SQL_CONSTANT.ID_STRATEGY;
+
+@Table("PX_TRAINING_USER_ROSTER")
+public class TrainingUserRoster implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id(strategy=ID_STRATEGY.UUID)
+	private String id;
+	private String companyName;
+	private String companyAbbreviation;
+	private String userId;
+	private String name;
+	private String sex;
+	private String idCard;
+	private String birthday;
+	private String age;
+	private String phone;
+	private String edu;
+	private String seniority;
+	private String major;
+	private String duty;
+	private String isChecking = "N";
+	
+	public String getIsChecking() {
+		return isChecking;
+	}
+
+	public void setIsChecking(String isChecking) {
+		this.isChecking = isChecking;
+	}
+
+	public void setId(String value) {
+		this.id = value;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setCompanyName(String value) {
+		this.companyName = value;
+	}
+	
+	public String getCompanyName() {
+		return this.companyName;
+	}
+	
+	public void setCompanyAbbreviation(String value) {
+		this.companyAbbreviation = value;
+	}
+	
+	public String getCompanyAbbreviation() {
+		return this.companyAbbreviation;
+	}
+	
+	public void setUserId(String value) {
+		this.userId = value;
+	}
+	
+	public String getUserId() {
+		return this.userId;
+	}
+	
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setSex(String value) {
+		this.sex = value;
+	}
+	
+	public String getSex() {
+		return this.sex;
+	}
+	
+	public void setIdCard(String value) {
+		this.idCard = value;
+	}
+	
+	public String getIdCard() {
+		return this.idCard;
+	}
+	
+	public void setBirthday(String value) {
+		this.birthday = value;
+	}
+	
+	public String getBirthday() {
+		return this.birthday;
+	}
+	
+	public void setAge(String value) {
+		this.age = value;
+	}
+	
+	public String getAge() {
+		return this.age;
+	}
+	
+	public void setPhone(String value) {
+		this.phone = value;
+	}
+	
+	public String getPhone() {
+		return this.phone;
+	}
+	
+	public void setEdu(String value) {
+		this.edu = value;
+	}
+	
+	public String getEdu() {
+		return this.edu;
+	}
+	
+	public void setSeniority(String value) {
+		this.seniority = value;
+	}
+	
+	public String getSeniority() {
+		return this.seniority;
+	}
+	
+	public void setMajor(String value) {
+		this.major = value;
+	}
+	
+	public String getMajor() {
+		return this.major;
+	}
+	
+	public void setDuty(String value) {
+		this.duty = value;
+	}
+	
+	public String getDuty() {
+		return this.duty;
+	}
+	
+}

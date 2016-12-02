@@ -1,0 +1,98 @@
+package com.insplatform.module.osta.personworktype.repository.impl;
+
+import java.io.Serializable;
+import java.util.*;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insplatform.module.osta.personworktype.model.OstaPersonWorktypeLevel;
+import com.insplatform.module.osta.personworktype.repository.OstaPersonWorktypeLevelRepository;
+
+import com.insframework.system.map.Condition;
+
+
+@Repository
+public class OstaPersonWorktypeLevelRepositoryImpl extends BaseRepositoryImpl<OstaPersonWorktypeLevel> implements OstaPersonWorktypeLevelRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition cd) {	
+		String sql = "select wc.name worktype_class_name,t.id, t.worktype_id, t.worktype_name, t.gain_level_id," +
+				" t.gain_level_name, to_char(t.gain_time,'yyyy-mm-dd') gain_time, t.person_id, t.person_name," +
+				" t.create_user_id, t.create_user_name, t.create_time, t.remarks,t.technical_title" +
+				" from px_osta_person_worktype_level t " +
+				" left join px_worktype w on w.id = t.worktype_id" +
+				" left join px_worktype_classify wc on wc.id = w.classify_id" +
+				" where 1=1 and t.person_id = '"+cd.get("pid")+"'";
+		cd.remove("pid");
+		//"worktypeName","gainLevelId"
+		if (cd.containsKey("worktypeName")) {
+			sql += " and t.worktype_name like ?";
+			cd.put("worktypeName","%"+cd.get("worktypeName")+"%");
+		}
+		if (cd.containsKey("gainLevelId")) {
+			sql += " and t.gain_level_id = ?";
+		}
+		
+		sql += " order by t.create_time desc";
+
+		return gridService.loadData(cd.getGridTransModel(), sql, cd.valueArray());
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {	
+		String sql = "select t.* from PX_OSTA_PERSON_WORKTYPE_LEVEL t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.id, t.worktype_id, t.worktype_name, t.gain_level_id," +
+				" t.gain_level_name, to_char(t.gain_time,'yyyy-mm-dd') gain_time, t.person_id, t.person_name," +
+				" t.create_user_id, t.create_user_name, t.create_time, t.remarks,t.technical_title" +
+				" from px_osta_person_worktype_level t " +
+				" where t.id = ?";
+		return jdbcAssistant.queryOne(sql, new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaPersonWorktypeLevel get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaPersonWorktypeLevel entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaPersonWorktypeLevel entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

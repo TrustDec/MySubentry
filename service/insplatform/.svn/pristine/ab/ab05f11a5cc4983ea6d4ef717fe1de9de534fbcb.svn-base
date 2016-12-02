@@ -1,0 +1,297 @@
+package com.insplatform.system.menu.service.impl;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.component.service.ext.tree.TreeService;
+import com.insframework.system.base.repository.BaseRepository;
+import com.insframework.system.base.service.impl.BaseServiceImpl;
+import com.insframework.system.context.App;
+import com.insframework.system.curruser.CurrentUser;
+import com.insframework.system.curruser.UserSession;
+
+import com.insframework.system.map.Condition;
+import com.insplatform.system.authz.repository.AuthzRepository;
+import com.insplatform.system.menu.model.Menu;
+import com.insplatform.system.menu.repository.MenuRepository;
+import com.insplatform.system.menu.service.MenuService;
+import com.insplatform.system.operate.repository.OperateRepository;
+
+import com.insplatform.system.role.RoleConstant;
+import com.insplatform.system.role.repository.RoleRepository;
+
+@Service
+public class MenuServiceImpl extends BaseServiceImpl<Menu> implements MenuService{
+	
+	@Autowired
+	private MenuRepository menuRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	private AuthzRepository authzRepository;
+	
+	@Autowired
+	private OperateRepository operateRepository;
+	
+	
+	@Autowired
+	private TreeService treeService;
+
+	@Override
+	public BaseRepository<Menu> getRepository() {		
+		return menuRepository;
+	}	
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(Menu entity) {		
+		String id = (String) menuRepository.save(entity);
+		authzRepository.addAuthzMenu(id);
+		return id;
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(Menu entity) {		
+		menuRepository.update(entity);
+		//更新所有的子节点，以及功能的enable和allow_authz字段
+		String enabled = entity.getEnabled();
+		String allowAuthz = entity.getAllowAuthz();
+		List<Map<String, Object>> children = menuRepository.loadChildrenMenuOpers(entity.getId());
+		if(children.size() > 0){
+			String [] sqls = new String [children.size()];
+			for(int i=0; i<sqls.length; i++){
+				Map<String, Object> child = children.get(i);
+				if(child.get("type").toString().toUpperCase().equals("OPERATE")){
+					sqls[i] = "update SYS_OPERATE set enabled='"+enabled+"' , allow_authz='"+allowAuthz+"' where id = '"+child.get("id")+"' ";
+				}else{
+					sqls[i] = "update SYS_MENU set enabled='"+enabled+"' , allow_authz='"+allowAuthz+"' where id = '"+child.get("id")+"' ";
+				}
+			}
+			jdbcAssistant.batchUpdate(sqls);
+		}
+		
+	}
+
+	/**
+	 * 重写父类deleteById方法
+	 * 
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		//删除权限
+		authzRepository.deleteAuthzByMenuId((String)id);
+		//删除其操作
+		List<Map<String, Object>> operates = operateRepository.loadByMenuId((String)id);
+		for(Map<String, Object> operate : operates){
+			authzRepository.deleteAuthzByOperateId(operate.get("id").toString());
+		}		
+		//删除子项
+		List<Map<String, Object>> children = menuRepository.getChildren(id);
+		for(Map<String, Object> child: children){
+			deleteById(child.get("id").toString());
+		}
+		//删除自身
+		super.deleteById(id);
+	}
+	
+	
+	@Override
+	public Map<String, Object> loadSysTree(String userId) {	
+		boolean isAdmin = roleRepository.checkUserIsSysAdmin(userId);
+		//如果不是超级管理员,则设置过滤条件
+		Map<String, Object> condition = new HashMap<String, Object>();	
+		if(!isAdmin){
+			//获取用户所有权限集合		
+			List<String> authzIds = authzRepository.loadUserAllAuthzIds(userId);
+			condition.put("userAuthzIds", TextUtil.tansferListtoSqlString(authzIds));
+		}
+		//设置只显示enabled的
+		condition.put("enabled", "Y");
+		List<Map<String, Object>> data = 
+				menuRepository.loadSysTreeData(condition);		
+		//组建树结构
+		return bulidFinalTree(buildTreeData(data, "sysTree"), false);
+	}
+	
+	@Override
+	public Map<String, Object> loadMgtTree(HttpServletRequest request, Condition condition) {	
+		CurrentUser user = UserSession.getCurrentUser(request);
+		
+		//如果不是超级管理员,并且没有其他查询条件时 ，则设置权限过滤		
+		if(!user.getIsAdmin() && condition.keySet().size() == 0){
+			//获取用户所有权限集合		
+			List<String> authzIds = authzRepository.loadUserAllAuthzIds(user.getId());
+			condition.put("userAuthzIds", TextUtil.tansferListtoSqlString(authzIds));
+		}		
+		
+		//roleId需要判断
+		String roleId = request.getParameter("roleId");
+		List<String> roleAuthzIds = null;
+		boolean roleIsSysAdmin = false;
+		if(TextUtil.isNotEmpty(roleId)){
+			roleAuthzIds = authzRepository.loadRoleAuthzIds(roleId);
+			if(RoleConstant.SYS_ADMIN_ID.getValue().equals(roleId)){
+				roleIsSysAdmin = true;
+			}			
+		}
+		
+		List<Map<String, Object>> data = menuRepository.loadMgtTreeData(request, condition);			
+		List<Map<String, Object>> treeData = buildTreeData(data, "mgtTree");
+		
+		
+		//给菜数据加图标
+		for(Map<String, Object> node : treeData){
+			//组
+			if(node.get("type").toString().equals("GROUP")){
+				node.put("icon", App.STATIC_PATH + "/image/icon/folder.png");
+				//node.put("type", "组");
+			}
+			//模块
+			else if(node.get("type").toString().equals("MODULE")){
+				node.put("icon", App.STATIC_PATH + "/image/icon/form.png");
+				//node.put("type", "模块");
+			}
+			//操作
+			else if(node.get("type").toString().equals("OPERATE")){
+				node.put("icon", App.STATIC_PATH + "/image/icon/config.png");
+				//node.put("type", "操作");
+			}
+
+
+			//角色权限	
+			if(roleAuthzIds != null){
+				boolean roleHasNodeAuthz = false;
+				for(String roleAuthzId : roleAuthzIds){
+					if(roleAuthzId.equals(node.get("authzId").toString())){
+						roleHasNodeAuthz = true;
+						break;
+					}
+				}	
+				if(node.get("allowAuthz").toString().equals("Y")){
+					if(roleHasNodeAuthz || roleIsSysAdmin){
+						node.put("checked", true);						
+					}else{
+						node.put("checked", false);
+					}
+				}	
+				if(roleHasNodeAuthz || roleIsSysAdmin){
+					node.put("text", "<span style='color:#003399;'>"+node.get("text")+"</span>");
+				}
+			}
+			
+		}
+		return bulidFinalTree(treeData, false);		
+				
+	}	
+
+	
+	/**
+	 * 将数据转为最终的树
+	 * @param finalList
+	 * @return
+	 */
+	public Map<String, Object> bulidFinalTree(List<Map<String, Object>> finalList, boolean checked){		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("children", treeService.parse(finalList, null, true, checked));
+		return map;
+	}	
+	 	
+	/**
+	 * 组合树
+	 * @param data
+	 * @param chekced	是否可以复选
+	 * @return
+	 */
+	private List<Map<String, Object>> buildTreeData(List<Map<String, Object>> data, String type){
+		//使用set去重
+		Set<Map<String, Object>> set = new HashSet<Map<String, Object>>();
+		//先将集合加入set中，保证数据完整性
+		set.addAll(data);
+		//确保每个节点的父节点都递归出来
+		for(Map<String, Object> node : data){			
+			addSuperNode(node, set, type);
+		}
+		List<Map<String, Object>> finalList = new ArrayList<Map<String, Object>>();		
+		finalList.addAll(set);	
+		//排序
+		Collections.sort(finalList, new Comparator<Map<String, Object>>() {
+			@Override
+			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+				try{
+					if(((BigDecimal)o1.get("orderIndex")).doubleValue() 
+							> ((BigDecimal)o2.get("orderIndex")).doubleValue()){						
+						return 1;
+					}else if(((BigDecimal)o1.get("orderIndex")).doubleValue() 
+							< ((BigDecimal)o2.get("orderIndex")).doubleValue()){						
+						return -1;
+					}else{
+						return 0;
+					}
+				}catch(Exception ex){					
+					return  0;
+				}	
+			}
+		});	
+		return finalList;
+	}
+	
+	/**
+	 * 向set中加入节点，并且递归加入其父节点
+	 * @param node
+	 * @param set
+	 */
+	private void addSuperNode(Map<String, Object> node, Set<Map<String, Object>> set, String type){
+		//如果是跟节点，直接加入，并返回
+		if(node.get("pid") == null){
+			set.add(node);
+			return;
+		}
+		
+		//加入自己
+		set.add(node);
+		
+		//先看此set中是否有当前节点的父节点
+		boolean hasSuper = false;
+		for(Map<String, Object> s : set){			
+			if(node.get("pid").toString().equals(s.get("id").toString())){
+				hasSuper = true;
+				break;
+			}
+		}
+		
+		if(!hasSuper){
+			//查询此节点关联的所有父节点
+			List<Map<String, Object>> supers = menuRepository.loadSupersByIdAsOracle(node.get("id").toString(), type);
+			set.addAll(supers);		
+		}
+		
+	}
+
+	
+	
+	
+
+}

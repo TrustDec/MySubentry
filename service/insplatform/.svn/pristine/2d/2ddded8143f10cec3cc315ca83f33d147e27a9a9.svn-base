@@ -1,0 +1,166 @@
+package com.insplatform.module.project.controller;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.insframework.common.utils.TextUtil;
+import com.insframework.system.base.controller.BaseController;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.project.model.ProjectItem;
+import com.insplatform.module.project.service.ProjectItemService;
+
+@Controller
+@RequestMapping("/px/projectitem")
+public class ProjectItemController extends BaseController{
+	
+	@Autowired
+	private ProjectItemService projectItemService;
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllGrid")
+	public @ResponseBody Map<String, Object> loadAllGrid(
+			HttpServletRequest request, HttpServletResponse response){
+		String projectId = request.getParameter("projectId");
+		Condition condition = this.getCondition(request);
+		condition.put("projectId", projectId);
+		return projectItemService.loadAllGrid(condition);
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllList")
+	public @ResponseBody Map<String, Object> loadAllList(
+			HttpServletRequest request, HttpServletResponse response){
+		Condition condition = this.getCondition(request);
+		return this.getMessager().success().data(projectItemService.loadAllList(condition));
+	}	
+	
+	
+	/**
+	 * 加载单条数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/load")
+	public @ResponseBody Map<String, Object> load(@RequestParam("id") String id){		
+		return this.getMessager().success().data(projectItemService.load(id));		
+	}
+	
+	/**
+	 * 新增
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/addOrUpdate")
+	public @ResponseBody Map<String, Object> add(ProjectItem projectitem){
+		if(TextUtil.isEmpty(projectitem.getId()))
+		{
+			projectItemService.save(projectitem);
+		}
+		else{
+			projectItemService.update(projectitem);
+		}
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 编辑
+	 * @param dict
+	 * @return
+	 */
+	@RequestMapping("/update")	
+	public @ResponseBody Map<String, Object> update(
+		   @RequestParam("id") String id,
+		   HttpServletRequest request){		
+		ProjectItem projectitem = projectItemService.get(id);
+		this.bindObject(request, projectitem);
+		projectItemService.update(projectitem);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/delete")	
+	public @ResponseBody Map<String, Object> delete(HttpServletRequest request){
+		String [] ids = this.getSelectedItems(request);
+		projectItemService.deleteByIds(ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/loadAllCourse")
+	public @ResponseBody Map<String, Object> loadAllCourse(
+			HttpServletRequest request, HttpServletResponse response){
+		String courseClassifyId = request.getParameter("courseClassifyId");
+		Condition condition = this.getCondition(request);
+		condition.put("courseClassifyId", courseClassifyId);
+		return projectItemService.loadAllCourse(condition);
+	}
+	
+	
+	/**
+	 * 添加关联课程
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/addItemCourse")
+	public @ResponseBody Map<String, Object> addItemCourse(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String[] ids = this.getSelectedItems(request, "idSer");
+		projectItemService.addItemCourse(id, ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 删除
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/deleteItemCourse")	
+	public @ResponseBody Map<String, Object> deleteCourse(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String [] ids = this.getSelectedItems(request);
+		projectItemService.deleteCourse(id,ids);
+		return this.getMessager().success();
+	}
+	
+	/**
+	 * 课程排序
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/updateItemCourseIndex")	
+	public @ResponseBody Map<String, Object> updateItemCourseIndex(HttpServletRequest request){
+		String id = request.getParameter("id");
+		String rowIndex = request.getParameter("rowIndex");
+		String currentId = request.getParameter("currentId");
+		String type = request.getParameter("type");
+		projectItemService.updateItemCourseIndex(id,rowIndex,currentId,type);
+		return this.getMessager().success();
+	}
+}

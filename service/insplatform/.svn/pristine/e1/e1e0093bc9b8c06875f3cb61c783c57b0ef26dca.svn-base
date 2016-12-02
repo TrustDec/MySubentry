@@ -1,0 +1,116 @@
+package com.insplatform.module.osta.question.repository.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.insframework.common.spring.jdbc.mapper.ValueMapper;
+import com.insframework.system.base.repository.impl.BaseRepositoryImpl;
+import com.insframework.system.map.Condition;
+import com.insplatform.module.osta.question.model.OstaQuestion;
+import com.insplatform.module.osta.question.repository.OstaQuestionRepository;
+import com.insplatform.module.resource.ResourceValueMapper;
+
+@Repository
+public class OstaQuestionRepositoryImpl extends BaseRepositoryImpl<OstaQuestion> implements OstaQuestionRepository{
+
+	@Override
+	public Map<String, Object> loadAllGrid(Condition condition) {	
+		String sql = "select t.*,ow.name kpoint_name,oqc.name question_classify_name,sd.name difficulty_name " +
+				" from PX_OSTA_QUESTION t" +
+				" left join px_osta_worktype ow on ow.id = t.kpoint_id" +
+				" left join px_osta_question_classify oqc on oqc.id = t.question_classify_id" +
+				" left join sys_dict sd on sd.id = t.difficulty" +
+				" where 1=1 ";
+		if(condition.containsKey("title")){
+			sql += " and t.title like ? ";
+			condition.put("title", "%" + condition.get("title") + "%" );
+		}
+		if(condition.containsKey("createUserName")){
+			sql += " and t.create_user_name like ? ";
+			condition.put("createUserName", "%" + condition.get("createUserName") + "%" );
+		}
+		if(condition.containsKey("type")){
+			sql += " and t.type = ? ";			
+		}
+		if(condition.containsKey("difficulty")){
+			sql += " and t.difficulty = ? ";			
+		}
+		if(condition.containsKey("kpointName")){
+			sql += " and ow.name like ? ";
+			condition.put("kpointName", "%" + condition.get("kpointName") + "%" );
+		}
+		if(condition.containsKey("questionClassifyName")){
+			sql += " and oqc.name like ? ";
+			condition.put("questionClassifyName", "%" + condition.get("questionClassifyName") + "%" );
+		}
+		sql += " order by t.update_time desc ";
+		return gridService.loadData(condition.getGridTransModel(), sql, condition.valueArray(), new ValueMapper(){
+			@Override
+			public RETURN_CODE map(Map<String, Object> record) throws Exception {
+				ResourceValueMapper.queType(record);
+				return RETURN_CODE.NEXT;
+			}
+		});
+	}
+	
+	@Override
+	public List<Map<String, Object>> loadAllList(Condition condition) {
+		String sql = "select t.* from PX_OSTA_QUESTION t ";
+		return jdbcAssistant.query(sql, condition.valueArray());
+	}
+	
+	@Override
+	public Map<String, Object> load(String id) {	
+		String sql = "select t.*,ow.name kpoint_name,oqc.name question_classify_name,sd.name difficulty_name " +
+				" from PX_OSTA_QUESTION t" +
+				" left join px_osta_worktype ow on ow.id = t.kpoint_id" +
+				" left join px_osta_question_classify oqc on oqc.id = t.question_classify_id" +
+				" left join sys_dict sd on sd.id = t.difficulty" +
+				" where t.id = ?";
+		return jdbcAssistant.queryOne(sql,new Object[]{id});
+	}
+	
+	/**
+	 * 重写父类get方法
+	 */
+	@Override
+	public OstaQuestion get(Serializable id) {		
+		return super.get(id);
+	}
+	
+	/**
+	 * 重写父类save方法
+	 */
+	@Override
+	public Serializable save(OstaQuestion entity) {	
+		return super.save(entity);
+	}
+	
+	/**
+	 * 重写父类update方法
+	 */
+	@Override
+	public void update(OstaQuestion entity) {		
+		super.update(entity);
+	}
+	
+	/**
+	 * 重写父类deleteById方法
+	 */
+	@Override
+	public void deleteById(Serializable id) {		
+		super.deleteById(id);
+	}
+	
+	/**
+	 * 重写父类deleteByIds方法
+	 */
+	@Override
+	public void deleteByIds(String... ids) {		
+		super.deleteByIds(ids);
+	}
+	
+}

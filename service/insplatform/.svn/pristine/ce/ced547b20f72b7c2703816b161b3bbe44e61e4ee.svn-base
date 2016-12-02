@@ -1,0 +1,69 @@
+package com.insplatform.module.osta.register.notice.repository;
+
+import java.util.*;
+
+import com.insframework.system.base.repository.BaseRepository;
+import com.insplatform.module.osta.register.notice.model.OstaRegNotice;
+
+import com.insframework.system.map.Condition;
+
+
+public interface OstaRegNoticeRepository extends BaseRepository<OstaRegNotice>{
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> loadAllGrid(Condition condition);
+	
+	/**
+	 * 加载数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	List<Map<String, Object>> loadAllList(Condition condition);
+	
+	/**
+	 * 加载单条数据
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	Map<String, Object> load(String id);
+
+	/**
+	 * 修改状态值
+	 * @param string
+	 * @param state
+	 * @return
+	 */
+	String updateState(String id, String state);
+
+	/**
+	 * 删除前校验
+	 * @param string
+	 * @return
+	 */
+	boolean beforeDeleteCheck(String id);
+
+	int deleteByIdx(String id);
+
+	/**
+	 * 修改状态前校验
+	 * @param id
+	 * @param state
+	 * @return
+	 */
+	String beforeUpdateStateCheck(String id, String state);
+
+	/**
+	 * 获取非草稿数据
+	 * @param condition
+	 * @return
+	 */
+	Map<String, Object> loadAllGridWrite(Condition condition);
+	
+}
